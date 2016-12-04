@@ -1,0 +1,547 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Schneller Interpretieren - Dynamische Compiler mit Graal und Truffle</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Normalerweise sind wir mit der Performance von Java ganz zufrieden.
+Der Bytecode-Compiler und die Hotspot VM mit Laufzeit-Compilierung (JIT) leisten recht gute Arbeit.
+Solange man auf Datenstrukturen und vernünfigte Interaktion (Mechanical Sympathy) mit CPU / Caches und Hauptspeicher sowie dem Garbage Collector achtet kann man sogar bis zu 70% der theoretischen Prozessorleistung mit Java erreichen, was mich immer wieder verblüfft.
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Etwas anders sieht es aus, wenn wir dynamische Sprachen anschauen.
+Seien das Programmiersprachen wie jRuby, Groovy, Clojure oder Javascript, die zwar mit InvokeDynamic und MethodHandles einen Bonus bekommen haben, aber trotzdem noch nicht so schnell sind wie Java.
+Aber auch Domänenspezifische Sprachen (DSL), wie Funktionen für Rule-Engines, Abfragesprachen, Routing-Definitionen oder Template-Sprachen würden davon profitieren, nicht interpretiert, sondern compiliert zu werden.</p>
+</div>
+<div class="paragraph">
+<p>Bisher wurde für Bytecoderzeugung zur Laufzeit meist ein Toolkit wie ASM oder CGlib benutzt.
+Damit können vorhandene Typen erweitert oder Bytecode für neue Klassen erschaffen werden.
+Ein anderer Ansatz, den die Auslieferung der Compiler-Tools mit der JRE ermöglicht, ist die Generierung von Java-Quellcode, der dann on-the-fly compiliert und geladen werden kann.
+Aber diese beiden Lösungen sind nur statische Ansätze, die den Laufzeitkontext der Ausführung des Codes nicht berücksichtigt.
+Bei dynamischen Sprachen, hat man zum Teil vor der konkreten Ausführung noch nicht alle Informationen z.b. Typen von Parametern oder Datenstrukturen die verarbeitet werden oder die konkrete Operation, die angewandt wird (Metaprogrammierung).
+Und natürlich möchte man diese Ausführung auch so weit wie möglich optimieren, um nah an die Ausführungsgeschwindigkeit von statisch compiliertem Code zu kommen.</p>
+</div>
+<div class="paragraph">
+<p>Von einer Gruppe von Ingenieuren bei Oracle Labs und diversen Universitäten wird seit einigen Jahren eine Infrastruktur entwickelt die es ermöglicht dynamischen Code während der kontinuierlich zu optimieren und dynamische zu compilieren - das Gespann aus dem Truffle-AST-Framework und dem Graal Compiler, die aus der Arbeit mit der Maxine VM (einer in Java implementierten JVM) entstanden sind.</p>
+</div>
+<div class="paragraph">
+<p>Graal unterliegt der GPLv2 Lizenz und die Truffle API der GPLv2 mit Classpath Exception.
+Der Quellcode der Projekte ist für wissenschaftliche Arbeiten für nichtkommerzielle Nutzung verfügbar.
+Es gibt eine Menge von Informationen zu diesem Projekt, sowohl von Oracle als auch als Teil des OpenJDK - Hotspot Projektes auf [Graal Projekt]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jit_und_optimierung">JIT und Optimierung</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Der JIT Compiler der JVM tritt nach der Warmup-Phase (<code>-XX:CompileThreshold=10000</code>) einer Methode in Erscheinung, indem die bisher gesammelten Informationen über statische Code-Struktur, aber auch Laufzeitinformationen über wiederholt genutzte Codepfade, geladene Subklassen und Spezialisierungen (Generics) berücksichtigt werden, um optimaleren Laufzeitcode zu erzeugen.
+Falls globale oder lokale Annahmen (Assumptions) nicht mehr zutreffen, wird wieder <em>deoptimiert</em>, d.h. bisher eingefügte Code-Pfade werden wieder entfernt.</p>
+</div>
+<div class="paragraph">
+<p>Ein gutes Beispiel dafür ist das effiziente Inlining (Aufruf wird durch Methodencode ersetzt) von Methoden, das bis zu einer Größe von 35 Bytecode-Instruktionen geschieht (<code>-XX:MaxInlineSize=35</code>).
+Diese Operation kann natürlich nur erfolgen, wenn keine polymorphen Subklassen die Methode überschreiben.
+Falls neben der ersten, noch weitere Subklassen geladen werden, stellt eine Fallunterscheidung für 2 Fälle, die erste Deoptimierung dar.
+Wenn noch mehr Subklassen geladen werden, die die Methode überschreiben, dann bleibt nur die Option des vollständigen Rückgängigmachens des Inlinings die Option.</p>
+</div>
+<div class="paragraph">
+<p>Ähnliche Optimierungen gibt es noch für viele andere Fälle: Aufrollen von Schleifen, Escape-Analyse von Variablen und Locks, On Stack Replacement usw.</p>
+</div>
+<div class="sect2">
+<h3 id="_dynamische_compiler_mit_graal_truffle">Dynamische Compiler mit Graal + Truffle</h3>
+<div class="paragraph">
+<p>Einen anderen Ansatz verfolgen dynamische Compiler wie Graal, dort wird nicht nur auf dem Bytecode-Level optimiert, sondern auf den Knoten des Abstrakten Syntaxbaums (AST).</p>
+</div>
+<div class="paragraph">
+<p>Nach dem Parsen eines Programms liegt dieses in einem Abstrakten Syntaxbaum (AST) vor.
+Dieser Baum besteht aus vielen Knoten von denen jeder eine strukturelle Einheit auf einem bestimmten Level beschreibt, z.B. Klasse &#8594; Methode &#8594; Block &#8594; Statement &#8594; Ausdruck.
+Die Kindknoten stellen die Bestandteile dieser Einheit auf dem nächstniedrigen Level dar.</p>
+</div>
+<div class="paragraph">
+<p>Normalerweise arbeiten nur Parser, Interpreter, Checker oder statische Compiler auf dem AST, nicht dynamische Laufzeitcompiler.
+Graal nutzt den Ansatz des Truffle Interpreter Framework, für den jeweiligen AST Knotens die Interpreter-Operation auszuimplementieren.
+Dabei können neben der generischen Variante, typ- und kontextabhängig massiv optimierte Spezialisierungen bereitgestellt werden.
+Diese ermöglichen eine sehr effiziente Kompilierung, soweit wie möglich direkt auf die entsprechenden CPU-Operationen.</p>
+</div>
+<div class="paragraph">
+<p>In der Umgebung der experimentellen, minimalen und effizienten <em>Substrate VM</em> erfolgt die Kompilierung mittels Graal direkt zu Maschinencode, so dass kein Java- und JVM Start- und Laufzeitoverhead entsteht.</p>
+</div>
+<div class="paragraph">
+<p>Wenn Graal in Verbindung mit Hotspot eingsetzt wird, dann erfolgt die Kompilierung nach Bytecode, der dann vom Just in Time Compiler weiter optimiert werden kann.</p>
+</div>
+<div class="paragraph">
+<p>In Graal und Truffle wurde Wert auf eine saubere Architektur mit Trennung der Verantwortlichkeiten der verschiedenen, feingranularen Module gelegt.
+Einen prinzipiellen Überblick gibt die folgende Abbildung.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./detailed_system_structure.png" alt="detailed system structure" width="800">
+</div>
+<div class="title">Figure 1. Architektur der Truffle / Graal Infrastruktur</div>
+</div>
+<div class="paragraph">
+<p>Zur Zeit liegt der Fokus auf dynamischen Programmiersprachen, wie Javascript, Ruby, Clojure, Groovy und R aber es sind viele weitere Anwendungen angedacht.
+Je nach Laufzeitumgebung des Hostsystems sind verschiedenste Optimierungen des Compilers möglich.
+Diese sollten aber nicht durch #defines oder bedingte Verzweigungen sondern durch dedizierte Module pro Runtime realisiert werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_graal">Graal</h3>
+<div class="quoteblock">
+<blockquote>
+Create an
+<strong>extensible</strong>, <strong>modular</strong>,
+<strong>dynamic</strong>, and <strong>aggressive</strong> compiler
+using <strong>object-oriented</strong> and <strong>reflective</strong> Java programming,
+a <strong>graph-based</strong>
+and <strong>visualizable</strong> intermediate representation,
+and Java <strong>snippets</strong>.
+</blockquote>
+<div class="attribution">
+<cite>Graal Compiler Vision Statement</cite><br>
+&#8212; Thomas Würthinger
+</div>
+</div>
+<div class="paragraph">
+<p>Graal ist ein in Java geschriebener, optimierender JIT Compiler im OpenJDK, der der Laufzeitumgebung JIT-APIs zur Verfügung stellt.
+Damit können Anwendungen den Compiler direkt steuern.
+In unserem Fall übernimmt Truffle diesen etwas komplexen Vorgang.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./graal_compiler_structure.png" alt="graal compiler structure" width="800">
+</div>
+<div class="title">Figure 2. Allgemeine Struktur der Herangehensweise von Graal</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_interpretervarianten">Interpretervarianten</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Für eine minimale Beispielsprache (SL, SimpleLanguage), die dynamische Typdefinitionen, einfache Operationen, ganze Zahlen beliebiger Länge, Strings und Booleans unterstützt,
+soll am Beispiel der <strong>Addition</strong> gezeigt werden, wie diese in Truffle abgebildet werden kann.</p>
+</div>
+<div class="paragraph">
+<p>Welche Ansätze gibt es im allgemeinen, um Interpreter-Code für diese Operation zu schreiben?</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Typchecks innerhalb einer Entscheidugnskette mit jeweiligen typspezifischen Blöcken<br>
+Problem: teure Operationen (<code>BigInteger.add</code>, <code>toString()</code>), aufwändiger Kontrollfluss für jeden Durchlauf</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">class AddNode extends TypedNode {
+  TypedNode left, right;
+  Object execute(Frame frame) {
+    Object l = left.execute(frame); Object r = right.execute(frame);
+    if (l instanceof BigInteger &amp;&amp; r instanceof BigInteger) return ((BigInteger) l).add((BigInteger) r);
+    if (l instanceof String || r instanceof String) return left.toString() + right.toString();
+    throw new RuntimeException("type error");
+  }
+}</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Typcheck auch für <code>Integer</code>, <code>Double</code> usw. mit <code>Math.addExact()</code><br>
+Problem: Boxing primitiver Werte, zuviele Typüberprüfungen</p>
+</li>
+<li>
+<p>Spezialisierte AST-Knoten, die genau einen Fall abhandeln oder generisch sind<br>
+Problem: Was passiert, wenn die aktuellen Parameter nicht den Erwartungen entsprechen, was passiert bei Überläufen?</p>
+</li>
+<li>
+<p>Ersetzen des aktuellen Knotens durch den <strong>korrekten Knoten</strong> (spezialisierter oder generischer) im Fall des Typfehlers<br>
+Problem: Sehr viel Zusatzcode für die ganzen Checks und Ersetzungen</p>
+</li>
+<li>
+<p>Nutzung von Annotationen für die Definition der Spezialfälle, der Zusatzcode wird transparent aus den Annotationen generiert.
+Das ist der Ansatz den <strong>Truffle</strong> gewählt hat.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_truffle">Truffle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Truffle ist ein Framework (API und Hilfsklassen), um AST Interpreter in Java zu schreiben.
+Um es zu nutzen, müssen neben den Knoten des Syntaxbaumes der Sprache auch noch zusätzliche Interpreter-Methoden implementiert werden, die die Realisierung der jeweiligen Operation darstellen.</p>
+</div>
+<div class="paragraph">
+<p>Anders als andere Interpreter unterstützt Truffle das Konzept der Spezialisierung.
+Abhängig vom Laufzeitzustand, Typinformationen und Werten aktueller Parameter kann der Knoten durch optimierte Spezialisierungen der Operation ersetzt werden.
+Wenn sich dieser Kontext ändert, wird der AST-Knoten gegen eine andere Spezialisierung ausgetauscht oder zurück zur unspezialisierten Variante gewechselt.
+Basierend auf einer AST-Superklasse, sowie weiteren Hilfsklassen, wird das Ersetzen der Knoten vorgenommen, sowie die Ausführung kontrolliert.
+Das betrifft vor allem den Wechsel in den Interpretermodus und die Überpüfung von lokalen Bedingungen sowie globalen Annahmen.</p>
+</div>
+<div class="paragraph">
+<p>Hier ist noch einmal das Beispiel der Addition, umgesetzt mit den APIs des Truffle Frameworks:</p>
+</div>
+<div class="listingblock">
+<div class="title">Basisklasse für AST-Knoten, notwendig für Umschreiben (Rewriting) des Baumes, enthält Operationen um Knoten zu ersetzen, kopieren usw.</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">public abstract class Node implements Cloneable { private Node parent;
+  protected final Node updateParent(Node newChild) { ... }
+  public final Node replace(Node newNode) { ... }
+  public final Iterable&lt;Node&gt; getChildren() { ... }
+  public Node copy() { ... }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Basisklasse für die jeweiligen Sprachen mit den entsprechenden typspezifischen Auswertungsmethoden, bei unbekannten Typen wird eine UnexpectedResultException geworfen, die dann weiter oben für die Entscheidung zur Generalisierung der Knoten genutzt werden kann.</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">public abstract class TypedNode extends Node {
+  // abstract methods
+  boolean executeBoolean(Frame frame) throws UnexpectedResultException;
+  int executeInteger(Frame frame) throws UnexpectedResultException;
+  BigInteger executeBigInteger(Frame frame) throws UnexpectedResultException;
+  String executeString(Frame frame) throws UnexpectedResultException;
+  Object executeGeneric(Frame frame);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Typsystem unserer Sprache</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">@TypeSystem(types = {int.class, BigInteger.class, boolean.class, String.class, Object.class}, nodeBaseClass = TypedNode.class)
+abstract class SLTypes {
+  public boolean isString(Object l, Object r) {
+    return l instanceof String || r instanceof String;
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Additions-Operation</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">@Operation(typeSystem = SLTypes.class, values = {"left", "right"})
+public final class AddOp {
+
+@SpecializationThrows(javaClass = ArithmeticException.class,
+                      transitionTo = "doBigInteger") <b>(2)</b>
+@Specialization public static int doInteger(int l, int r)
+{ return Math.addExact(l, r); } <b>(1)</b>
+
+@Specialization public static BigInteger doBigInteger(BigInteger l, BigInteger r)
+{ return l.add(r); }
+
+@SpecializationGuard(methodName = "isString", dynamic = true) <b>(3)</b>
+@Specialization public static String doString(Object l, Object r)
+{  return l.toString() + r.toString(); }
+
+@Generic public static Object doGeneric(Object l, Object r)
+{ throw new RuntimeException("type error"); } <b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>@Specialization</code> annotiert eine spezialisierte Operation.</p>
+</li>
+<li>
+<p>Beim Überlauf der Addition Ausführung durch die <code>doBigInteger</code> Operation.</p>
+</li>
+<li>
+<p>Typ-Annahme, wenn String, dann soll <code>doString</code> benutzt werden.</p>
+</li>
+<li>
+<p>Wenn keine der Spezialisierungen zutrifft, dann wird die generische Implementierung genutzt.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Ansatz: Typüberprüfung und Boxing primitiver Werte ist zu teuer, stattdessen wird der aktuelle AST-Knoten durch einen spezialisierten ersetzt, der nur die primitive Operation vornimmt.
+Der Graal Compiler nimmt eine automatische, teilweise Auswertung/Umschreibung vor,
+um mit sovielen Vorbedingungen wie möglich, effizient compilierbaren Code in den Hotspots der Ausführung z.b. in Schleifenkörpern zu erzeugen.</p>
+</div>
+<div class="paragraph">
+<p>Erst zusammen mit dem Graal Compiler kann Truffle seine Vorteile ausspielen, da dieser die spezialisierten Knoten optimal zu Maschinencode compilieren kann.
+Die Typüberprüfungen, Vorbedingungen, globalen Annahmen usw. sind kein Teil des Compilats sondern werden ausserhalb gehandhabt.
+Falls eine dieser Änderungen triggert, die eine alternative Spezialisierung oder Generalisierung zur Folge hätte (was in der Realität nur sehr selten auftritt), wird kurzerhand in den Interpreter-Modus zurückgewechselt.
+Von dort aus wird dann entweder zu einer alternativen optimierte Variante gewechselt, oder für generische Fälle interpretiert.</p>
+</div>
+<div class="paragraph">
+<p>Wenn nach einigen Ausführungen sich die Ausprägung und Anordnung der AST-Spezialisierungen stabilisiert hat, tritt der dynamische Compiler auf den Plan und konvertiert die spezialisierten Operationen in optimalen Maschinencode.
+Dabei werden alle Methodenaufrufe geinlined, Konstanten werden aufgelöst und Variablennutzung optimiert.</p>
+</div>
+<div class="paragraph">
+<p>Der Code für Entscheidungen und Überprüfungen bleibt aussen vor, so dass dieser die Effizienz der Kernoperationen nicht beeinflusst.
+Sie lösen stattdessen bei entsprechenden Änderungen einen Wechsel in den Interpreter-Modus aus und ermöglichen dann eine erneute Anpassung an die geänderten Verhältnisse.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./truffle_approach.png" alt="truffle approach">
+</div>
+<div class="title">Figure 3. generische sowie spezialisierte, stabilisierte und compilierte AST-Operationen</div>
+</div>
+<div class="paragraph">
+<p>Auf einer normalen JVM läuft Truffle nur im Interpretermodus, also ziemlich langsam.
+Diesen Modus kann man aber gut dazu nutzen, die AST-Implementierungen der eigenen Sprache zu entwickeln, testen und debuggen.
+Truffle Code ist ganz normaler Java-Code, man muss sich nicht mit Bytecodegenerierung, Classloading, JIT oder anderen Compilertechniken auseinandersetzen.
+Das übernimmt die Truffle-Graal Kombination im Hintergrund.</p>
+</div>
+<div class="paragraph">
+<p>Auf der Graal-VM dagegen wird die JIT-API von Graal exponiert und Truffle stellt dem JIT die in eine einzige Methode / Objekt kombinierte Gesamtheit der spezialisierten Interpreter-Methoden zur Verfügung die dann von Graal dynamisch compiliert wird.
+Über die bereitgestellten JIT-APIs kann auch die Deoptimierung / Rückkehr in den Interpretermodus gesteuert werden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deployment_mit_der_substrate_vm">Deployment mit der Substrate-VM</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit der Substrate VM kann ein minimales Bundle aus effizienter Laufzeitumgebung und optimalem Maschinencode geschnürt werden.
+Dabei wird der Original-Java-Code von Truffle und Graal, des Sprach-Parsers und der AST-Knoten Implementierungen einer aggressiven statischen Analyse unterzogen, die allen nicht
+erreichbaren Code (Klassen, Methoden, Variablen) entfernt.</p>
+</div>
+<div class="paragraph">
+<p>Der verbleibende Bytecode wird effizient nach Maschinencode für das Zielsystem und die Substrate-VM übersetzt, dabei wird sogar schon in entsprechenden Datensegmenten Platz für
+statisch initialisierte Objekte und Konstanten mit bereitgestellt.</p>
+</div>
+<div class="paragraph">
+<p>Dieser Ansatz wurde auch genutzt, um eine beeindruckend schnelle Ruby-Implementierung zu entwickeln.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ruby_turbo_dank_truffle_graal">Ruby-Turbo dank Truffle &amp; Graal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ein Team um <em>Chris Seaton</em> hat für die dynamische Sprache Ruby eine Truffle Implementierung umgesetzt. [jRuby Truffle]
+Dieses Projekt unterstützt alle dynamischen und exotischen Sprachfeatures wie Metaprogrammierung und feingranulare Methodenkomposition.
+Bei realistischen, rechenintensiven Benchmarks (Bildverarbeitung, ohne massive I/O Anteile) zeigte sich eine beeindruckende Leistungssteigerung im Vergleich mit anderen Ruby und JRuby-Implmementationen.
+Besonders in den dynamischen Szenarien mit hoher Variabilität zeigen sich die Vorteile der dynamischen Compilierung mit Truffle und Graal.
+Viele der existierenden Ruby-VMs inlinen Code nicht aggressiv genug, so dass mögliche Grenzen der Leistungsfähigkeit nicht erreicht werden.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man einen Ruby-Parser mit Truffle, der Ruby-Implementierung, Graal und der sparsamen Substrate VM zusammen paketiert, erhält man eine hochperformante, standalone Ruby-VM.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_geschwindigkeitsvergleiche">Geschwindigkeitsvergleiche</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In den mittels Truffle umgesetzten Implementierungen für dynamische Sprachen wie JRuby, Javascript und R zeigt sich die Sinnhaftigkeit der dynamischen Kompilierung.
+In allen Fällen ist eine deutliche Leistungssteigerung zu verzeichnen.</p>
+</div>
+<div class="paragraph">
+<p>Sogar im Vergleich mit C-Compilern schneiden Truffle &amp; Graal nicht schlecht ab.
+In vielen Fällen wird fast die Leistung der besten C-Compiler-Optimierungs Leistung erreicht.</p>
+</div>
+<div class="paragraph">
+<p>TODO Fr. Weinert Diagramme???</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_forschung_und_community">Forschung und Community</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es gibt eine Menge von Projekten und eine aktive Community rund um Truffle und Graal.
+Von Forschungsprojekten bei Oracle und an diversen Universitäten von Arbeiten an der virtuellen Maschine über den Compiler und Interpreter bis zu Implementierungen für eine Reihe von (dynamischen) Sprachen (JRuby, Javascript, C, FastR, ZipPy, Groovy, GPU).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_graal_truffle_in_neo4j">Graal &amp; Truffle in Neo4j</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bei Neo Technology wollten wir testen, welche Auswirkung der Ansatz der dynamischen Kompilierung für unsere Abfragesprache Cypher hat.
+Zur Zeit ist diese in Scala (Parser + Plan-Builder + Interpreter-Runtime) geschrieben.
+Bei ersten Experimenten mit einer minimalen Runtime haben wir einen Performancezuwachs um den Faktor 5-7 gesehen.
+Das ist natürlich nicht repräsentativ.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://slideshare.net/ThomasWuerthinger/graal-truffle-ethdec2013">Wuerthinger-Graal-Truffle</a></p>
+</li>
+<li>
+<p><a href="https://wiki.openjdk.java.net/display/Graal/Publications+and+Presentations">Graal+Truffle Publications</a></p>
+</li>
+<li>
+<p><a href="http://aosd.net/2014/sites/default/files/2014-04-24Graal_Modularity.pdf">Wuerthinger - Graal &amp; Truffle Intro</a></p>
+</li>
+<li>
+<p><a href="https://wiki.openjdk.java.net/display/Graal/Truffle+FAQ+and+Guidelines">Truffle FAQ</a></p>
+</li>
+<li>
+<p><a href="http://medianetwork.oracle.com/video/player/2623645003001">JVM-LS 2013 Wimmer + Seaton</a></p>
+</li>
+<li>
+<p><a href="http://www.chrisseaton.com/rubytruffle/">JRuby Truffle</a></p>
+</li>
+<li>
+<p><a href="https://github.com/jruby/jruby/wiki/Truffle">jRuby Truffle FAQ</a></p>
+</li>
+<li>
+<p><a href="http://www-huber.embl.de/dsc/slides/FastR_DSC.pdf">FastR</a></p>
+</li>
+<li>
+<p><a href="https://github.com/jakub-/neo4j/tree/truffle-runtime">Neo4j&#8217;s Cypher Experimente</a></p>
+</li>
+<li>
+<p><a href="http://lafo.ssw.uni-linz.ac.at/builds/">Binary Graal Builds</a></p>
+</li>
+<li>
+<p><a href="http://openjdk.java.net/projects/graal/">Graal Projekt</a></p>
+</li>
+<li>
+<p><a href="http://hg.openjdk.java.net/graal/graal/file/1778c3208bc5/graal/com.oracle.truffle.sl/src/com/oracle/truffle/sl">Simple Language Truffle-Graal Beispielimplementierung</a></p>
+</li>
+<li>
+<p><a href="https://github.com/jexp/presto-truffle">Einfaches TPC6 Beispiel</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Die Abbildungen wurden aus den Präsentationen des Graal/Truffle Teams, die als Referenzen gelistet sind entnommen.</p>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-10-04 19:40:42 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

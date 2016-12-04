@@ -1,0 +1,579 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | "Neues" von I/O</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="__neues_von_i_o">"Neues" von I/O</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Obwohl Java&#8217;s NIO (New I/O) Subsystem schon im Jahre 2002 mit Java 1.4 im Rahmen von JSR 51 eingeführt wurde, haben die meisten Entwickler damit nur wenig zu tun, und selbst jetzt sind es zumeist Bibliotheken und hochperformante Server, die diese Infrastruktur-APIs nutzen. Java 7 brachte dann ein Update mit NIO.2 (JSR 203), das sich vor allem auf Dateioperationen und asynchrone Kanäle erstreckte.</p>
+</div>
+<div class="paragraph">
+<p>Dabei bietet NIO diverse praktische Features, die schnelle, nicht-blockierende Interaktion mit Dateisystem, Netzwerk-Puffern, Speicherzugriff und Interprozesskommunikation unterstützen und gar nicht so schwierig zu nutzen sind, wenn man weiss, wie. Die verschiedenen Klassen und APIs sind auf diverse Packages verstreut und bieten gemeinsam direkten Zugriff auf low-level Betriebssystemfunktionen, die besonders für geschwindigkeitskritische Aufgaben einen Unterschied machen. Damit ist auch ersichtlich, dass die Operation von Java-Anwendungen, die NIO benutzen viel mehr an das jeweilige Betriebssystem gekoppelt sind, als mit der Nutzung der allgemeinen Input/Output Bibliotheken.</p>
+</div>
+<div class="paragraph">
+<p>In diesem Artikel werde ich die APIs von NIO.2 kurz vorstellen, den klassischen NIO APIs wird ein zukünftiger Artikel gewidmet sein.</p>
+</div>
+<div class="sect2">
+<h3 id="_schnelles_lesen_von_dateien">Schnelles Lesen von Dateien</h3>
+<div class="paragraph">
+<p>Für viele sequentielle Operationen sind die klassischen I/O APIs mehr als schnell genug, so kommt man mit <code>java.io.File</code>, den <code>Input-</code> und <code>OutputStreams</code> und besonders deren gepufferten Varianten (<code>BufferedInputStream</code>) ziemlich weit.</p>
+</div>
+<div class="paragraph">
+<p>Als ein Beispiel: Das Lesen einer 4 GB grossen Datei in einer Schleife dauert mit BufferedInputStream, nur 7 Sekunden (Beispielcode), also immerhin knapp 550 MB pro Sekunde. Das Aufsummieren im Schleifenkörper soll die Verarbeitung der gelesenen Informationen repräsentieren.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private long measureReadFile(File file) throws IOException {
+    byte[] buffer = new byte[MB*16];
+    BufferedInputStream is = new BufferedInputStream(new FileInputStream(file), MB);
+    int read;
+    long count=0, sum = 0;
+    long time = System.currentTimeMillis();
+    while ((read = is.read(buffer))!=-1) {
+        for (int i=0;i&lt;read;i++) {
+            count++;
+            sum += buffer[i];
+        }
+    }
+    is.close();
+    System.out.printf("reading %s time %d ms, size %d MB%n", file, (System.currentTimeMillis() - time), count / MB);
+    return sum;
+}
+// writing target/big.file time 5175 ms, size 4000 MB
+// reading target/big.file time 7065 ms, size 4000 MB</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zum Vergleich, das Kommandozeilentool dd (Block-Kopierer) benötigt immer noch 5.8 Sekunden für die gleiche Aufgabe.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">dd if=~/trash/test.db/neostore.relationshipstore.db of=/dev/null bs=1048576
+4011+1 records in
+4011+1 records out
+4206698718 bytes transferred in 5.880777 secs (715330441 bytes/sec)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mit NIO sieht das wie folgt aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public long measureReadFileFileChannel(File file) throws Exception {
+    ByteBuffer buffer = ByteBuffer.allocate(MB * 16);
+    FileChannel channel = new RandomAccessFile(file, "r").getChannel();
+    int read;
+    long count=0, sum = 0;
+    long time = System.currentTimeMillis();
+    while ((read = channel.read(buffer))!=-1) {
+        buffer.flip();
+        for (int i=0;i&lt;read;i++) {
+            count++;
+            sum += buffer.get();
+        }
+        buffer.clear();
+    }
+    channel.close();
+    System.out.printf("reading %s time %d ms, size %d MB%n", file, (System.currentTimeMillis() - time), count / MB);
+    return sum;
+}
+// reading target/big.file time 6634 ms, size 4000 MB</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wie immer sollte man also sorgfältig messen, ob es wirklich die IO-Leistung ist, die ein System beeinträchtigt, oder andere Flaschenhälse im Programm viel mehr Leistung kosten.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_api_Übersicht">API Übersicht</h3>
+<div class="paragraph">
+<p>Die NIO API gibt es nun schon seit 12 Jahren und unterstützt Funktionen wie:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>(halb-)automatisches Mapping von Dateien in den Speicher</p>
+</li>
+<li>
+<p>File-Channel API für bequemen Zugriff auf Betriebsysstemfunktionen für Dateihandles und Dateioperationen</p>
+</li>
+<li>
+<p>Puffer-Abstraktion für kontinuierliche Speicherbereiche, die sich sowohl auf dem als auch ausserhalb des Heaps befinden können</p>
+</li>
+<li>
+<p>Selektoren für nicht-blockierende Notifikation für Aktivität auf Kanälen</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>NIO.2 fügt folgende Funktionen hinzu:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>neue <code>Path</code> und <code>Filesystem</code>-Abstraktionen</p>
+</li>
+<li>
+<p>erweiterte Datei-Operationen z.b. Metadatenzugriff, Änderungsnotifikationen für Verzeichnisse und mehr</p>
+</li>
+<li>
+<p>asynchrone File-Channel-API und Socket-Channel mit Multicast-Unterstützung (Asynchronous[File,Socket,ServerSocket,Datagram]Channel)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dateioperationen_mit_nio_2">Dateioperationen mit NIO.2</h3>
+<div class="paragraph">
+<p>Mit NIO.2 gibt es eine Reihe von neuen APIs für die Interaktion mit dem Dateisystem und Dateien. Wer bisher mit <code>java.io.File</code> auf verschiedenen Betriebsysstemen gearbeitet hat, vermisste sicherlich schmerzlich eine konsistente, umfassende und effiziente Dateisystem-Abstraktion. NIO.2 bringt diese als <code>FileSystem</code> und dazu gehörend <code>Path</code> für Dateien und Verzeichnisse mit. Daneben gibt es Unterstützung für den Zugriff auf eine Vielzahl von Dateiattributen.</p>
+</div>
+<div class="paragraph">
+<p>Einfachen Zugriff auf FileSystem und Path erlauben folgende Methoden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">FileSystem fs = FileSystems.getDefault();
+Path path = fs.getPath("file.txt");
+
+Path path = Paths.get("file.txt");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Neue Methoden, die man aus File nicht kennt, sind</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>path.startsWith/endsWith(Path)</p>
+</li>
+<li>
+<p>path.normalize() &#8594; normalisiert relative Pfade</p>
+</li>
+<li>
+<p>path.relativize(Path other) - konstruiert einen relativen Pfad zwischen diesem und dem Ziel-Pfad</p>
+</li>
+<li>
+<p>path.toRealPath(LinkOption&#8230;&#8203;) &#8594; löst relative Pfade und symbolische Links auf</p>
+</li>
+<li>
+<p>path.resolveSibling(Path other) &#8594; erzeugt einen Pfad aus dem aktuellen Parent und dem übergebenen Pfad</p>
+</li>
+<li>
+<p>path.register(WatchService, WatchEvent.Kind) registiert einen Überwachungsmechanismus für Dateisystem-Änderungen (Kind ist z.B. StandardWatchEventKinds.ENTRY_MODIFY)</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_dateisystemüberwachung">Dateisystemüberwachung</h4>
+<div class="paragraph">
+<p>Wir kennen das von Editoren und IDEs, Auto-Compile-Tools oder Upload-Diensten. Wenn sich der Inhalt eines Verzeichnisses ändert, wird die geänderte Datei in der UI aktualisiert bzw. erneut verarbeitet. Bisher mussten Java-Tools dafür auf native Bibliotheken zugreifen oder selbst einen Poll-Thread laufen lassen. Jetzt ist diese Funktionalität in NIO.2 enthalten.</p>
+</div>
+<div class="paragraph">
+<p>Wie kann ich selbst über Änderungen am Dateisystem informiert werden? Indem ich einen <code>WatchService</code> auf einem konkreten Pfad registriere, die interessanten Änderungsoperationen angebe und mich dann regelmässig nach Aktivitäten erkundige.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein Beispiel für das automatische Kopieren von Ressourcen in ein "target"-Verzeichnis.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">Path source = Paths.get("src/main/resources");
+Path target = Paths.get("target");
+
+WatchService watchService = FileSystems.getDefault().newWatchService();
+source.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+for (;;) {
+    WatchKey key = watchService.poll(10, TimeUnit.SECONDS);
+    if (key == null) break; // timeout
+    for (WatchEvent evt : key.pollEvents()) {
+        Path file = (Path) evt.context();
+        Path sourceFile = source.resolve(file);
+        Path targetFile = target.resolve(sourceFile);
+        System.out.println("Event " + evt.kind() + " file " + file+" source "+sourceFile+" target "+targetFile);
+        Files.createDirectories(targetFile.getParent());
+        Files.copy(sourceFile, targetFile);
+        key.reset();
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_traversierung_von_dateibäumen">Traversierung von Dateibäumen</h4>
+<div class="paragraph">
+<p>Eine API, deren Funktionalität man bisher immer über <code>File.listFiles</code> und <code>FileNameFilter</code> rekursiv implementieren musste, ist jetzt <code>FileSystemVisitor</code> enthalten, sie kann genutzt werden, um effizient über einen Dateisystembaum zu navigieren. Für Verzeichnisse gibt es zusätzlich Steuerungsmethoden, die über den Rückgabewert den weiteren Verlauf der Traversierung bestimmen. Für den Fehlerfall gibt es spezielle Callbacks die die aufgetretene Exception übergeben bekommen.</p>
+</div>
+<div class="paragraph">
+<p>Die API ist:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public interface FileVisitor&lt;T&gt; {
+	FileVisitResult preVisitDirectory(T dir, BasicFileAttributes attrs);
+	FileVisitResult visitFile(T file, BasicFileAttributes attrs)
+	FileVisitResult visitFileFailed(T file, IOException exc);
+	FileVisitResult postVisitDirectory(T dir, IOException exc);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Benutzt wird sie wie folgt, hier benutzen wir den Adapter <code>SimpleFileVisitor</code> zum Kopieren eines Verzeichnisbaumes:</p>
+</div>
+<div class="paragraph">
+<p>Path target = Paths.get("data");
+Path source = Paths.get("backup");
+Files.walkFileTree(source, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+    new SimpleFileVisitor&lt;Path&gt;() {
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
+        {
+            Path targetdir = target.resolve(source.relativize(dir));
+            try {
+                Files.copy(dir, targetdir);
+            } catch (FileAlreadyExistsException e) {
+                 if (!Files.isDirectory(targetdir))
+                     throw e;
+            }
+            return CONTINUE;
+        }
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+            throws IOException {
+            Files.copy(file, target.resolve(source.relativize(file)));
+            return CONTINUE;
+        }
+    });</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_asynchrone_operationen">Asynchrone Operationen</h3>
+<div class="paragraph">
+<p>Zusätzlich zu den den Channel-APIs in NIO wurden in NIO.2 asynchrone Varianten zusätzlich bereitgestellt. Diese erlauben für Operationen wie Verbinden, Lesen und Schreiben asynchrone Operationsausführung.</p>
+</div>
+<div class="paragraph">
+<p>Dabei können deren Methoden entweder <code>java.util.concurrent.Future</code> Instanzen zurückggeben, auf die dann erst bei Bedarf mit ihrer <code>get()</code>-Operation zugegriffen wird. Alternativ nehmen sie einen <code>java.nio.channels.CompletionHandler</code> entgegen, dessen 2 Methoden für den Erfolgs- und Fehlerfall neben dem eigentlichen Parametern (Ergebnis bzw. Exception) auch noch ein weiteres Objekt (Attachment) vom originalen Aufruf durchreichen können.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public interface CompletionHandler&lt;V,A&gt; {
+    void completed(V result, A attachment);
+    void failed(Throwable exc, A attachment);
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_asynchrone_dateioperationen">Asynchrone Dateioperationen</h4>
+<div class="paragraph">
+<p>Speziell für Dateioperationen kann der <code>AsynchronousFileChannel</code> für nichtblockierende Operationen genutzt werden. Eine neue Instanz davon kann direkt per statische "open" Factory-Methode erzeugt werden. Dieser Methode können auch diverse Flags zum Steuern der Interaktion mit der Datei mitgegeben werden. Das sind zum Beispiel: StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.DELETE_ON_CLOSE wobei die letzte interessant für temporäre Dateien ist.</p>
+</div>
+<div class="paragraph">
+<p>Die Methoden des <code>AsynchronousFileChannel</code> sind ähnlich derer des <code>FileChannel</code>, nur jeweils in 2 Varianten für den asynchronen Aufruf ausgelegt (Future und CompletionHandler). Ein weiterer Unterschied besteht darin, dass es hier keinen internen Zeiger auf eine aktuelle Position in der Datei gibt. Das ergibt sich aus der nichtdeterministischen, asynchronen Ausführung der Operationen. Daher muss immer eine absolute Postion in der Datei mitgegeben werden. Beim Lesen und Schreiben in/aus einem Puffer, wird als Ergebnis stets die Anzahl der verarbeiteten Bytes geliefert.</p>
+</div>
+<div class="paragraph">
+<p>Hier das asynchrone Beispiel für das Lesen aus einer Datei:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">{
+    int bufferSize = MB;
+    long fileSize = file.length();
+
+    // count-down-latch for waiting for total completion
+    int segments = (int) (fileSize / bufferSize);
+    if ((long)segments * bufferSize &lt; fileSize) segments++;
+    CountDownLatch latch = new CountDownLatch(segments);
+
+    System.out.printf("segments = %d file size %d buffer size %d%n",
+                       segments, fileSize, bufferSize);
+
+    // preparing a pool of buffers
+    BlockingQueue&lt;ByteBuffer&gt; buffers = new ArrayBlockingQueue&lt;&gt;(100);
+    for (int i=0;i&lt;100;i++) {
+      buffers.offer(ByteBuffer.allocate(bufferSize));
+    }
+
+    long time = System.currentTimeMillis();
+    final AtomicLong sum = new AtomicLong();
+    final AtomicLong totalCount = new AtomicLong();
+    AsynchronousFileChannel channel = AsynchronousFileChannel.open(Paths.get(file.getAbsolutePath()),
+            StandardOpenOption.READ);
+    for (long position=0; position &lt; fileSize; position += bufferSize) {
+      final ByteBuffer buffer = buffers.poll(5, TimeUnit.SECONDS);
+      buffer.clear();
+      String attachment = "Position " + position + " Segment " + position / bufferSize;
+      channel.read(buffer,position, attachment,new CompletionHandlerFI&lt;Integer, String&gt;() {
+        @Override
+        public void done(Throwable exc, Integer bytesRead, String attachment) {
+          if (exc != null) {
+            System.err.println("Error"+ exc);
+            return;
+          }
+          buffer.flip();
+          int localSum = 0;
+          for (int i=0;i&lt;bytesRead;i++) {
+            localSum += buffer.get();
+          }
+          long totalSum = sum.addAndGet(localSum);
+          totalCount.addAndGet(bytesRead);
+          System.out.printf("%s bytes read: %d bytes, localSum: %d totalSum (currently): %d "+
+                            "latches %d total-count %d%n",
+                            attachment, bytesRead, localSum, totalSum,
+                            latch.getCount(), totalCount.get());
+          buffers.offer(buffer);
+          latch.countDown();
+        }
+    });
+    }
+    latch.await();
+    channel.close();
+    System.out.printf("reading %s time %d ms, size %d MB%n total-read %d total-sum %d",
+                      file, (System.currentTimeMillis() - time), fileSize / MB,totalCount.get(),sum.get());
+    return sum.get();
+}
+
+// Ergebnis:
+segments = 4000 file size 4194304000 buffer size 1048576
+reading target/big.file time 3994 ms, size 4000 MB
+ total-read 4194304000 total-sum 6815744000</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_asynchrone_netzwerkkommunikation">Asynchrone Netzwerkkommunikation</h4>
+<div class="paragraph">
+<p>Sowohl für den Server-Socket als auch für die serverseitige Verarbeitung von Client-Anfragen, sowie für Client-Verbindungen sind asynchrone Kanäle verfügbar.</p>
+</div>
+<div class="paragraph">
+<p>Nachdem man einen Server-Kanal mittels <code>bind()</code> auf ein Interface + Port gebunden hat, kann man mittels <code>serverChannel.accept()</code> potentielle Client-Verbindungen als Future erhalten. Diese Future blockiert beim Aufruf von <code>get()</code> solange bis wirklich eine Client-Verbindung vorhanden ist (man kann natürlich auch mit Timeouts und Polling arbeiten) und liefert dann direkt den Kanal für die Verbindung zum Client zurück, der asynchron aus Puffern (Buffer) lesen, bzw. in sie schreiben kann.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein kleines Beispiel für die Client-Server Kommunikation:</p>
+</div>
+<div class="paragraph">
+<p>Ein Server, der auf Nachrichten lauscht und in Großbuchstaben zurückgibt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">String attachment = "Accepted Connection on " + address;
+server.accept(attachment, new CompletionHandlerFI&lt;AsynchronousSocketChannel, String&gt;() {
+    @Override
+    public void done(Throwable exc, AsynchronousSocketChannel worker, String attachment) throws Exception {
+        if (exc != null)
+            System.err.println("Exception while listening on " + attachment + " " + exc.getMessage());
+        else {
+            try {
+                ByteBuffer buffer = ByteBuffer.allocate(1000);
+                int bytesRead;
+                while ((bytesRead = worker.read(buffer).get(10, TimeUnit.SECONDS)) != -1) {
+                    String content = new String(buffer.array());
+                    System.out.println("Message: " + content + " bytes-read " + bytesRead);
+                    ByteBuffer response = ByteBuffer.wrap(content.toUpperCase().getBytes());
+                    worker.write(response).get();
+                }
+            } finally {
+                worker.close();
+            }
+        }
+    }
+});
+Thread.currentThread().join();
+server.close();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der Client würde so aussehen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+client.connect(new InetSocketAddress(PORT)).get();
+
+ByteBuffer buffer = ByteBuffer.wrap("ping".getBytes());
+Integer bytesWritten = client.write(buffer).get();
+System.out.println("Message: " + new String(buffer.array()) + " bytes-written " + bytesWritten);
+buffer.flip();
+Integer bytesRead = client.read(buffer).get();
+System.out.println("Response: " + new String(buffer.array()) + " bytes-read " + bytesRead);
+
+client.close();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_internes_management">Internes Management</h4>
+<div class="paragraph">
+<p>Wie werden die asynchronen Kanäle intern in der JVM gehandhabt? Es gibt verschiedene Thread-Pools die jeweils für eine Gruppe von Kanälen zuständig sind. Diese Gruppen kann man selbst erzeugen und dann beim Erstellen der Kanäle selektieren, standardmässig landet alles im globalen Pool. Leider gilt das aber nur für die Netzwerkkanäle und nicht für die FileChannels, da die Trennung von Netzwerk-IO und Dateisystem-IO sonst nicht sicherzustellen ist. Für den AsynchronousFileChannel kann man der <code>open</code>-Methode daher nur einen ExecutorPool mitgeben.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">AsynchronousChannelGroup group =
+    AsynchronousChannelGroup.withFixedThreadPool(32, Executors.defaultThreadFactory());
+AsynchronousServerSocketChannel channel =
+	    AsynchronousServerSocketChannel.open(group);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_fazit">Fazit</h3>
+<div class="paragraph">
+<p>NIO ist schnell und nicht schwer zu benutzen. Die NIO.2 APIs bringen einige sehr nützliche Funktionalitäten mit, die nicht zu schwer zu nutzen sind. Bei den Asynchronen Kanälen ist es zwar etwas aufwendiger durch Futures und CompletionHandler, aber man bekommt dadurch eine bessere Skalierbarkeit über viele CPUs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referenzen">Referenzen</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>NIO.2 Intro: <a href="http://www.ibm.com/developerworks/java/library/j-nio2-1/index.html" class="bare">http://www.ibm.com/developerworks/java/library/j-nio2-1/index.html</a></p>
+</li>
+<li>
+<p>NIO.2 Concepts: <a href="http://tamanmohamed.blogspot.com/2012/03/jdk7-part-1-power-of-java-7-nio2-jsr.html" class="bare">http://tamanmohamed.blogspot.com/2012/03/jdk7-part-1-power-of-java-7-nio2-jsr.html</a></p>
+</li>
+<li>
+<p>File Filtering using NIO.2: <a href="http://www.javacodegeeks.com/2012/10/java-7-file-filtering-using-nio-2-part-1.html" class="bare">http://www.javacodegeeks.com/2012/10/java-7-file-filtering-using-nio-2-part-1.html</a></p>
+</li>
+<li>
+<p>Oracle Docs FileIO: <a href="http://docs.oracle.com/javase/tutorial/essential/io/fileio.html" class="bare">http://docs.oracle.com/javase/tutorial/essential/io/fileio.html</a></p>
+</li>
+<li>
+<p>Oracle NIO Examples: <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/io/example/index.html" class="bare">http://docs.oracle.com/javase/8/docs/technotes/guides/io/example/index.html</a></p>
+</li>
+<li>
+<p>Tricks and Tips with NIO.2/AIO: <a href="http://jfarcand.wordpress.com/2008/12/29/tricks-and-tips-with-nio-2aio-part-0-a-new-beginning/" class="bare">http://jfarcand.wordpress.com/2008/12/29/tricks-and-tips-with-nio-2aio-part-0-a-new-beginning/</a></p>
+</li>
+<li>
+<p>Links zu NIO / NIO.2: <a href="http://www.agilemobiledeveloper.com/2013/09/12/nio2-jdk7-file-reading/" class="bare">http://www.agilemobiledeveloper.com/2013/09/12/nio2-jdk7-file-reading/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-05-30 13:27:42 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

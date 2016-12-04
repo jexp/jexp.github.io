@@ -1,0 +1,94 @@
+/***********************************************************************
+** jexp.css
+**  Copyright 2005 Susanne Buchta (seebee at gmx dot de)
+**  Based on:
+** pmwiki.css
+**  Copyright 2004 Patrick R. Michaud (pmichaud@pobox.com)
+***********************************************************************/
+body {
+  color: black; background-color: #1F3A1F;
+  font-size: 13pt;
+  font-family: Helvetica,Arial,sans-serif;
+  margin: 0; padding: 1em;
+}
+
+h1, h2, h3, h4, h5 { line-height:1em; }
+h1 { font-size:180%; }
+h2 { font-size:140%; }
+h3 { font-size:120%; }
+h4 { font-size:100%; }
+h5 { font-size:100%; font-weight:normal; font-style:italic; }
+
+table { background-color: #3B543B; }
+
+#wikihead {
+  font-size: 1.5em;
+  margin: 0 0 0 0;
+  text-align: top;
+  background-image:url(img/top.gif); background-repeat:no-repeat;
+  font-family: Times New Roman,serif; font-style:italic; font-variant:small-caps; color:#FFD561;
+}
+#wikihead input { font-size:85%; }
+
+#wikileftt ul { list-style:none; margin-top:10px; margin-left: 0px;}
+
+#wikileft {
+  width:115px; height:400px;
+  background-image:url(img/left.gif); background-repeat:no-repeat;
+  float: left;
+  padding:10px 10px 0 -10px;
+  font-size: 85%;
+  font-family: Times New Roman,serif; font-style:italic; font-variant:small-caps;
+}
+#wikileft a { font-weight: bold; text-decoration:none; }
+#wikileft a:link { color:#FFD561; }
+#wikileft a:visited { color: #FFCC33; }
+#wikileft a:hover { color: white; text-decoration:underline; }
+#wikileft a:active { color: FFEBB0; }
+#wikileft ul { list-style:none; padding:5px; margin:0px; }
+#wikileft li { margin-top:10px; }
+
+#wikibody {
+  font-size: 100%;
+  margin: 0 2em 1em 8.5em;
+  padding: 1em;
+  line-height: 120%;
+  color: #FFFFCC; ;
+  border: 1px solid #405740;
+  background-color: #334C33;
+}
+#wikibody a { text-decoration:none; }
+#wikibody a:link { color: white; text-decoration:underline; }
+#wikibody a:visited { color: white; }
+#wikibody a:hover { color:#FFD561; }
+#wikibody a:active { color: FFEBB0; }
+
+#wikitext { margin-top:1em; line-height:1.33em; }
+
+.pagegroup { margin-top:10px; font-size:85%; }
+.pagetitle { margin-top:2px; font-size:180%; }
+
+#wikifoot {
+/*  clear: both; */
+  font-size: 0.7em;
+  margin: 0; padding: 0.1em;
+  text-align: center;
+  color: #FFFFCC;
+  border: 1px solid #405740;
+  background-color: #334C33;
+}
+
+#wikifoot a { text-decoration:none; }
+#wikifoot a:link { color:#FFCC33; }
+#wikifoot a:visited { color: #FFCC33; }
+#wikifoot a:hover { color: white; text-decoration:underline; }
+#wikifoot a:active { color: FFEBB0; }
+
+#wikiedit form { margin:0px; }
+#wikiedit textarea { width:98%; color:#333333; }
+#wikiedit input { color:#333333; }
+
+#wikibody .sourceblock {
+   background-color: #FFFFCC;
+   color: #334C33; 
+}

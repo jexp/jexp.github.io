@@ -1,0 +1,336 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Wie überfordere ich eine JVM?</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="paragraph">
+<p>Müllmänner und große Haufen / Keine Angst vor grossen Heaps</p>
+</div>
+<div class="sect1">
+<h2 id="_wie_überfordere_ich_eine_jvm">Wie überfordere ich eine JVM?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir kennen alle Moore&#8217;s Law über die Verdoppelung der Transistorzahl auf Prozessoren aller 18 Monate. Ähnliche exponentielle Entwicklungen gibt es auch bei anderen Hardwarekomponenten wie Festplatten oder RAM.</p>
+</div>
+<div class="paragraph">
+<p>Während die JVM ziemlich gut in der Lage ist viele Prozessoren zu beschäftigen, sieht es mit der Nutzung großer RAM Mengen eher schlecht aus.
+Wer schon einmal grosse Anwendungen - standalone oder im AppServer mit entsprechenden Speichermengen - so ab 16 GB gefahren hat, weiss das
+die Garbage Collection dem kontinuierlichen Betrieb immer wieder Striche durch die Rechnung macht. Zu oft entstehen (bei entsprechender Last)
+längere Pausen in denen der GC die Anwendung anhält um z.b. ein Umlagerung oder Defragmentierung vorzunehmen. Daher wurden oft Architekturen in kleinere Komponenten zerlegt, die individuell weniger Heap nutzen, dafür aber über Kommunikationsmechanismen koordiniert werden müssen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_rettung_in_sicht">Rettung in Sicht</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Das muss doch heutzutage wirklich nicht sein. Meinen ersten Aha-Effekt in dieser Richtung hatte ich, als ich vor ein paar Jahren mal auf der JAOO (heute GOTOCon) beim Clojure User Group Meeting mit Rich Hickey ein Demo einer Ameisensimulation in Clojure gesehen habe die auf einer Azul Vega Maschine 800 Prozessoren parallel auslastete und dabei mehrere zig Gigabyte Heap pro Sekunde durch deren Pauseless Garbage Collector schickte.</p>
+</div>
+<div class="paragraph">
+<p>Spezialhardware wie die Vega Maschinen sind zwar eindrucksvoll aber die meisten von uns nutzen doch eher Standardhardware, um ihre Anwendungen zu betreiben. Netterweise, oder genau aus diesem Grund hat Azul ihre JVM Adaption auf x86 Prozessoren portiert und vertreibt das ganze jetzt unter dem wohlklingenden Namen "Zing" an ihre Kunden. Ein weiterer Grund dafür dass das erst jetzt passiert sind spezielle Eigenschaften der aktuellen Befehlssätze moderner Server-Prozessoren.</p>
+</div>
+<div class="paragraph">
+<p>In dieser Kolumne möchte ich die Details der Zing Architektur näher beleuchten. Bei Interesse kann in einer der nächsten Kolumnen eine Gegenüberstellung der verschiedenen existierenden Kollektoren, z.b. auch des neuen G1 Kollektor von Java7 erfolgen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_basics">Basics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zuerst noch einmal ein paar Worte zur Garbage Collection allgemein und zu den Problemen, mit denen die Kollektoren fertig werden müssen (d.h. welche Parameter wirken sich auf deren Performance aus).</p>
+</div>
+<div class="paragraph">
+<p>Garbage Collection gibt es schon seit den 70ern seit die automatische Speicherverwaltung in LISP Maschinen Einzug hielt. Die JVM hat seit Anfang an auf dieses Pferd (damals war es wohl eher ein Esel oder Maultier) gesetzt. Garbage Collection erspart uns den Kampf mit Pointern, manchen Speicherlecks und Buffer Overflows. Ausserdem ist es bequem, einfach Objekte zu erzeugen und sich dann nicht mehr um sie kümmern zu müssen. Der Garbage Kollektor macht das schon.</p>
+</div>
+<div class="paragraph">
+<p>Mit fast jeder Version der JVM ist ein neuer Garbage Kollektor hinzugekommen, der schneller, besser und weniger intrusiv war. Der aktuellste von ihnen ist der in Java7 enthaltene G1 Kollektor, aber dazu später mehr. #TODO im nächsten Artikel ?</p>
+</div>
+<div class="paragraph">
+<p>#todo image java-heap-generations</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_eigenschaften_von_garbage_kollektoren">Eigenschaften von Garbage Kollektoren</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wie unterscheiden sich Garbage Kollektoren eigentlich, es gibt da einige Eigenschaften die bei bisher jedem Kollektor in irgendeiner Kombination wichtig waren:</p>
+</div>
+<div class="paragraph">
+<p>Garbage Collection kann in mehreren Phasen ablaufen. Zum einen (Mark-Sweep-Phase) muss festgestellt werden welche Objekte noch am Leben (meist bedeutet das noch vom Root-Set erreichbar) sind. Danach wird der Rest aufgeräumt (Compact-Phase) also defragmentiert.</p>
+</div>
+<div class="paragraph">
+<p>Das kann z.b. geschehen dem nur noch lebendige Objekte in einen neuen Speicherbereich kopiert werden (wie z.b. vom Young-Generation Survivor-Space 1 zu 2) oder indem die Speicherbereiche der toten Objekte als frei markiert werden. Beim letzteren entstehen zwangsläufig nicht mehr füllbare Lücken die irgendwann dazu führen, dass keine Objekte mehr angelegt werden können und der gesamte Speicherbereich defragmentiert werden muss.</p>
+</div>
+<div class="paragraph">
+<p>Kollektoren können ihre Arbeit mit mit nur einem Thread (simpler) oder parallel ausführen (komplexer). Multi-threaded Kollektoren nutzen natürlich die vorhandenen Prozessoren besser aus. Kollektoren, die die Anwendung pausieren (Stop-the-World) können ohne Rücksicht auf die Anwendung arbeiten, wohingegen "concurrent" Kollektoren aufräumen, während die Anwendung weiterläuft. Es gibt Versionen von Kollektoren, die teilweise parallel arbeiten (z.b. in der Mark-Phase) und dann während der Defragmentierung die Anwendung(en) pausieren.</p>
+</div>
+</div>
+</div>
+<h1 id="_kollektoren_grafik_aus_azul_whitepaper" class="sect0">Kollektoren - Grafik aus Azul Whitepaper</h1>
+<div class="sect1">
+<h2 id="_einflussfaktoren">Einflussfaktoren</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wie lange ein <em>Objekt lebt</em> beeinflusst, wo es gespeichert wird. Kurzlebige Objekte wie lokale Variablen von Methoden oder Blöcken werden zum Teil nur auf dem Stack alloziert, zumindest aber in einem speziellen Bereich für kurzlebige Objekte (Eden Space) der extrem schnell aufgeräumt wird. Lebt ein Objekt etwas länger ist es ein Kandidat für die Young-Generation die durch die wechselseitige Nutzung von zwei Speicherbereichen auch schnell beräumt werden kann. Lebt das Objekt länger (d.h. der GC kommt mehrmals vorbei) bzw. ist es zu gross dann kommt es in den Bereich für ältere Objekte (Tenured Space), der der größte der Speicherbereiche ist. Diesen Teil des Heaps aufzuräumen bzw. zu defragmentieren ist eine kostspieligere Angelegenheit, sie erfolgt bei existierenden Kollektoren nur während die Anwendung angehalten wird.</p>
+</div>
+<div class="paragraph">
+<p>Bestimmte langlebige Objekte (wie z.b. Klassendefinitionen oder internalisierte Strings) werden in manchen JVMs sofort in einen speziellen Speicherbereich untergebracht (PermGen), dessen Auslastung kann besonders mit dynamischen Sprachen wie z.B. Groovy deutlich anwachsen.</p>
+</div>
+<div class="paragraph">
+<p>Wenn eine Anwendung extrem schnell Millionen von Objekten erzeugt und wieder entsorgt (object churn), dann kann es passieren dass der Garbage Kollektor nicht mithalten kann und sich der vorhandene Heap vorschnell füllt. Dann wird als letzte Möglichkeit der Anwendung die Handbremse angelegt und in einer (längeren) Pause erst einmal wieder Platz geschaffen. Wenn durch die schnelle Objekt-Allokation nur noch wenig Platz auf dem Heap ist, und auch nur wenig bereinigt werden kann, kann es vorkommen, das ein Lauf des GCs nicht genügend Freiraum geschaffen hat und sofort wieder startet. Das zeigt sich dann in einem langsamen aber qualvollen Tod der Anwendung, die dann meist sowieso in einem Out-Of-Memory Error endet.</p>
+</div>
+<div class="paragraph">
+<p>Die Anzahl der vorhandenen Objekte auf dem Heap bzw. deren Größe spielt besonders für die Feststellung der lebendigen Objekte eine Rolle, da hierbei alle Objekte traversiert werden müssen. Aber auch beim Kopieren der aktiven Objekte ist es relevant. Die Größe von Objekten bestimmt, wo sie auf dem Heap gelagert werden, welche Lücken sie nach dem Löschen hinterlassen und wie schnell sich der Heap füllt.</p>
+</div>
+<div class="paragraph">
+<p>Die daraus entstehende Fragmentierung hat einen grossen Einfluss auf die Häufigkeit und Dauer der Kollektionen. Je höher sie ist und je schneller der Heap wieder fragmentiert ist, desto häufiger muss der Garbage Kollektor aufwändig defragmentieren.</p>
+</div>
+<div class="paragraph">
+<p>Die Anzahl der vorhandenen Prozessoren bzw. aktiven Threads bestimmt wie schnell Objekte erzeugt werden können und wieviele zusätzliche Threads ein paralleler Garbage Kollektor zusätzlich starten kann. Für Kollektoren oder Phasen die nicht thread-safe sind, muss die Anwendung angehalten werden damit die parallele Objekterzeugung nicht interferiert.</p>
+</div>
+<div class="paragraph">
+<p>Die Nutzung von Soft- und Weak-Referenzen hat auf bestimmte Kollektoren auch Auswirkungen, da diese oft komplett in einer Phase bereinigt werden.</p>
+</div>
+<div class="paragraph">
+<p>Wenn ein Garbage Kollektor die Anwendung pausiert (und sei es nur im zugesicherten Millisekunden-Bereich), hat er das Problem dass bei aufwändigen Bereinigungsaufgaben die Deadline zu schnell näher rückt. Viele Kollektoren beenden daher vorzeitig Aufgaben, da die Phase innerhalb der Deadline erfolgreich abgeschlossen werden muss. Das kann zur ungenügenden Bereinigung des Heaps führen, die sich schnell zu einem Problem aufschaukeln kann.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_der_zing_c4_kollektor">Der Zing C4 Kollektor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zing enthält einen parallelen, compacting Garbage Kollektor (Continuously Concurrent Compacting Collector oder C4), der massiv parallel arbeitet, keine "stop-the-world" Phasen kennt und die Ausführung der Anwendung nicht einschränkt. Beim Design des Kollektors wurde auf Robustheit und auf Unempfindlichkeit gegenüber den genannten Faktoren Wert gelegt.</p>
+</div>
+<div class="paragraph">
+<p>Interessanterweise ist die Funktionsweise des Garbage Kollektors wirklich simpel. Er basiert auf einem zentralen Mechanismus, der diese Vereinfachung ermöglicht.</p>
+</div>
+<div class="paragraph">
+<p>Der wichtigste Aspekt ist die Nutzung einer Indirektion beim Zugriff auf Objekt-Referenzen. Der "Load Value Barrier" genannte Mechanismus enthält zum einen ein Flag, das speichert ob das Objekt schon von der Markierungsphase erfasst wurde. Zum anderen wird beim Zugriff auf eine Referenz über diese Barriere ein Konsistenzcheck ausgeführt, der z.b. bei verlagerten, aber noch nicht aktualisierten Referenzen oder bei nicht gesetzten Mark-Flags triggert.</p>
+</div>
+<div class="paragraph">
+<p>Diese Überprüfung löst bei Fehlschlag sofort eine Benachrichtigung an den Garbage Kollektor aus, der die notwendigen Korrekturen vornimmt, bevor die Referenz an das Programm weitergegeben wird. Damit ist sichergestellt, dass dem ausgeführten Programm nur valide Referenzen zu Verfügung gestellt werden.</p>
+</div>
+<div class="paragraph">
+<p>Eine interessante Folge dessen ist, dass der Garbage Kollektor nicht mit vorauseilendem Gehorsam immer alle Objekte erfassen oder korrigieren muss, da keine inkorrekten Referenzen entwischen können.</p>
+</div>
+<div class="paragraph">
+<p>Wie läuft die Garbage Collection bei Zing jetzt konkret ab? Wie viele andere Kollektoren arbeitet Zing auch in Phasen, diese laufen aber parallel ab und halten <em>nie</em> die Anwendung an. Der Heap ist bei Zing in Seiten unterteilt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ablauf_der_kollektion">Ablauf der Kollektion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In der <em>Mark</em> Phase werden alle aktiven Referenzen aus den CPU-Registern und der aktiven Threads ermittelt (für blockierte oder wartende Threads macht das der GC). Die Threads können dann unbehelligt vom GC weiterlaufen. Dieses Root Set wird markiert und ausgehend davon, über eine Erreichbarkeits-Traversierung alle lebendigen Objekte erreicht und ebenfalls mit Marken versehen. Für Objekte die währenddessen vorzeitig benutzt werden, kommt die Load Value Barrier zum Einsatz die dann das Setzen der Markierung auslöst. Damit ist erst einmal geklärt, welche Objekte noch aktiv sind. Soft-, Weak- und Phantom-Referenzen werden auch parallel in dieser Phase bearbeitet.</p>
+</div>
+<div class="paragraph">
+<p>In der darauffolgenden "Relocate" Phase werden die am spärlichsten besetzten Seiten gesucht und deren aktive Objekte in eine neue, leere Seite kopiert, die daraufhin eine kontinuierliche Ansammlung von Objekten enthält. Die freigewordene Page wird sofort wieder freigegeben, die Information über die Relokation wird ausserhalb der alten Page gehalten. Zumindest der physikalische Speicher ist wieder frei, die virtuelle Speicherseite kann erst wieder freigegeben werden, wenn keine Referenz mehr darauf zeigt. Damit kann aber der Kollektor die Seite auch sofort wieder benutzen.</p>
+</div>
+<div class="paragraph">
+<p>Falls eines der umgelagerten Objekte von der Anwendung genutzt werden will, greift wieder die Load Value Barriere und repariert sowohl die Objektreferenz als auch sich selbst.</p>
+</div>
+<div class="paragraph">
+<p>Ansonsten schliesst noch eine "Remap" Bereinigungsphase an, die noch nicht aktualisierten Objektreferenzen auf ihren neuen Bestimmungsort zeigen lässt und die Marken aktualisiert. Das passiert einfach über eine Traversierung und Auslösen Load Value Barriere. Und wo der Kollektor gerade beim Traversieren ist, erledigt er dabei gleich auch noch die Markierung der aktiven Objekten, d.h. die Mark und die Remap-Phase werden in einem Durchgang kombiniert.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_umsetzung_auf_x86">Umsetzung auf x86</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Azul&#8217;s Zing 4.0 läuft auf Intel 55xx, 56xx und jüngeren Xeon Prozessoren (mit EPT Extended Page Table) und auf AMD Prozessoren 6100, 8100 und jünger (mit NPT, AMD-V Nested Paging).  Der interessanteste Aspekt, die Load Value Barrier wird mit wenigen Instruktionen in den von der JVM generierten Maschinencode eingewoben, da ihr Check auf einen einzelnen Branch-Jump beschränkt, können aktuelle Prozessoren diesen Seitenstrang und den Hauptstrang weit vorberechnen (Branch-Prediction &amp; XXXX read ahead), so dass beim Nicht-Zutreffen der Bedingung (was in den meisten Taktzyklen der Fall ist) die schon weit fortgeschrittene Mikrocode-Ausführung genutzt werden kann. Daher bleibt die ganze Ausführung auch im Prozessor und seinen Caches und ist schön schnell. Die neue virtuelle Speicherseitenverwaltung in diesen Prozessoren unterstützt und beschleunigt den Umlagerungsprozess zwischen den Seiten aktiv. Diese neuen Prozessor-Features erlauben es, mehrere Gigabyte RAM pro Sekunde zu belegen und wieder freizugeben. Es sind eher die Betriebssysteme die damit noch nicht Schritt halten können.</p>
+</div>
+<div class="paragraph">
+<p>Auf der Betriebssystem-Ebene kommt dann die Managed Runtime Initiative zum tragen. Die open-source MRI hat einen umfassenden Ansatz in Bezug auf die Ausnutzung aktueller Hardware-Features über alle Schichten von Betriebssystem-Kern bis zur JVM. Innerhalb des Projektes hat Azul ihren Garbage Kollektor, Patches für das OpenJDK und diverse Linux-Kernel-Patches und -Erweiterungen beigesteuert.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_architektur">Architektur</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zing besteht aus mehreren Bestandteilen. Auf einer Virtualisierungsumgebung wie KVM oder VMWare ESX(i) läuft ein Gast-Betriebssystem-System mit der Zing-JVM. Die Zing JVM ist nur ein schmaler Proxy, der die Ausführung des Java-Codes in die eigentliche, betriebssystem-unabhängige Umgebung (Zing-Virtual-Appliance) transferiert. Die Virtual-Appliance wird auch innerhalb der Virtualisierungsumgebung installiert.
+Die Nutzung einer separaten Komponente ist notwendig, da aktuelle Betriebssysteme noch zu viele Einschränkungen bei der schnellen Speicher (De-)Allokation aufweisen.
+Die Interaktion zwischen beiden Bestandteilen erfolgt über ein internes virtuelles Netzwerk? Beim jedem Zugriff vom OS auf die Anwendung (z.b. Netzwerkzugriff von aussen) wird diese Barriere einmalig überschritten, das kostet nur minimale Performance.</p>
+</div>
+<div class="paragraph">
+<p>Unter VMWare unterstützt Zing bis zu 512 GB RAM und 160 (virtuelle) Prozessoren, auf KVM sind es sogar 768 GB RAM und 160 Prozessoren. #TODO</p>
+</div>
+<div class="paragraph">
+<p>Diese Infrastruktur lässt sich über den Zing Resource Controller steuern. Zing Vision ist ein Monitoring- und Statistik-Tool mit dem ohne Performance-Verlust Profiling von Anwendungen möglich ist. Informationen die der Garbage Kollektor (Speicher) und die JVM (JIT) während der Ausführung nutzen, werden dem Anwender in Real-Time bereitgestellt. Zing Vision wurde ursprünglich für Statistiken zur Weiterentwicklung der Azul Technologie entwickelt, war aber zu nützlich um es nicht auch anderweitig zu verwenden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_performance">Performance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Für die Demonstration der Performance hat der Chef-Wissenschaftler von Azul Cliff Clicks eine e-Commerce Warenkorb Liferay Demo auf der Zing JVM laufen lassen. Mit einem SLA das 99.9% aller Requests innerhalb von 5 Sekunden ausgeführt werden können, konnten mit dem CMS Kollektor der Hotspot JVM 45 parallele Nutzer bedient werden, auf der Zing JVM waren es 800 (90 GB Heap). Dabei wurden 3,2 GB Heap pro Sekunde bereinigt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_zing_4_1">Zing 4.1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit Version 4.1. gab es noch einmal einen ziemlichen Performance-Sprung (um 80 Prozent), der diesen Benchmark auf 1500 parallele Nutzer hochschnellen lies. Die Details der Verbesserungen sind wieder interessant. Zum einen geht es um die Nutzung von Aussagen über die relative Lage von Speicher-Adressen zueinander.  Nur zu den bekannten Garbage Collection Zeitpunkten (Umlagerung) können sich Speicher-Adressen ändern, daher werden die Adressen zwischenzeitlich von JVM/JIT Optimierungen als Konstanten betrachtet. Ein weiterer Aspekt ist die Behandlung von Feldern. Da oft auf Felder mehrmals mittels Indexierung zugegriffen wird (jedenfalls nach JIT-Inlining), wurde zuerst <em>immer</em> die LVB des Feldes gecheckt und dann die LVB des Feldelements. Der Check der Feldereferenz selbst wird jetzt innerhalb bestimmter Grenzen nur noch einmal vorgenommen und damit viele Takte gespart. Beim Kopieren von Feldern werden Quell- und Zieladressen der Element nur einmal überprüft. Es werden auch Überprüfungen auf Null-Werte erkannt. Für die dort geladenen Referenzen werden Load Value Barriers erst angelegt, wenn sie den Null-Check bestanden haben.</p>
+</div>
+<div class="paragraph">
+<p>Ein paar nette Tools, die von Azul bereitgestellt werden, sind JitterMeter, ein Programm, das misst, wie stark Anwendungsthreads durchschnittlich von Pausen die durch die JVM verursacht werden (z.b. durch GC) beeinflusst werden. Fragger hilft beim Erzeugen realerer Bedingungen für GC-Tests indem Heap-Fragmentierung schneller herbeigeführt wird, die sonst erst nach längerer Laufzeit auftreten würde.</p>
+</div>
+<div class="paragraph">
+<p>Azul Systems, one of the five vendors to make Gartner&#8217;s 2011 “Cool Vendors in Application and Integration Platforms”</p>
+</div>
+</div>
+</div>
+<h1 id="_referenzen" class="sect0">referenzen</h1>
+
+<h1 id="_infoq_artikel" class="sect0">infoq artikel</h1>
+
+<h1 id="_garbage_collection_vs_stm_se_radio" class="sect0">garbage collection vs. STM se-radio</h1>
+
+<h1 id="_azul_whitepapers_trial" class="sect0">azul whitepapers / trial</h1>
+
+<h1 id="_next_article_todo_gc_log" class="sect0">next article - todo gc-log</h1>
+<div class="paragraph">
+<p>Andere existierende GC&#8217;s # todo nächster Artikel ?</p>
+</div>
+<div class="paragraph">
+<p><a href="http://www.azulsystems.com/resources/tools" class="bare">http://www.azulsystems.com/resources/tools</a>
+<a href="http://www.infoq.com/Azul" class="bare">http://www.infoq.com/Azul</a>
+<a href="http://java.dzone.com/category/tags/azul" class="bare">http://java.dzone.com/category/tags/azul</a>
+<a href="http://www.azulsystems.com/products/zing/whatisit" class="bare">http://www.azulsystems.com/products/zing/whatisit</a>
+<a href="http://www.azulsystems.com/trial" class="bare">http://www.azulsystems.com/trial</a>
+# todo link azul liferay demo
+<a href="http://java.dzone.com/zing-benchmarks" class="bare">http://java.dzone.com/zing-benchmarks</a>
+<a href="http://www.azulsystems.com/products/zing/performance" class="bare">http://www.azulsystems.com/products/zing/performance</a></p>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2011-07-23 20:36:36 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

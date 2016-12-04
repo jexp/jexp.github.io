@@ -1,0 +1,591 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Schneller sperren - Stamped Lock in Java 8</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Eine der interessanten, aber auch komplexeren Neuzugänge in Java 8 ist eine neue Form von Sperre (Lock) namens StampedLock, die besonders für den Fall des konkurrierenden Zugriffs von häufigen und vielen lesenden und wenigen, seltenen schreibenden Beteiligten, deutliche Leistungszuwächse verspricht. Dafür sorgt ein optimistischer Ansatz, der kostengünstig für den Fall is, dass es während eines Lese <em>versuchs</em> keinen konkurrierenden Schreibzugriff gab. Dann muss keine teure Sperre gesetzt werden, man kann stattdessen mit günstigeren, optimistischen Mechanismen auskommen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_konkurrenz_was_tun">Konkurrenz - was tun?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sobald man konkurrierend aus mehreren Threads auf gemeinsame, geteilten Ressourcen oder Speicherstellen zugreifen will oder muss, ist dringend der Bedarf an einer Koordinationslösung gegeben. Was uns im sequentiellen Modus nicht gestört hat, nimmt beim gemeinsamen Zugriff bedrohliche Ausmasse an.</p>
+</div>
+<div class="paragraph">
+<p>Am besten wäre es, immer mit unveränderlichen (immutablen) Datenstrukturen auszukommen, oder die genutzten Informationen gleich gar nicht zu teilen. Man kann auch grundsätzlich nur einen Thread Zugriff gewähren, den man über Aufrufe oder Botschaften mit neuen Informationen versorgt.</p>
+</div>
+<div class="paragraph">
+<p>Das alles ist aber leider nicht immer machbar, so dass es notwendig wird, sich die Koordinationsmöglichkeiten in Java genauer anzuschauen.</p>
+</div>
+<div class="paragraph">
+<p>Die Benutzung der Code-Bereiche "kritische Sektionen", die auf dieselben Resourcen(gruppen) zugreifen, muss also koordiniert werden. Zum Teil für einen exklusiven Zugriff, zum Teil für gemeinsamen Zugriff (z.b. wenn mehrere Konsumenten nur lesen).</p>
+</div>
+<div class="paragraph">
+<p>Neben den in der Sprache integrierten Methoden zur Synchronisation, gibt es noch diverse Hilfsklassen im JDK, besonders im Paket <code>java.util.concurrent</code>. Welche dieser Methoden nun genutzt wird ist u.a. von der Länge und Art der kritischen Bereiche, sowie von der Anzahl und Häufigkeit von konkurrierenden, parallelen Lese- und/oder Schreibzugriffen abhängig. Das ist besonders spannend, wenn diese Verhältnisse sich während der Laufzeit der Anwendung ändern, was in realen Anwendungsfällen durchaus geschieht.</p>
+</div>
+<div class="paragraph">
+<p>Wie immer sollte die Wahl des "besten" Ansatzes sowohl nach gründlicher Überlegung als auch praktischer Messung (Mikrobenchmark und realer Anwedungsfall) erfolgen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_synchronized">Synchronized</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die älteste und bekannteste Methode der der Synchronisation in Java heisst auch so <code>synchronized</code>. Dabei wird entweder auf der Klasse, der Instanz oder auf einem Lock-Objekt eine exklusive Sperre für eine Methoder einen Block gesetzt, so dass nur ein Thread zur gleichen Zeit, diesen Block durchlaufen kann. Dabei wird nicht zwischen Lese- und Schreiboperationen unterschieden.</p>
+</div>
+<div class="paragraph">
+<p>Falls sich schon ein Thread im Codeblock befindet, werden alle anderen Threads in einen Wartezustand (suspend) gesetzt. Wenn der Thread den <code>synchronized</code> Block verlässt, werden sie aufgeweckt, Prozessorcache-Notifikationen und Speicherbarrieren ausgelöst und dann einer der Threads ausgewählt, um den Block als nächstes zu betreten. Es findet praktisch eine Serialisierung des Zugriffs statt. Selbst wenn es praktisch keine konkurrierenden Zugriffe gibt, addieren sich die zusätzlichen Prüfungen und Operationen zu einem deutlichen Geschwindigkeitsverlust auf. Gute Beispiel dafür, dass pauschale Synchronisation keine gute Idee ist, sind <code>StringBuffer</code> vs. <code>StringBuilder</code> und <code>Vector</code> vs. <code>ArrayList</code>.</p>
+</div>
+<div class="paragraph">
+<p>Synchronized ist reentrant, dh. derselbe Thread kann wieder in die Methode eintreten, ohne blockiert zu werden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_optimierungen_durch_hotspot">Optimierungen durch Hotspot</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Dieser Mechanismus ist exklusiv und ziemlich teuer, kann aber bei Kenntnis der Abläufe (kleine Blöcke, wenige Threads, seltene konkurrierende Zugriffe) trotzdem geeignet sein. Besonders weil neuere JVMs einige Tricks im Ärmel haben, um diese Sperren zu optimieren. Besonders, wenn es seltene konkurrierende Zugriffe auf die geschützten Bereiche gibt, können diese angewandt werden.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen können mittels <em>biased-locking</em> die teuren Operationen zum Erlangen des "Leases", dass die Vorraussetzung zur Erteilung einer Sperre darstellt, minimiert werden. Besonders in Fällen, die nur wenig konkurrierende Zugriffe, aber dafür eine Schleife über einen synchronisierten Bereich enthalten, ist die immerwährende Erzeugung des Leases sehr teuer. Daher können seit Java 6, Threads in einer solchen Schleife solange die Freigabe des Leases vermeiden, solange nicht ein anderer Thread den Zugriff benötigt. Damit begünstigt (biased) die Sperre den wiederkehrenden Aufrufer. Es wird aber nicht die Sperre um die ganze Schleife gelegt, um andere Threads nicht auszusperren.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren gibt es zwei Wege, ungenutzte oder unnütze Sperren ganz zu beseitigen. Zum einen <em>lock-coarsening</em> - damit wird aneinandergereihtes Erlangen derselben Sperre zusammengefasst, z.b. aufeinanderfolgende Aufrufe synchronisierter Methoden desselben Objekts. Durch Inlining der Methoden kann der synchronisierte Bereich vergrössert werden, so dass er den gesamten Code umfasst, und die Sperre nur einmal angefordert werden muss. Der größere gesperrte Bereich hat aber natürlich Auswirkungen auf das Laufzeitverhalten, besonders die Fairness gegenüber anderen Threads.</p>
+</div>
+<div class="paragraph">
+<p>Und mit <em>lock elision</em> wird der reale Gültigkeitsbereich (Scope) von Lock-Objekten überprüft (mittels Escape-Analyse). Werden Referenzen auf das Lock (z.b. Objekt-Instanz bei synchronized Methoden) nie ausserhalb des aktuellen Scopes (so auch für andere Threads) zugreifbar, können die Sperrmechianismen ganz entfernt werden.</p>
+</div>
+<div class="paragraph">
+<p>Das Parken der Threads, die den kritischen Bereich nicht betreten konnten ist eine ziemlich teure Operation für JVM, OS und Hardware. Daher kann es, gerade bei sehr kurz gehaltenen Sperren sinnvoll sein, die wartenden Threads in einer Schleife des Nichtstuns verharren (<em>Spin Lock</em>) zu lassen, bevor wiederholt getestet werden kann, ob die Sperre verfügbar ist. In Java 4 waren das einfach kurze Schleifen von 10 Iterationen. Java 6 führte einen dynamischen Ansatz (<em>adaptive Spinning</em>) ein, wobei bisherige Erfahrungen mit dieser Sperre und dem aktuellen Thread mit einfliessen. Bis zu 100 Iterationen können dann CPU-Zyklen "verbrannt" werden, oder halt gar nicht, wenn es in der Vergangenheit auch nicht gereicht hat.</p>
+</div>
+<div class="paragraph">
+<p>Diese Optimierungen sind von vielen Rahmenbedingungen abhängig und können nicht pauschal für jede Situation vorausgesetzt werden.
+Mittels anderer Sperren, kann man selbst kontrollieren, ob man lesenden oder schreibenden Zugriff unterscheiden will, ob die Sperren an andere Threads oder Methoden weitergegeben werden können oder ob man die Sperren von weiteren Bedingungen abhängig machen will.</p>
+</div>
+<div class="paragraph">
+<p>Das JDK hat noch diverse andere Hilfsklassen, um Sperren von Bereichen zu ermöglichen. Ich möchte mich hier nur auf das <code>ReentrantReadWriteLock</code> beschränken, da es als zu ersetzender "Vorgänger" des <code>StampedLock</code> gilt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reentrantreadwritelock">ReentrantReadWriteLock</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Alle Concurrency-Hilfsklassen im JDK haben nicht den Vorteil von <code>synchronized</code>, direkt Teil der Sprache und des JVM-Modells zu sein. Daher sind sie zum einen auf Operationen beschränkt, die jedem anderen Code auch offenstehen, zum anderen machen sie massiven gebrauch von <code>sun.misc.Unsafe</code>, um ihre Arbeit zu leisten. Um an bestimmte Speicherbarrieren auszulösen oder CPU-Instruktionen wie Compare-And-Swap auszuführen, müssen sie diesen Weg nehmen.</p>
+</div>
+<div class="paragraph">
+<p>Das <code>ReentrantReadWriteLock</code> war vor Java 8 eine häufig genutzte Sperre, die an sich ganz praktisch war, da sie zum einen mittels eines Sperr-Objektes, sowohl Lese- als auch Schreibzugriffe synchronisieren konnte.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren ist es reentrant, dh. wenn derselbe Thread erneut dieselbe Sperre anfordert, wird er einfach durchgelassen (mit Erhöhung von Zählern), auch wenn das über mehrere Methodenaufrufe weit entfernt geschieht. Das ist auch praktisch, wenn ausgehend von einer Schreibsperre, andere Methoden aufgerufen werden, die erneute Lese-Sperren im aktuellen Thread anfordern.</p>
+</div>
+<div class="paragraph">
+<p>Normalerweise ist das <code>ReentrantReadWriteLock</code> nicht fair, dh. Lese- oder Schreiboperationen können potentiell beliebig lange verzögert werden. Da dieser Ansatz der performantere ist und es in der Praxis im Allgemeinen nicht vorkommt dass Threads ausgeschlossen werden, ist der "nicht-faire" Modus standardmässig aktiv.</p>
+</div>
+<div class="paragraph">
+<p>Der "faire" Modus ist deutlich langsamer, da Zugriffswünsche aufgezeichnet, und ausgeglichen behandelt werden müssen. Entweder der am längsten wartende Schreib-Thread oder die gemeinsam am längsten wartende Gruppe von Lese-Threads werden bevorzugt behandelt.</p>
+</div>
+<div class="paragraph">
+<p>Schreibsperren können zu einer Lese-Sperre umgewandelt werden (indem innerhalb sie vor der Freigabe der Schreibsperre angefordert werden), aber nicht umgekehrt. Eine zugeteiltes Read-Lock kann nicht zu einem Write-Lock aufgewertet werden. Diese Möglichkeit gibt es erst mit dem StampedLock.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+...
+public float updateAndComputeAverage(int value) {
+
+  // kurzer geschützter Bereich
+  lock.writeLock().lock();
+  try {
+	sum += value;
+	count ++;
+	// Umwandlung zu Read-Lock
+	lock.readLock().lock();
+  } finally {
+    lock.writeLock().unlock();
+  }
+  try {
+	return (float)(sum / count);
+  } finally {
+    lock.readLock().unlock();
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der Nachteil am ReentrantReadWriteLock liegt an der Performance, besonders wenn häufig viele lesende und selten schreibende Threads aktiv sind. Dann ist die zwangsweise Zuteilung eines Read-Locks eine relativ teure Angelegenheit, sie kostet ca. 2000 Prozessorzyklen, was eine ganze Menge ist.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_stampedlock">StampedLock</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Genau um diese Probleme zu adressieren, wurde das <code>StampedLock</code> in Java 8 eingeführt. Doug Lea hatte es schon vor einiger Zeit entwickelt, daher gibt es auch einen Backport zu Java 7. Wie im <code>ReentrantReadWriteLock</code> wird zwischen exklusiven (Write) und geteilten (Read) Sperren unterschieden. Die größte Neuerung sind schnelle, optimistische Optionen für lesende Operationen.</p>
+</div>
+<div class="paragraph">
+<p>Die Hauptziele des StampedLock sind ein höherer Durchsatz wenn viele lesende Threads gleichzeitig auf den kritischen Bereich zugreifen. Desweiteren die Möglichkeit ein Read-Lock zu einem Write-Lock aufzuwerten.</p>
+</div>
+<div class="sect2">
+<h3 id="_vorteile">Vorteile</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>sehr schnelle, optimistische Lese-Sperren</p>
+<div class="ulist">
+<ul>
+<li>
+<p>in den meisten Fällen gibt es keine Konflikte zwischen Lese- und Schreiboperationen, in diesen sollte die Leseoperation sehr performant sein</p>
+</li>
+<li>
+<p>wenn die Ausnahme auftritt, dass während der Leseoperation eine Schreibsperre angefordert wird, wird das optimistische Token automatisch ungültig</p>
+</li>
+<li>
+<p>dann kann ein erneuter Versuch gestartet oder ein richtiges Read-Lock angefordert werden</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>höherer Durchsatz, besonders wenn deutlich mehr Lese- als Schreib-Threads um die Sperre konkurrieren</p>
+</li>
+<li>
+<p>Möglichkeit zum Aufwerten einer Lesesperre zur Schreibsperre</p>
+</li>
+<li>
+<p>Stamp-Token kann weitergegeben werden, andere Methoden können ihn benutzen oder umwandeln</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nachteile">Nachteile</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>nicht so einfach zu benutzen (siehe auch "Bedingungen"), man muss aufpassen, stets die korrekten Methoden zu benutzen</p>
+</li>
+<li>
+<p>nicht <strong>reentrant</strong>,</p>
+<div class="ulist">
+<ul>
+<li>
+<p>d.h. wenn derselbe Thread wieder in einen Bereich kommt, der auf demselben Lock eine Sperre anfordert, wird er auch geblockt,</p>
+</li>
+<li>
+<p>muss über Weitergabe des Tokens gehandhabt werden</p>
+</li>
+<li>
+<p>daher muss aufgepasst werden, welche anderen Methoden (möglichst keine) im kritischen Bereich aufgerufen werden, so dass der Thread nicht versehentlich sich selbst blockiert</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Leseoperationen müssen Seiteneffektfrei sein (reine Berechnungen), sonst können sie nicht nach einer fehlgeschlagenen Validierung (beliebig oft) wiederholte werden</p>
+</li>
+<li>
+<p>Token benutzen endlichen Wertebereich</p>
+<div class="ulist">
+<ul>
+<li>
+<p>laufen nach einem Jahr über</p>
+</li>
+<li>
+<p>sind nicht "sicher", können erraten werden</p>
+</li>
+<li>
+<p>ungültige Token für Operationen (ausser <code>validate</code>) zu benutzen kann zu unvorhergesehenen Auswirkungen führen</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>StampedLock ist <code>Serializable</code> aber wird in nicht-gesperrten Zustand deserialisiert, also nicht für verteilte Sperren nutzbar</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modi">Modi</h3>
+<div class="sect3">
+<h4 id="_schreib_lock">Schreib-Lock</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Exclusiv</p>
+</li>
+<li>
+<p>Akquisition mit <code>writeLock()</code>, wenn nicht gerade Read-Lock aktiv ist, dann Blockierung (ggf. Timeout bei <code>writeLock(time,timeUnit)</code>)</p>
+</li>
+<li>
+<p>Freigabe mit <code>unlockWrite(stamp)</code></p>
+</li>
+<li>
+<p>Read-Locks werden blockiert</p>
+</li>
+<li>
+<p>optimistische Leseanforderungen schlagen fehl</p>
+</li>
+<li>
+<p>fair, kontinuierlich ankommende Lese-Threads können wartende Schreib-Threads nicht aushungern</p>
+</li>
+<li>
+<p>Downgrade zu Read-Lock mittels <code>tryConvertToReadLock(stamp)</code></p>
+</li>
+<li>
+<p>Downgrade/Release mittels <code>tryConvertToOptimisticRead(stamp)</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_read_lock">Read-Lock</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>geteilt mit anderen Lese-Threads</p>
+</li>
+<li>
+<p>Akquisition mittels <code>readLock()</code> wenn nicht gerade Write-Lock aktiv ist, dann Blockierung (ggf. Timeout bei <code>readLock(time,timeUnit)</code>)</p>
+</li>
+<li>
+<p>Wenn Read-Lock aktiv ist und kein Write-Thread warted, dann Partizipation in aktuellem Lock</p>
+</li>
+<li>
+<p>Upgrade zu Write-Lock mittels <code>tryConvertToWriteLock()</code></p>
+<div class="ulist">
+<ul>
+<li>
+<p>wenn schon in Write-Mode, oder kein weiterer Lese-Thread oder im optimistischen Modus und kein Lock gesetzt</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Downgrade/Release mittels <code>tryConvertToOptimisticRead(stamp)</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_optimistisch_lesen">Optimistisch Lesen</h4>
+<div class="paragraph">
+<p>Der optimistische Ansatz für die Leseoperation funktioniert wie folgt:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Vor dem Lesezugriff, versucht man mit <code>tryOptimisticRead()</code>, sich einen Lese-Token geben zu lassen</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>dieser ist 0 wenn schon ein Write-Lock gehalten wird</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Man liest von den Feldern, aber nur einmalig und atomar, daher wird oft (z.B. wenn man ihn später noch benötigt), der Wert einer lokalen Variablen zugewiesen</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>dieses Code-Segment sollte so kurz wie möglich sein, nur dann kommt auch die Leistungssteigerung zum Tragen</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Mittels <code>validate(token)</code> überprüft man die Gültigkeit des Tokens von Erhalt bis zum aktuellen Zeitpunkt, d.h. kein anderer Thread hat mittlerweile einen Schreibzugiff über das Lock angefordert</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><code>validate</code> kann auch mehrmals aufgerufen werden, um sicherzustellen, dass gelesene Werte nicht völlig inkonsistent sind</p>
+</li>
+<li>
+<p>man sollte die zu lesenden Datenstrukturen sehr gut kennen, besonders ihre Konsistenzzusammenhänge, um zwischenzeitliche Fehlersituationen zu vermeiden</p>
+</li>
+<li>
+<p>das gilt auch für Methoden die mit den gelesenen Werten aufgerufen werden, diese sollten auch mit inkonsistenten Werten umgehen können (oder man muss vorher ein <code>validate</code> die Konsistenz bestätigen lassen)</p>
+</li>
+<li>
+<p>Wenn das <code>validate</code> erfolgreich ist, kann man den berechneten Wert nutzen oder zurückgeben</p>
+</li>
+<li>
+<p>Wenn nicht kann man entweder eine explizite Lesesperre mittels <code>readLock()</code> anfordern,</p>
+</li>
+<li>
+<p>oder den optimistischen Zugriff in einer Schleife wiederholen, bis er erfolgreich ist (oder eine Kombination aus beiden mit einer beschränkten Anzahl von Versuchen)</p>
+</li>
+<li>
+<p>bei höheren Anzahlen von Lese-Threads, sollte die Anzahl der Versuche des optimistischen Lesens erhöht werden, da die Wahrscheinlichkeit des Erfolgs ziemlich hoch ist</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Optimistische Leseoperation</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">class Counter {
+    private final StampedLock sl = new StampedLock();
+    int sum;
+    int count;
+
+    public float getAverage() {
+        long stamp = sl.tryOptimisticRead();
+        int s = sum, c = count; // in lokale Variablen kopieren
+        if (sl.validate(stamp)) return c == 0 ? 0 : (float)(s / c);
+
+        stamp = sl.readLock();
+        try {
+            return count == 0 ? 0 : (float) (sum / count);
+        } finally {
+            sl.unlockRead(stamp);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bedingungen">Bedingungen</h3>
+<div class="paragraph">
+<p>Für die korrekte Funktionsweise des optimistischen Ansatzes, besonders für die <strong>Nutzung der gelesenen Werte in Berechnungen</strong> innerhalb t des kritischen Codebereiches, müssen folgende Bedingungen beachtet werden:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Atomare Leseoperationen</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Da keine Speicherbarrieren (ala volatile oder synchronized) für den Zugriff hinzugefügt werden, müssen alle Zugriffe atomar sein (was bei 32 bit Feldern sowieso, und bei 64-bit Feldern meist der Fall ist). Sonst kann ein anderer Schreib-Thread den Wert teilweise ändern, während man ihn gerade liest.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Invarianten</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Ähnliches gilt für Invarianten d.h. semantische Abhängigkeiten zwischen gelesenen Werten, auch diese können durch ebendiesen Fakt verletzt werden, so dass eine Berechnung, die auf dieser Abhängigkeit aufbaut, im besten Fall unerwartete Ergebnisse liefert im schlechtesten Fall aber zu einer Exception führt (was bei einer Leseoperation unerwartet ist).</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Garbage Collection</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Wenn Referenzen, die gelesen werden sollen zwischenzeitlich entsorgt wurden, dann ist das auch kontraproduktiv. Normalerweise beim Java-Garbage Collector passiert das nicht, aber wenn man Dinge in die eigene Hand nimmt, z.b. mit eigenen Speicherstrukturen, oder off-heap Speicher sollte man dies bedenken.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man Martin Thompson (Mechanical Sympathy, Disruptor, Lock-Free Algorithms, Simple Binary Encoding, Aeron) zuhört, dann stellt sich natürlich die Frage, warum man denn schon wieder eine neue Sperre benötigt, und ob nicht mit etwas mehr Nachdenken ein Ansatz/Algorithmus gewählt werden könnte, der ohne Sperren auskommt. Dazu mehr in einer der nächsten Kolumnen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_arbeitsweise_wie_funktioniert_das_stampedlock_intern">Arbeitsweise - Wie funktioniert das StampedLock intern?</h3>
+<div class="sect3">
+<h4 id="_zustand_und_token">Zustand und Token</h4>
+<div class="paragraph">
+<p>Das StampedLock benutzt intern Algorithmen und Speicherbarrieren, die erst in Java8 hinzugefügt wurden. Damit ist es schneller und auch robuster als bisherige Ansätze.</p>
+</div>
+<div class="paragraph">
+<p>Der Zustand des Locks wird intern durch eine Version und einen Modus abgebildet. Sowohl dieser Zustand als auch die Zeiger auf die Warteschlange sind auf eine Cache-Line optimiert, so dass sie für Lesezugriffe immer gemeinsam konsistent zur Verfügung stehen.</p>
+</div>
+<div class="paragraph">
+<p>Der zurückgegebene Stamp-Token repräsentiert diesen Zuststand. Die <code>try</code>-Versionen der Methoden können ggf. 0 zurückgeben, falls sie fehlschlagen. Ansonsten schlagen <code>release</code> und <code>convert</code> Operationen fehl, wenn der Token nicht dem aktuellen Zustand entspricht.</p>
+</div>
+<div class="paragraph">
+<p>StampedLock benutzt Sequence Locks (wie im Linux Kernel) und geordnete Read-Write-Locks. Intern gibt es eine Sequenz-Nummer, die ungerade für Write-Locks und sonst gerade is, mehrere parallele Reader werden in einem Offset gehalten bis zu 7 Bit (komfortable 128 Threads) in Bitfeld, sonst in einem Überlaufsfeld für (unerwartet) größere Mengen von lesenden Threads.</p>
+</div>
+<div class="paragraph">
+<p>Die Validierung von Sequenznummern benötigt stärkere Zusicherungen als nur einzelne volatile Lesezugriffe. Es muss erzwungen werden, dass die Aktualisierung der Sichtbarkeit der Felder vor der Ausführung der Validierung passiert ist. Wenn das noch nicht durch andere Trigger geschehen ist, muss es mit Unsafe.loadFence() (seit Java 8) ausgelöst werden.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_warteschlange">Warteschlange</h4>
+<div class="paragraph">
+<p>Referenzen auf die Threads, die auf die Zuteilung der Sperre warten, werden in einer doppelt verkettete Liste (CLH-Lock-Queue) von "Waiter"-Knoten gehalten.
+Jeder Knoten ist als Lese- oder Schreibthread markiert. Lese-Threads hängen an einem Gruppenknoten, so dass sie gemeinsam aufgeweckt werden können.
+Normalerweise würden Reader gleich mit zum Zuge kommen, wenn gerade eine Lese-Sperre vorliegt, der Fairness (Phase-Fair) halber wird aber sobald auch ein Schreib-Thread in der Warteschlange steht, auch der aktuell angekommene Leser eingereiht. Diese Fairness-Mechanismen führen zu einer höheren Komplexität in der <code>aquireRead</code> Methode. Aber auch die <code>aquireWrite</code>-Methode ist ziemlich umfangreich, da sie auf konsistenten Sets von gelesenen Variablen beruhen gibt es keine extrahierten Methoden, sondern viel ähnlichen "kopierten" Code für die alternativen Zweige.</p>
+</div>
+<div class="paragraph">
+<p>Über die Knoten der Liste wird sowohl das Management der Blockierung, als auch das Aufwecken des nächsten in der Reihe (FIFO) gesteuert.
+Notifizierte Threads bekommen nicht automatisch die Sperre, sie sind nur die nächsten mit der Gelegenheit, sie anzufordern.</p>
+</div>
+<div class="paragraph">
+<p>Neue wartende Threads werden am Ende mit einer atomaren Operation eingefügt. Genauso wird das Umsetzen des Kopf-Zeigers (head) atomar ausgeführt. Aufwändiger ist es, (bedingt durch Timeouts und Interrupts) herauszufinden, wer denn der nächste potentielle Nachfolger ist. Herauslöschen abgebrochener Knoten erfolgt durch Ermittlung der Vorgänger und Nachfolger, sowie Neuverlinkung der beiden Zeiger auf Vorgänger und Nachfolger. Um den Nachfolgern zu erlauben, sicher selbst festzustellen, ob sie auch abgebrochen wurden und ihren neuen Vorgänger zu akzeptieren werden sie kurz "entparkt". Ggf. enstehende Race-Conditions zwischen Herauslöschen entfernter Threads und dem Hinzufügen neuer am Ende, wird durch zusätzliche Checks Rechnung getragen.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references">References</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[KabutzSlides] <a href="http://javaspecialists.eu/talks/jfokus13/PhaserAndStampedLock.pdf" class="bare">http://javaspecialists.eu/talks/jfokus13/PhaserAndStampedLock.pdf</a></p>
+</li>
+<li>
+<p>[KabutzNewsletter] <a href="http://www.javaspecialists.eu/archive/Issue215.html" class="bare">http://www.javaspecialists.eu/archive/Issue215.html</a></p>
+</li>
+<li>
+<p>[StampedLock - JavaDoc]<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/StampedLock.html" class="bare">https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/StampedLock.html</a></p>
+</li>
+<li>
+<p>[Lock Performance Comparison] <a href="http://javaagile.blogspot.co.uk/2014/10/a-lock-for-all-weathers.html" class="bare">http://javaagile.blogspot.co.uk/2014/10/a-lock-for-all-weathers.html</a></p>
+</li>
+<li>
+<p>[Lock-based vs. Lock-free Algorithms - Thompson]<a href="http://mechanical-sympathy.blogspot.com/2013/08/lock-based-vs-lock-free-concurrent.html" class="bare">http://mechanical-sympathy.blogspot.com/2013/08/lock-based-vs-lock-free-concurrent.html</a> (code: <a href="https://github.com/mjpt777/rw-concurrency" class="bare">https://github.com/mjpt777/rw-concurrency</a>)</p>
+</li>
+<li>
+<p>[InfoQ - JVM Optimierungen von Locks] <a href="http://www.infoq.com/articles/java-threading-optimizations-p1" class="bare">http://www.infoq.com/articles/java-threading-optimizations-p1</a></p>
+</li>
+<li>
+<p>[Unsafe xxFence Instruktionen] <a href="http://stackoverflow.com/questions/23603304/java-8-unsafe-xxxfence-instructions" class="bare">http://stackoverflow.com/questions/23603304/java-8-unsafe-xxxfence-instructions</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-11-26 14:45:23 CET</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

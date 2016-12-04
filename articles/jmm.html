@@ -1,0 +1,559 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | In den Speicher geschaut, das Java Speichermodell (JMM)</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Final für Frau Weinert
+</td>
+</tr>
+</table>
+</div>
+<div class="sect1">
+<h2 id="_in_den_speicher_geschaut_das_java_speichermodell_jmm">In den Speicher geschaut, das Java Speichermodell (JMM)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wenn wir bisher auf Java&#8217;s Speicher geschaut haben, dann ist das meist im Rahmen von Speichermanagement, d.h. Erzeugung (Allocation) und Beseitigung (Garbage Collection) von Objekten geschehen.
+Die Nutzung des Heaps mit den verschiedenen Generationen (Young-, Old- und Perm-Gen) sowie die verschiedenen Garbage-Collectors, sollen in dieser Kolumne aber nicht im Mittelpunkt stehen, sondern das Speichermodell das der Java Virtual Machine (JVM) zugrundeliegt.</p>
+</div>
+<div class="paragraph">
+<p>Nachdem wir vor kurzem schon einmal Aleksey Shipilev&#8217;s Arbeit, den Java Measurement Harness (JMH) im Visier hatten, will ich ihn auch dieses Mal zu einem anderen, spannenden aber auch komplizierten Teil der JVM-Spezifikation zitieren, dem Java Speichermodell (JMM).
+Er hat dazu einen ausführlichen Beitrag geschrieben, der einen eine Weile beschäftigen kann.</p>
+</div>
+<div class="sect2">
+<h3 id="_einführung">Einführung</h3>
+<div class="paragraph">
+<p>Jeder hat seine ganz eigenen Erfahrungen mit Concurrency, Race-Conditions und der Sichtbarkeit von Änderungen für andere Threads gehabt und es gibt da sicher so einige Gruselgeschichten zu berichten.
+Diese Art von Fehlern ist schwer zu finden und deterministisch zu reproduzieren, meistens hat man sich einige Informationen angelesen und hergeleitet, aber oft ist das eher gefährliches Halbwissen.</p>
+</div>
+<div class="paragraph">
+<p>Aleksey geht seinem sehr langen Artikel [Shipilev JMM] ausführlich auf viele Details der Java Language Specification (JLS) bezüglich des Speichermodells ein, von denen ich im folgenden einige erörtern möchte.</p>
+</div>
+<div class="paragraph">
+<p>Generell ist die Frage, die für die verschiedensten Kontexte, Zustände und Situationen beantwortet werden muss: <strong>"Welchen Wert siehts eine bestimmte Leseoperation"</strong>.
+Das ganze ist natürlich nur für nebenläufige Programme wirklich interessant, bei sequentiellem Ablauf ist die Antwort deterministisch. Dort ist nur die Abfolge von Speicher-Lese und Schreiboperationen für Sprachkonstrukte relevant, d.h. wann lesen und/oder schreiben welche Operationen welche Werte und wie werden sie nacheinander ausgeführt (auch abhängig von Präzendenz und Compiler-Optimierungen).</p>
+</div>
+<div class="paragraph">
+<p>Eine Sprachspezifikation wie die der JVM besteht aus dem einfachen Teil, der die Syntax der Sprache festlegt und beschreibt, und der weitaus komplexeren Beschreibung des Laufzeitverhaltens.</p>
+</div>
+<div class="paragraph">
+<p>Das Verhalten wird oft im Rahmen einer Abstrakten Maschine dargestellt, deren Operationen und Speichermodell detailliert dargelegt sind.</p>
+</div>
+<div class="paragraph">
+<p>(Diese Maschine wird dann von Interpretern emuliert oder von Compilern aus dem Quellcode umgesetzt, in beiden Fällen kann es zu Problemen kommen.)</p>
+</div>
+<div class="paragraph">
+<p>Im Endeffekt handelt es sich bei der Umsetzung von Sprachen, Compiler und Speichermodellen immer um einen Balanceakt.
+Man will sie so einfach, performant und korrekt wie möglich gestalten und muss dafür jeweils Abstriche an anderen Aspekten hinnehmen.</p>
+</div>
+<div class="paragraph">
+<p>Wir wollen im Folgenden einige Aspekte im Detail betrachten</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_atomare_lese_und_schreiboperationen">Atomare Lese- und Schreiboperationen</h3>
+<div class="paragraph">
+<p>In einer Programmiersprache geht man eigentlich davon aus, dass jeder Lese- und Schreibzugriff eines Feldes atomar ist.
+Leider lässt uns dabei die Hardware im Stich, denn je nach Architektur können längere Werte nicht mehr atomar mit einer Hardwareinstruktion gehandhabt werden.
+In Java betrifft das auf einigen Plattformen (32-bit) den Zugriff auf Werte vom Typ long und double (jeweils 8 Bytes).
+Und wenn man mindestens 2 Operationen benötigt, dann ist nicht automatisch sichergestellt, dass diese noch atomar ablaufen, ohne dass sich ein weiterer Zugriff dazwischenschmuggelt.
+Dasselbe Problem tritt auf, wenn ein Wert auf zwei Zeilen des Prozessor-Caches oder auf Speicherbereiche mit dem falschen Alignment verteilt ist.</p>
+</div>
+<div class="paragraph">
+<p>Daher sind im Java-Speichermodelle nur atomare Speicheroperationen bis zu 32 Bit Länge garantiert (Kompatibilität zu 32-Bit-Prozessoren), bei längeren Werten muss mit <code>volatile</code> oder <code>final</code> Modifikatoren eine atomare Operation erzwungen werden (wenn nötig).
+Dann treffen der Compiler und die JVM spezielle, aufwändigere Vorkehrungen dass diese Operationen auch atomar ausgeführt werden und z.b. Speicher- und Cachezellen zwangsweise publiziert werden.
+Das ist auch der Grund warum Objektreferenzen in Java maximal 32 Bit lang sind, damit sie garantiert atomar gelesen und geschrieben werden können.
+Da diese Operationen deutlich teurer sind, werden sie nicht standardmässig genutzt und es liegt in der Verantwortung des Anwenders, bei Notwendigkeit (z.b. parallelem Zugriff) die Variablen entsprechend geschützt zu deklarieren.</p>
+</div>
+<div class="paragraph">
+<p>Wenn es für die Wertlänge keine atomaren Prozessoroperationen gibt, muss man sich anders behelfen, entweder über Compare and Swap (CAS) Prozessoroperationen oder sogar Sperren (Locks) auf dem Maschinenlevel.</p>
+</div>
+<div class="paragraph">
+<p>Zum Beispiel in <code>AtomicLong</code> werden atomare Lese- oder Schreiboperationen erreicht, indem der gekapselte Wert als volatiles Feld deklariert ist. Komplexere Operationen wie Erhöhen um einen Wert (wofür man ihn Lesen <strong>und</strong> Schreiben muss) werden über CAS umgesetzt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_individueller_feldzugriff">Individueller Feldzugriff</h3>
+<div class="paragraph">
+<p>Für die Aktualisierung von Feldwerten kann es abhängig von der Lesebreite der Hardware notwendig sein, mehrere Feldelemente auf einmal zu lesen, den Wert zu ändern und den ganzen Block auf einmal wieder zurückzuschreiben.
+Man kann sich leicht vorstellen, dass das bei konkurrierendem Zugriff schnell danebengeht, so dass ein Thread Änderungen eines parallel laufenden zweiten Threads überschreibt.</p>
+</div>
+<div class="paragraph">
+<p>Da die meisten Maschinen eine Mindestbreite des Zugriffes von einem Byte haben, können z.B. Boolean-Felder nicht pauschal als Bitsets abgebildet werden.
+In der Java Spezifikation sind Datenstrukturen mit einer Breite kleiner als ein Byte verboten, um das generell auszuschliessen.
+Wichtig ist dies auch bei Optimierungen durch Programmierer oder Compiler, die nebenläufig größere Puffer auf einmal lesen, bearbeiten und zurückschreiben.
+Diese Zugriffe müssen durch entsprechende Synchronisationsmechanismen geschützt werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_schreiboperationen_und_sichtbarkeit_durch_publikation_von_aktualisierungen">Schreiboperationen und Sichtbarkeit durch Publikation von Aktualisierungen</h3>
+<div class="paragraph">
+<p>Parallele Operationen in einem Programm können auf diesselben Register und Speicherzellen lesend und schreibend zugreifen.
+Die Reihenfolge des Ablaufs bestimmt in der Theorie welche Werte diese Threads sehen.
+In Realität sieht das noch etwas anders aus.
+Ohne weitere Hinweise, ist der Compiler in der Lage diverse Operationen umzusortieren, um Abläufe effizienter zu gestalten.</p>
+</div>
+<div class="paragraph">
+<p>Auch im Prozessor ist eine aggressive Optimierung der Reihenfolge und optmistische Spekulationen über Speicherzugriffe und Operationen an der Tagesordnung (Im Fehlerfall wird die Spekulation dann verworfen und ggf. die aktuelle Pipeline zurückgesetzt).
+Ausserdem sind Prozessoren heutzutage mit einem schnellen, mehrstufigen (meist 3) Cachesystem ausgestattet, das lokale Änderungen an Werten erlaubt, ohne dass diese sofort in den Speicher zurückgeschrieben oder anderen beteiligten Prozessorkernen bekannt gemacht müssen.</p>
+</div>
+<div class="paragraph">
+<p>Aus diesen zwei Gründen können Schreiboperationen eines Threads für andere Threads komplett unsichtbar sein und damit zur falschen Aussagen beim Lesen von Werten führen, die dann im weiteren Verlauf die Korrektheit des Programms beeinflussen.</p>
+</div>
+<div class="paragraph">
+<p>Für die meisten Operationen im Programm sind diese Optimierungen auch wichtig und unproblematisch, da sie im lokalen Kontext eines Threads erfolgen, und damit massive Leistungssteigerungen hervorrufen können.
+Für das aktive Bekanntmachen von Änderungen und Verhindern solcher Optimierungen gibt es das Konzept der Speicherbarrieren (memory barriers).
+D.h. Instruktionen die dem Prozessor mitteilen das Speicheroperationen in einer festen Reihenfolge und mit globaler Sichtbarkeit erfolgen müssen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_formalismen_im_java_memory_model">Formalismen im Java Memory Model</h3>
+<div class="sect3">
+<h4 id="_sequential_consistency_data_race_free">Sequential Consistency: Data Race Free</h4>
+<div class="paragraph">
+<p>Der von Aleksey dargestellte Ansatz zur Beschreibung der Herstellung einer konsistenten Ausführungsreihenfolge von Operationen wird von ihm als "Sequential Consistency - Data Race Free (SC-DRF)" bezeichnet.
+Dabei wird aus einer Reihe von Operationsabhängigkeiten für verschiedene Teilaspekte (Abfolge, Synchronisation, Umordnungsrestriktionen) die Menge der möglichen Abfolgen von Instruktionen immer weiter reduziert, bis die konsistenten Sequenzen übrig bleiben.</p>
+</div>
+<div class="paragraph">
+<p>Um ein Speichermodell sinnvoll so auf Hardware abzubilden, dass die Konsistenz der Operationen noch gewährleistet ist (trotz extremer Optimierungen von Compiler und Prozessor), muss es Festlegungen geben welche Operationen wie voneinander abhängig sind (oder nicht) und welche Ausführungsreihenfolge garantiert sein muss.
+Also Regeln, welche Operationen (besonders Feld und Monitor-Operationen) warum nicht umsortiert werden <em>dürfen</em>.</p>
+</div>
+<div class="paragraph">
+<p>Nur so kann man Race-Conditions, d.h. abhängige Werte werden gelesen bevor sie geschrieben werden, verhindern.
+Man kann aber nicht die Reihenfolge eines jeden Befehls fixieren, da dass die Möglichkeiten moderner Prozessoren zur Optimierung komplett aushebeln würde und als Ergebnis nur im Schneckentempo ausgeführt würde.</p>
+</div>
+<div class="paragraph">
+<p>Im Java Memory Model (JMM) werden diese Zusammenhänge über Regeln, die spezielle Aktionen und Reihenfolgen/Abhängigkeiten festlegen, formalisiert.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_aktionen_und_reihenfolgen">Aktionen und Reihenfolgen</h4>
+<div class="paragraph">
+<p>Der Ablauf eines "abstrakten" Programms wird über einzelne <strong>Aktionen</strong> definiert, das können je nach Art der Betrachtung entweder alle Instruktionen (<em>Programmaction</em>) sein, oder nur bestimmte Speicherzugriffe (<em>Synchronizationaction</em>).</p>
+</div>
+<div class="paragraph">
+<p>Da die Instruktionen durch das Scheduling mehrerer Threads und prinzipiell jederzeit in einer beliebigen Reihenfolge ausgeführt werden können, legen Ausführungsordnungen (~order) die möglichen und je nach Art der Betrachtung erlaubten <strong>Reihenfolgen von Aktionen</strong> fest.</p>
+</div>
+<div class="paragraph">
+<p>Dass heisst, die Menge aller möglichen Ausführungen ist wie ein Q-Bit und die "Beobachtung" durch die erlaubten Reihenfolgen von Aktionen fixieren bestimmte Aspekte der Möglichkeiten, so dass zum Schluss nur die gültigen (aber meist mehr als eine, durchaus variable) Ausführungen übrigbleiben.</p>
+</div>
+<div class="sect4">
+<h5 id="_arten_von_aktionen">Arten von Aktionen:</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Programmaktionen (Program Action, PA): stellen die ganz normalen Instruktionen/Statements des Programmcodes dar</p>
+</li>
+<li>
+<p>Synchronsationsaktionen (SynchronizationAction, SA): Nur Speicherzugriffsmechanismen, sowie Start und Ende von Threads, Monitors und Locks sind hier relevant</p>
+<div class="ulist">
+<ul>
+<li>
+<p>wie z.b. Lese "1" von "x" als <code>read(x): 1</code> oder Schreibe "1" auf  "x" als <code>write(x,1)</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Die einzelnen Aktionen werden dann über gerichtete Verknüpfungen zu konkreten Programm(ausführungen) verbunden.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_die_spezifizierten_ausführungsreihenfolgen_sind">Die spezifizierten Ausführungsreihenfolgen sind:</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Program Order (PO),</p>
+<div class="ulist">
+<ul>
+<li>
+<p>originale sequentielle Reihenfolge der Programmaktionen (Statements) <strong>innerhalb</strong> des Programms und eines Threads,</p>
+</li>
+<li>
+<p>Verbindung zum Originalcode</p>
+</li>
+<li>
+<p>Aktionen können für eine Ausführung aber umgeordnet werden</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Synchronization Order (SO),</p>
+<div class="ulist">
+<ul>
+<li>
+<p>nur Synchronizationsaktionen stehen in dieser expliziten Reihenfolge, alle andere Operationen werden nicht betrachtet,</p>
+</li>
+<li>
+<p>SO legt die bedingte Reihenfolge von Schreib und Leseoperationen fest.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Synchronization With (SW), Sichtbarkeitsreihenfolge von Speicherzugriffen</p>
+</li>
+<li>
+<p>Happens Before (HB), Kombination der vorangegangenen Regeln, welche Aktionen sind wie voneinander abhängig und welche Sichtbarkeiten aller Speicherzustände gibt es für nachfolgende Leseoperationen</p>
+<div class="ulist">
+<ul>
+<li>
+<p>einmal gesehene Werte, fixieren was vorher passiert sein muss, über Speicherstellen hinweg</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Mit diesen 4 Ausführungsreihenfolgen,
+wird die Menge aller möglichen Ausführungspfade von mehreren Programmfragmenten über mehrere Threads annotatiert.
+Die bei der dazugehörigen Regelanwendung übrig bleibenden, validen Konstruktionen stellen die erlaubten Ausführungsreihenfolgen dar.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+Wenn man nur genügend "volatile" Modifikatoren über ein Programm sprenkelt wird es irgendwann entscheidbar (sequentially consistent), da irgendwann genug Programmaktionen in Synchronizationsaktionen umgewandelt wurden, die dann eine ausreichend definierte, globale Reihenfolge fixieren
+</blockquote>
+<div class="attribution">
+&#8212; Hans Boehm
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_publikation_von_aktualisierungen">Publikation von Aktualisierungen</h4>
+<div class="paragraph">
+<p>Im Allgemeinen kann man "Happens Before"-Verbindungen zwischen Aktionen als Paare einer <em>release</em> (Updates veröffentlichen) und <em>aquire</em> (Updates erhalten) betrachten. Dies gilt hier nur für eine Variable, es wird später mittels der "memory barrier" als generelle Publikation erweitert.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://shipilev.net/blog/2014/jmm-pragmatics/page-091.png" alt="page 091">
+</div>
+<div class="title">Figure 1. Publikation von Änderungen mittels "release &#8594; acquire" [Shiplev JMM]</div>
+</div>
+<div class="paragraph">
+<p>Beispiel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Test {
+  volatile Object value;
+  public synchronized set(Object value) { if (this.value == null) this.value = value; }
+  public Object get() { return this.value; }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dieses Beispiel funktioniert, da die <code>synchronized</code> Methode am Ende ein <em>release</em> erzeugt und der Zugriff auf die <code>volatile</code> Variable das entsprechende <em>acquire</em>.</p>
+</div>
+<div class="paragraph">
+<p>Bei Benchmarks zeigen sich die Kosten von "volatilen" Variablen aber auch des Teilens von Zustand/Speicher im Allgemeinen, die notwendigen Zusicherungen für threadübergreifende Sichtbarkeit es verhindern, dass der Compiler Programmoptimierungen vornehmen kann, die sonst massive Auswirkungen hätten.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_fazit_jmm_formalisierung">Fazit: JMM Formalisierung</h4>
+<div class="paragraph">
+<p>Wenn alle Ausführungsreihenfolgen angewandt und validiert wurden, bleiben nur die Programmabläufe als gültig zurück, die allen Restriktionen standhalten.
+Dieser kleine Teil ist dann, was vom Compiler generiert und der JVM ausgeführt werden kann, ohne dass die Invarianten und Vor- und Nachbedingungen verletzt werden.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://shipilev.net/blog/2014/jmm-pragmatics/page-125.png" alt="page 125">
+</div>
+<div class="title">Figure 2. Venn Diagramm der 5 Regelanwendungen [Shiplev JMM]</div>
+</div>
+<div class="paragraph">
+<p>Und die Hilfen, die man als Programmierer gibt, wie <code>volatile</code>, <code>final</code>, <code>synchronized</code> und Threadsteuerung helfen dabei, die validen Lese- und Schreiboperationen auf geteilte Resourcen zu markieren und korrekt abzusichern und zu publizieren.</p>
+</div>
+<div class="paragraph">
+<p>Das Thema Formalisierung des JMM ist nicht so einfach zu verstehen und auch nicht so einfach zu erklären, wie ich mir vorgestellt habe.
+Ich hoffe, Sie wurden nicht überfordert.
+Ich fand das Ganze sehr spannend und einsichtsreich.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_speicherbarrieren">Speicherbarrieren</h3>
+<div class="paragraph">
+<p>(memory barrier, memory fence)</p>
+</div>
+<div class="paragraph">
+<p>Speicherbarrieren dienen zur Publikation von Änderungen über Prozessorgrenzen hinweg, sie werden <em>zwischen</em> Speicherzugriffen aktiv.
+Sie stellen sicher, dass bestimmte Aktualisierungen nicht nur im lokalen Prozessorcache widergespiegelt werden, sondern auch für Threads auf anderen Prozessoren sichtbar sind.
+Dazu werden beim Eintreffen einer solchen Instruktion die Cache-Lines und Schreibpuffer des Prozessors geflushed.
+Bei Einzelprozessoren ist das nicht notwendig sie teilen sich einen Prozessorcache, nur bei Multiprozessoren.</p>
+</div>
+<div class="paragraph">
+<p>Interessanterweise müssen sie auch vom Compiler erzeugt werden, wenn der eigentliche Feldzugriff auf das "synchronisierte" Feld wegoptimiert wird, da in ihrem Kontrakt steht, dass sie auch alle vorherigen Speicheroperationen sichtbar machen.</p>
+</div>
+<div class="paragraph">
+<p>Die teure, grobgranulare "Fence" Operation der meisten Prozessoren stellt sicher, dass alle Schreiboperationen vor der Grenze allen Leseoperationen nach der Grenze zur Verfügung stehen.</p>
+</div>
+<div class="paragraph">
+<p>Es gibt 4 Arten von Speicherbarrieren, je nachdem welches Paar von Operationen sie trennen.
+Die am häufigsten vorkommende ist, wie schon zu erwarten StoreLoad, dass neben seiner eigentlichen Operation auch noch das Lesen nachfolgend, durch einen anderen Prozessor gespeicherter, noch nicht publizierter Werte verhindert, so dass diese nicht zufällig den publizierten Wert überdecken.</p>
+</div>
+<div class="paragraph">
+<p>Compiler müssen Barrieren pessimistisch zwischen entsprechenden Speicherzugriffen eingefügt werden, da eine globale Optimierung der Platzierung nicht trivial möglich ist.
+Es ist oft nicht entscheidbar, was für eine Operation einem Lese- oder Schreibzugriff folgt, zum Beispiel wenn dieser von einem <code>return</code> gefolgt wird.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zum_schluss_final">Zum Schluss: Final</h3>
+<div class="paragraph">
+<p>Beispiel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class A {
+   int f;
+   public A() { f = 42; }
+}</pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread 2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A a = new A();</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">if ( a != null) out.println(a.f);</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Welche Ausgaben kann Thread 2 produzieren?</p>
+</div>
+<div class="paragraph">
+<p>Erwartet:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nichts</p>
+</li>
+<li>
+<p>42</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Nicht erwartet, kommt aber trotzdem:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>0</p>
+</li>
+<li>
+<p>NullPointerException</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Warum?</strong> Race-Conditions können machen dass <code>a.f</code> noch nicht initialisiert ist, wenn Thread 2 schon auf darauf zugreift.
+Die NullPointer Exception kann aus einem Fall kommen, in dem Thread 2, zwei verschiedene Werte von <code>a</code> sieht, einmal den
+initialisierten, so dass die if-Bedingung erfüllt ist, dann aber wieder den nicht-initialisierten, so dass es zur NPE kommt.</p>
+</div>
+<div class="paragraph">
+<p>Wie kann man das verhindern?
+Indem das Feld als <code>final int f;</code> deklariert wird.</p>
+</div>
+<div class="paragraph">
+<p>Damit wird es nicht nur unveränderlich, sondern was hier viel wichtiger ist, es bekommt einen sauberen Publikationsmechanismus für die Sichtbarkeit seines Wertes.</p>
+</div>
+<div class="paragraph">
+<p>Der Compiler darf auserdem nicht mehr die Referenz für <code>a</code> anderen Threads zur Verfügung stellen bevor nicht alle finalen Felder gesetzt wurden.
+Und damit werden auch alle anderen Änderungen die bis dahin passiert sind, verfügbar.
+Damit wird auch effektiv verhindert, dass unsere eigentlich geschützten (immutablen) Objekte (absichtlich) einem anderen Konsumenten vor der fertigen Initialisierung zur Verfügung gestellt werden, ohne dass wir es kontrollieren können.</p>
+</div>
+<div class="paragraph">
+<p>Die Implementierung von <code>final</code> ist leichter als gedacht.
+Mit einer Speicherbarriere (<em>freeze action</em>) am Ende des Konstruktors, Initialisierung der Felder vor Publikation der Instanz, und einer Garantie dass die Referenzen der Instanz und damit auch der finalen Felder erst geladen werden, wenn die Initialisierung abgeschlossen ist.
+Durch die Speicherbarriere sind auch Aktualisierungen automatisch publiziert auf die finale Felder referenzieren.</p>
+</div>
+<div class="paragraph">
+<p>Dieser Publikationsmechanismus funktioniert wirklich gut, es gibt nur eine Ausnahme.</p>
+</div>
+<div class="paragraph">
+<p>Man muss aufpassen, dass man die aktuelle Instanz der Klasse nicht während der Konstrukturausführung unbeabsichtigt globalen Variablen zuzuweisen.
+Andere Threads können über diese Variable dann eine unpublizierte Referenz auf die Instanz und ihre finalen Felder zugreifen.
+Das kann auch passieren, indem während der Konstrukturausführung fremde Methoden mit der eigenen Referenz (this) aufgerufen werden und damit ohne es zu wollen, die noch nicht initialisierte Instanz zu zeitig geteilt wird.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referenzen">Referenzen:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>[JLS - Memory Model] <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.4" class="bare">http://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.4</a></p>
+</li>
+<li>
+<p>[Shipilev JMM Pragmatics] <a href="http://shipilev.net/blog/2014/jmm-pragmatics/" class="bare">http://shipilev.net/blog/2014/jmm-pragmatics/</a></p>
+</li>
+<li>
+<p>[Goetz Value Types] <a href="http://cr.openjdk.java.net/~jrose/values/values-0.html" class="bare">http://cr.openjdk.java.net/~jrose/values/values-0.html</a></p>
+</li>
+<li>
+<p>[Rose Struct Tearing] <a href="https://blogs.oracle.com/jrose/entry/value_types_and_struct_tearing" class="bare">https://blogs.oracle.com/jrose/entry/value_types_and_struct_tearing</a></p>
+</li>
+<li>
+<p>[Rose Value Types] <a href="https://blogs.oracle.com/jrose/entry/value_types_in_the_vm" class="bare">https://blogs.oracle.com/jrose/entry/value_types_in_the_vm</a></p>
+</li>
+<li>
+<p>[JEP 188 JMM Update] <a href="http://openjdk.java.net/jeps/188" class="bare">http://openjdk.java.net/jeps/188</a></p>
+</li>
+<li>
+<p>[Shipilev Atomic Access] <a href="http://shipilev.net/blog/2014/all-accesses-are-atomic/" class="bare">http://shipilev.net/blog/2014/all-accesses-are-atomic/</a></p>
+</li>
+<li>
+<p>[Dekker] <a href="http://en.wikipedia.org/wiki/Dekker&#8217;s_algorithm" class="bare">http://en.wikipedia.org/wiki/Dekker&#8217;s_algorithm</a></p>
+</li>
+<li>
+<p>[Lea JSR 133 Cookbook for Compiler Writers] <a href="http://gee.cs.oswego.edu/dl/jmm/cookbook.html" class="bare">http://gee.cs.oswego.edu/dl/jmm/cookbook.html</a> (konservative Interpretation des JMM)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-08-05 20:26:34 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

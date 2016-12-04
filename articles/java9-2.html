@@ -1,0 +1,505 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Ein Blick hinter die Kulissen von Java 9, Teil 2</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Seit der Veröffentlichung meines ersten Artikel über Java 9 ist die Entwicklung und besonders auch der <strong>Test des JDK 9</strong> weiter vorangeschritten.</p>
+</div>
+<div class="paragraph">
+<p>Bei einem Vortrag von Dalibor Topic beim JUG Saxony Day Ende September in Dresden hat er noch einmal explizit um ein paar Dinge gebeten.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen gibt es das Java 9 Qualitätssicherungsprogramm (qualiy outreach), in dem Java Projekte ihre Kompatibilität zu Java 9 überprüfen und veröffentlichen können.
+Zur Zeit sind 80 Projekte Mitglied des Programms, darunter Programmiersprachen wie Groovy, Build-Tools wie Maven aber auch Server wie Wildfly.
+Falls Sie an einem größeren, offenen Java Projekt mitwirken, ziehen Sie bitte in Betracht auch an diesen Programm teilzunehmen.</p>
+</div>
+<div class="paragraph">
+<p>Zudem und das gilt für jeden Anwender von Java, gibt es den Aufruf, schon jetzt die Early Access Builds des Java 9 JDKs zu testen und vor allem Rückmeldung über Probleme und Inkompatibilitäten zu geben.</p>
+</div>
+<div class="paragraph">
+<p>Nun aber wieder zurück zu spannenden Features in Java 9, die sonst nicht soviel Beachtung wie JigSaw finden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_223_Änderung_des_formats_der_java_version">JEP 223 Änderung des Formats der Java-Version</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Javas Versionsnummer waren schon immer etwas seltsam, sie enthielten aus historischen Gründen noch die führende 1 und das "u" für Update.</p>
+</div>
+<div class="paragraph">
+<p>Mit Java 9 wird es eine klarere Versionierung geben, die dem üblichen Verständnis entspricht:
+<code>$MAJOR.$MINOR.$SECURITY+$BUILD</code>, z.b. für das erste Security nach dem GA, Update, Build 20 <code>9.0.1+20</code>.</p>
+</div>
+<div class="paragraph">
+<p>Das ist zum einen erfreulich, zum anderen, muss man sich dessen bewusst sein, dass Code, der zur Zeit auf Java Versionen tested, dann sehr wahrscheinlich nicht mehr funktioniert.
+Die Dokumentation zum JEP listet Stolperfallen und Tips (z.B. reguläre Ausdrücke) zum Thema.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_260_kapselung_interner_apis">JEP 260: Kapselung interner APIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Teilweise JigSaw geschuldet, aber noch viel mehr den Aufräumarbeiten im JDK, ist der Zugriff auf interne APIs besonders <code>sun.*</code> nicht mehr möglich.</p>
+</div>
+<div class="paragraph">
+<p>Prominentestes Beispiel für die internen APIs ist natürlich <code>sun.misc.Unsafe</code>, das sich aufgrund seiner vielen Möglichkeiten (z.B. um effizient auf Hauptspeicher zuzugreifen) großer Beliebtheit erfreut.</p>
+</div>
+<div class="paragraph">
+<p>Bisher gab es dafür Compiler Warnungen, die auch nicht abschaltbar waren.</p>
+</div>
+<div class="paragraph">
+<p>Das ist besonders von Bedeutung für Entwickler von leistungskritischen Systemen wie Datenbanken, Netzwerk- und Nachrichtenverabeitungsysteme.</p>
+</div>
+<div class="paragraph">
+<p>Aber auch Anwender, die einige der Effizienztips aus vergangenen Kolumnen nutzen, müssten sich umstellen, wie das konkret aussieht, dazu später mehr.</p>
+</div>
+<div class="paragraph">
+<p>Unsafe selbst soll es für einen Übergangszeitraum zugreifbar bleiben, bis alle Funktionalitäten in andere APIs portiert wurden.</p>
+</div>
+<div class="paragraph">
+<p>Um zu testen, ob eigene Anwendungen oder genutzte Bibliotheken interne APIs benutzen, kann man das Tool <code>jdeps</code> mit dem Flag <code>-jdkinternals</code> benutzen.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein Beispiel für Neo4j:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$JAVA_HOME/bin/jdeps -jdkinternals neo4j-io-3.1.0-SNAPSHOT.jar
+
+neo4j-io-3.1.0-SNAPSHOT.jar -&gt; $JAVA_HOME/jre/lib/rt.jar
+ org.neo4j.io.pagecache.impl.SingleFilePageSwapper (neo4j-io-3.1.0-SNAPSHOT.jar)
+   -&gt; sun.nio.ch.FileChannelImpl                       JDK internal API (rt.jar)
+
+Warning: JDK internal APIs are unsupported and private to JDK implementation that are
+subject to be removed or changed incompatibly and could break your application.
+Please modify your code to eliminate dependency on any JDK internal APIs.
+For the most recent update on JDK internal API replacements, please check:
+https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Im Zuge der Aufräumarbeiten wurden auch einige APIs entfernt.</p>
+</div>
+<div class="paragraph">
+<p>Durch Änderungen von APIs und Nutzung neuer APIs von Java9 können damit gebaute Klassen und Jars inkompatibel mit früheren JDK Versionen werden.
+Daher stellt das neue JDK einige Mechanismen bereit, um die Abwärtskompatibilität zu bewahren.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_247_cross_compilation">JEP 247: Cross Compilation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Falls es wirklich notwendig ist, können, wie schon zuvor, Klassen für alte JDK Versionen erzeugt werden.
+Dazu muss man javac die <code>-release N</code> Option übergeben, die das Äquivalent zu <code>-source N -target N -bootclasspath &lt;bootclasspath-from-N&gt;</code> darstellt.
+Die API-Klassen und Signaturen der älteren Versionen werden im JDK in <code>$JDK_ROOT/lib/ct.sym file</code> bereitgestellt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_238_multi_release_jars">JEP 238: Multi-Release Jars</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Um sicherzustellen, dass mit und für Java 9 erzeugte Jar Dateien auch mit älteren Versionen funktionieren, können diese in Zukunft mehrere Versionen einer Klasse enthalten.</p>
+</div>
+<div class="paragraph">
+<p>Sogenannte Multi-Release-Jars stellen vor allem eine clevere Struktur innerhalb des Archives dar.
+Dabei liegen die Klassen für die ältere Version der JVM im Wurzelverzeichnis.</p>
+</div>
+<div class="paragraph">
+<p>Im Manifest gibt es dann einen <code>Multi-Release: true</code> Eintrag.
+In <code>META-INF</code> gibt es ein neues Unterverzeichnis namens <code>versions</code>, das dann wieder Verzeichnisse für die anderen JDK-Versionen mit den entsprechenden, abweichenden Klassen enthält.</p>
+</div>
+<div class="paragraph">
+<p>Dazu mussten diverse Tools, wie <code>jar</code>,<code>javac</code>, <code>javap</code> usw als auch die Classloader angepasst werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>jar root
+  - B.class
+  - D.class
+  - META-INF
+     - versions
+        - 9
+           - B.class</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_269_factorymethoden_für_collections">JEP 269 Factorymethoden für Collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Viele hofften auf kompakte literale Notation für Listen und Maps, wie bei Feldern.
+Das hat sich leider nicht erfüllt, aber es hat für einige statische Factory-Methoden auf den <code>List</code>,<code>Set</code> und <code>Map</code> Interfaces gereicht
+Ähnlich APIs bieten viele Collection Bibliotheken es schon seit Jahren an.</p>
+</div>
+<div class="paragraph">
+<p>Diese sind nicht so elegant und haben wahrscheinlich auch keine Compilerunterstützung, wie Felder oder Stringverknüpfung.
+Zumindest aber Overloads für die Methoden mit bis zu 10 Argumenten</p>
+</div>
+<div class="paragraph">
+<p>Für <code>Map.of</code> gibt es typsichere Überladung mit bis zu 10 Schlüsseln und Werten.
+Für mehr Elemente muss dann <code>Map.ofEntries</code> benutzt werden, denen ein Feld von <code>Map.Entry&lt;K,V&gt;</code> Instanzen übergeben wird.
+Dazu gibt es eine neue Factory Methode <code>Map.entry</code> die statisch importiert konkrete <code>Entry</code> Objekte erzeugen kann.</p>
+</div>
+<div class="paragraph">
+<p>Es wird keine Einfügereihenfolge garantiert, wer das benötigt, muss dann doch auf LinkedHashMap zurückgreifen.
+Die erzeugten Instanzen sind unveränderlich und optimiert implementiert für kleine Mengen von Werten.</p>
+</div>
+<div class="paragraph">
+<p><code>Null</code> ist als Wert hier nirgendwo erlaubt, weder bei den Collections noch bei Map als Schlüssel oder Wert.</p>
+</div>
+<div class="listingblock">
+<div class="title">Factory Methoden für Collections in jshell</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">Set.of(true,false,false,true)
+                   // duplicate Element Exception
+List.of(null)      // NullPointerException
+Set.of(true,false) // [true,false]
+List.of(1,2,3)     // [1,2,3]
+Map.of("name","Michael","age",41,"male",true)
+                   // {name=Michael, male=true, age=41}
+
+import static java.util.Map.entry
+Map.ofEntries(entry("MSFT",57.6),entry("AAPL",113.05),
+              entry("ORCL",39.28))
+                   // {ORCL=39.28, MSFT=57.6, AAPL=113.05}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_243_java_level_jvm_compiler_interface">JEP 243:  Java-Level JVM Compiler Interface</h3>
+<div class="paragraph">
+<p>In einem früheren Artikel [HungXX] hatte ich Truffle (AST Framework) und Graal (optimierender Compiler) beschrieben.</p>
+</div>
+<div class="paragraph">
+<p>Dort wurde die Notwendigkeit dargestellt, dass die dynamische Neuübersetzung von Code zur Laufzeit der JVM durch einen externen Compiler eine Schnittstelle benötigt, die in der Standard-JVM nicht vorhanden war.
+Bisher gab es einen spezielle Variante von Java 8 die das ermöglichte, in Java 9 soll das nun direkt in der Standard-JVM funktionieren.</p>
+</div>
+<div class="paragraph">
+<p>Dazu wird das JVM Compiler Interface (JVMCI) bereitgestellt, dass einem externen Compiler ermöglicht, auf die internen JVM Datenstrukturen für Klassen, Felder, Methoden und Metadaten zuzugreifen.
+Desweiteren wird dieser Compiler für die Neuübersetzung von Methoden aufgerufen und kann dann seine Ergebnisse in der JVM integrieren.</p>
+</div>
+<div class="paragraph">
+<p>In Java 9 ist die Schnittstelle noch experimentell und muss durch geeignete Flags aktiviert werden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -Djvmci.Compiler=&lt;name of compiler&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sicherheitsüberlegungen sind hier ein wichtiger Aspekt, da der Zugriff auf die internen JVM Daten und die Installation compilierten Codes sehr streng kontrolliert werden muss.
+Zur Absicherung der Schnittstelle wurde das Modul-System von Java 9 benutzt (JSR261).</p>
+</div>
+<div class="paragraph">
+<p>Ich finde das sehr spannend, da man so die Möglichkeiten des Truffle-Graal Gespanns für hochperformante Ausführung anderer Sprachen und DSLs in Java 9 direkt nutzen kann.
+Ich denke wir werden für Java 9 sehr effiziente Varianten von Ruby, R, Python usw. nutzen können.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_schneller_zugriff_auf_variable_und_methoden_mittels_reflection_und_invoke_dynamik">Schneller Zugriff auf Variable und Methoden mittels Reflection und Invoke-Dynamik</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_jep_193_variable_handles">JEP 193:  Variable Handles</h3>
+<div class="paragraph">
+<p>Mit der schon erläuterten späteren Absicht, <code>sun.misc.Unsafe</code> zu ersetzen, muss für die notwendigen APIs die Unsafe bereitstellt, Ersatz geschaffen werden.</p>
+</div>
+<div class="paragraph">
+<p>Für den direkten, atomaren Zugriff auf Felder von Objekten, Feldelementen und Speicherbereichen wird diese Aufgabe in Zukunft von VarHandles übernommen.</p>
+</div>
+<div class="paragraph">
+<p>Dabei sollen die gewünschten Zugriffseffekte in Bezug auf das Java Speichermodell möglich sein, wie zum Beispiel eine volatile oder atomare Schreiboperation.</p>
+</div>
+<div class="paragraph">
+<p>Anders als bei Unsafe dürfen aber bestimmte Sicherheitsmechanismen nicht ausgehebelt werden, wie z.B. der Zuweisungstypcheck eines Objektfeldes oder die Indexüberprüfung bei Array-Zugriffen.</p>
+</div>
+<div class="paragraph">
+<p>Ein Ziel bei der Entwicklung war diesselbe Geschwindgkeit wie aber bessere Nutzerfreundlichkeit als für Unsafe.
+Der vom Java Compiler generierte Assembler-Code sollte dem von Unsafe genutzen weitgehend entsprechen.</p>
+</div>
+<div class="paragraph">
+<p>Für ihre Realisierung mussten Erweiterungen im JDK, der JVM und im Compiler vorgenommen werden.</p>
+</div>
+<div class="paragraph">
+<p>Warum ist das alles notwendig?</p>
+</div>
+<div class="paragraph">
+<p>Besonders in hochparallelen, perfomance-kritischen Anwendungen wie z.B. Big Data Frameworks und Datenbanken will man mit minimalem Aufwand and Speicher und CPU sichere Programme schreiben.
+Dazu sind atomare Operationen auf Feldern eine Grundvoraussetzung.</p>
+</div>
+<div class="paragraph">
+<p>Man kann das ganze zwar korrekt mit dem Hilfsklassen in <code>java.util.concurrent</code> erreichen, die CAS benutzen, wie <code>AtomicInteger</code> oder die verschiedenen <code>FieldUpdater</code>, aber halt nicht effizient.
+Daher wurde in der Vergangenheit meist zu Unsafe gegriffen, um solche Operationen umzusetzen.
+In Zukunft sollen das VarHandles übernehmen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Wie sieht deren API aus?</strong></p>
+</div>
+<div class="paragraph">
+<p>Zum einen werden VarHandles ähnlich wie MethodHandles über <code>MethodHandles.lookup()</code> ermittelt.</p>
+</div>
+<div class="paragraph">
+<p>Dann enthält VarHandle (siehe [VarHandle] sehr viele Methoden für Lese-, Schreib-, Bit-, CompareAndSwap-, Additions- und andere Zugriffsoperationen auf die Felder, wobei nicht jede Operation auf jedem Datentyp definiert ist.
+Z.B. gibt es keine Modifikationen auf <code>final</code> Feldern, keine <code>add*</code>-Operation auf booleschen Feldern, oder zur Zeit noch keine Bitoperationen auf <code>float</code> und <code>double</code>.
+Jede dieser Methoden hat dokumentierte Speicher-Sichtbarkeitsregeln, wie zum Beispiel volatiler Zugriff (auch ohne dass die Variable als <code>volatile</code> definiert ist).</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren gibt es eine Handvoll von statischen Marker-Methoden, wie z.B. <code>loadLoadFence()</code>, die die erlaubten  Operations-Reordering-Regeln abbilden (siehe Java-Memory-Modell Artikel [Hung]).</p>
+</div>
+<div class="paragraph">
+<p>Hier ist ein einfaches Beispiel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">class Transactions {
+    int count;
+}
+VarHandle counter =
+  MethodHandles.lookup().in(Transactions.class)
+  .findVarHandle(Transactions.class, "count", int.class);
+
+Transactions tx = new Transactions();
+
+int vol = (int)counter.getAndAdd(tx,1); // 0
+counter.get(tx); // 1
+counter.compareAndSet(tx,1,2); // true
+counter.getVolatile(tx); // 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um von den Compiler Optimierungen (Intrinsics, Constant-Folding) zu profitieren, sollte das VarHandle aber in einer <code>static final</code> Konstante abgelegt werden (und in einem static Initializer Block initialisiert).</p>
+</div>
+<div class="paragraph">
+<p>Ein interessanter Aspekt ist wie die Implementierung von VarHandles mit einer einzigen abstrakten Klasse vorgenommen werden kann, deren Methodensignatur aus einem Object-varargs und einem Object Rückgabewert bestehen, zum Bespiel: <code>Object VarHandle.getAndAdd(Object&#8230;&#8203;args)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Diese Methoden werden "signature-polymorphic" genannt, da sie nicht auf Subklassenvererbung beruhen, sondern rein vom Compiler und der Runtime gehandhabt werden.
+Für die Bestimmung der Zieltypen der Methodenparameter werden die Typen der übergebenen Parameter genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Damit wird die Compilierbarkeit sichergestellt, der Bytecode enthält die Informationen über die genutzen Typ-Parameter. Es wird aber kein Boxing von Objekten vorgenommen, das sieht nur so aus.</p>
+</div>
+<div class="paragraph">
+<p>Intern wird dann der Methodenaufruf komplett durch die Implementierung der Operation ersetzt, wie bei einer intrinsischen Methode.</p>
+</div>
+<div class="paragraph">
+<p>Der Rückgabetyp wird noch nicht aus Ziel-Typ der Call-Site inferiert, so dass immer noch ein Type-Cast notwendig ist.</p>
+</div>
+<div class="paragraph">
+<p>Ein cooles Feature ist die Behandlung eines Speicherbereiches (byte-Array) als die Repräsentation eines anderen Datentyps, z.B. <code>long</code> oder <code>double</code>.</p>
+</div>
+<div class="paragraph">
+<p>Ein Fallstrick ist hier aber die Berechung des Indexes für den Wert, den man selbst mit der Datenbreite (z.b. 8 bytes pro long Wert) inkrementieren muss.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>byte[] bytes = new byte[100]
+VarHandle view = MethodHandles
+  .byteArrayViewVarHandle(long[].class, ByteOrder.BIG_ENDIAN);
+
+view.get(bytes,8) // 0
+
+view.set(bytes,8,-1L)
+
+view.get(bytes,8) // -1
+
+view.set(bytes,0,98L)
+
+// byte[10000] { 0, 0, 0, 0, 0, 0, 0, 98, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Leider wurde in diesem JEP nicht die Gelegenheit genutzt, ähnlich wie für Methoden-referenzen, eine Feld-Referenz einzuführen, ala <code>Transactions::count</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_248_make_g1_the_default_garbage_collector_jep_158_unified_jvm_logging_gc_logging">JEP 248:  Make G1 the Default Garbage Collector / JEP 158: Unified JVM Logging / GC Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Nachdem in Java 7 und 8 reichlich Gelegenheit war, den G1 Collector in vielen Projekten und Anwendungen auf Herz und Nieren zu testen, und die doch vorhandenen Probleme zu beseitigen, fühlt sich Oracle für Java 9 sicher genug, diesen Garbage Collector zum Standard zu erklären.</p>
+</div>
+<div class="paragraph">
+<p>Damit können Java Anwendungen größere Heaps als bisher mit besserer Latenz und weniger Pausen nutzen.
+Der G1-GC ist ein Garbage Collector (compacting, concurrent), der parallel zu den Anwendungsthreads arbeitet und Speicherbereiche des Heaps reorganisiert.
+Er ist für Server-Anwendungen ausgelegt ist, die mehrere Prozessoren zur Verfügung haben.</p>
+</div>
+<div class="paragraph">
+<p>Damit einhergehend, werden einige der alten, schon länger als deprecated markierten GCs entfernt und auch diverse Flags für den Garbage-Collector aufgeräumt, die alten Flags werden transparent übersetzt.</p>
+</div>
+<div class="paragraph">
+<p>Als Teil der Aufräumarbeiten in der JVM werden auch die verschiedenen Log-Formate und Ansätze vereinheitlicht, so dass alle Ausgaben der JVM und der Collectoren ein konsistentes Format haben.</p>
+</div>
+<div class="paragraph">
+<p>Ich hoffe, meine zwei Artikel konnten etwas Licht in die performance-bezogenen Änderungen in Java 9 geben und Sie neugierig auf mehr machen.</p>
+</div>
+<div class="paragraph">
+<p>Die Liste der JEPs für Java 9 ist wirklich beeindruckend und die individuellen Vorschläge geben einen guten Überblick.</p>
+</div>
+<div class="paragraph">
+<p>Laden Sie sich das JDK 9 heute schon einmal herunter und versuchen Sie es regelmäßiger zu benutzen.
+Das Team freut sich über Feedback zur Vollständigkeit und Korrektheit.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen:</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Quality Outreach Program <a href="https://wiki.openjdk.java.net/display/quality/Quality+Outreach" class="bare">https://wiki.openjdk.java.net/display/quality/Quality+Outreach</a></p>
+</li>
+<li>
+<p>Java 9 Download: <a href="https://jdk9.java.net/download/" class="bare">https://jdk9.java.net/download/</a></p>
+</li>
+<li>
+<p>Jdeps Wiki: <a href="https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool" class="bare">https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool</a></p>
+</li>
+<li>
+<p>Offene Diskussion zu Unsafe: <a href="https://www.infoq.com/news/2015/07/oracle-plan-remove-unsafe" class="bare">https://www.infoq.com/news/2015/07/oracle-plan-remove-unsafe</a></p>
+</li>
+<li>
+<p>JEP 223 Version String: <a href="http://openjdk.java.net/jeps/223" class="bare">http://openjdk.java.net/jeps/223</a></p>
+</li>
+<li>
+<p>VarHandle: <a href="http://download.java.net/java/jdk9/docs/api/java/lang/invoke/VarHandle.html" class="bare">http://download.java.net/java/jdk9/docs/api/java/lang/invoke/VarHandle.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2016-10-04 01:48:27 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Sparkling Coffee - Apache Spark</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_sparkling_coffee_apache_spark">Sparkling Coffee - Apache Spark</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bisher haben wir im Rahmen dieser Kolumne meist über die Parallelisierung von Operationen auf einer einzigen Maschine und JVM gesprochen.
+Für viele Anwendungsfälle in Enterprise-Anwendungen ist das auch vollends ausreichend.
+Wenn nun aber doch grosse Datenmengen jenseits des TeraByte-Bereichs verarbeitet werden müssen, dann ist es schon sinnvoll, sich Lösungen anzuschauen, die die Verarbeitung auf einen Cluster von Maschinen verteilen.</p>
+</div>
+<div class="paragraph">
+<p>Ich stehe dem BigData Hype etwas skeptisch gegenüberstehe, da meist zuerst geschossen und dann nach dem "Warum" gefragt wird.
+Dass heisst zuerst einmal wird festgestellt "wir brauchen das", bevor das "wofür" klar ist.
+Gezielte Verarbeitung von grossen Datenmengen ist dann sinnvoll, wenn dadurch neue und bessere Entscheidungen ermöglicht werden.</p>
+</div>
+<div class="paragraph">
+<p>Interessanterweise wird die BigData Infrastruktur vor allem von <strong>Java</strong>-Projekten im Apache Umfeld angetrieben.
+Natürlich vor allem von Hadoop, Lucene, HBase und Cassandra, Storm, Kafka, aber seit Neuestem auch von Spark, Flink und Ignite.</p>
+</div>
+<div class="paragraph">
+<p>Heute wollen wir uns Apache Spark mal genauer anschauen, die Anwendungsgebiete betrachten und die APIs und Implementierung vorstellen.
+An einigen leicht nachvollziehbaren Beispielen soll demonstriert werden, wie statische tabellarische und Graph-Daten verarbeitet werden können,
+aber auch wie diese Daten als Ereignisstrom innerhalb eines Berechnungsfensters aggregiert werden können.</p>
+</div>
+<div class="sect2">
+<h3 id="_hadoop">Hadoop</h3>
+<div class="paragraph">
+<p>In Apache Hadoop [Hadoop] wird der Map-Reduce Ansatz umgesetzt, der von Google 2002 TODO [MapReducePaper] veröffentlicht wurde.
+Dabei wird in 2 Operationen eine Menge von Daten parallel von viele Prozessen auf vielen Maschinen verarbeitet.
+Die Arbeit wird von einer zentralen Steuerung verteilt, Prozesse gestartet und im Fehlerfall Arbeit wiederholt.</p>
+</div>
+<div class="paragraph">
+<p>Zuerst werden in einem Map-Schritt die Eingabedaten prozessiert und in einen Strom von Schlüssel-Wert Paare umgewandelt.
+Dann werden in einem Reduce-Schritt die Paare mit gleichem Schlüssel gemeinsam verarbeitet.
+Es können prinzipiell beliebig viele Map und Reduce-Schritte hintereinander ausgeführt werden.</p>
+</div>
+<div class="paragraph">
+<p>Programmiert werden die Map- und Reduce-Funktionen in Java oder anderen JVM-Sprachen.</p>
+</div>
+<div class="paragraph">
+<p>Für das Erstellen von Hadoop-Jobs muss deutlich mehr Code geschrieben werden, als man eigentlich möchte, selbst wenn die eigentlichen Transformations-Operationen der Businesslogik nur wenige Zeilen bedürfen.</p>
+</div>
+<div class="paragraph">
+<p>Daher gibt es, wie in der Hadoop-Ökosystem Darstellung ersichtlich, eine ganze Menge (Pig, Hive, Drill, usw.) von alternativen Ansätzen, DSLs und APIs oder SQL, um diesen Aufwand zu vereinfachen.</p>
+</div>
+<div class="paragraph">
+<p>TODO bei CodeCentric nachfragen, ggf. gibt es auch bei Sigs-Datacom ein nettes Hadoop Bild im Fundus</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://blog.codecentric.de/files/2013/08/hadoop_%C3%BCbersicht.png" alt="hadoop %C3%BCbersicht">
+</div>
+</div>
+<div class="paragraph">
+<p>Als Datenspeicher wird das verteilte HDFS Dateisystem genutzt, die kolumnare HBase Datenbank, die Analyse-Datenbank Impala oder andere (No)SQL Datenbanken als Quellen und Senken für Informationen.</p>
+</div>
+<div class="paragraph">
+<p>Hadoop und die damit verbundene Infrastruktur wird bekanntlicherweise für die Batchverarbeitung grosser Datenmengen genutzt.
+Es gibt ein reichhaltiges Ökosystem mit verschiedenen Distributionen von verschiedenen kommerziellen Anbietern.</p>
+</div>
+<div class="paragraph">
+<p>In Hadoop ist Map-Reduce meist durch die Leistungsfähigkeit des I/O Subsystems begrenzt, sowohl Lese- als auch Schreiboperationen nach HDFS und HBase sind "teuer".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_warum_alternativen">Warum Alternativen?</h3>
+<div class="paragraph">
+<p>Hadoop hat viele Vorteile, und ermöglicht Unternehmen aller Größe hohe Datenvolumnia im Batchbetrieb zu verabeiten.
+Die zwei größten Nachteile sind die hohe Latenz bis die Ergebnsise zur Verfügung stehen und die Leistungsbeeinträchtigung durch die zwangsweise Nutzung von Dateissystem und Datenbanken zur Speicherung von Ein- und Ausgabedaten und Ergebnissen zwischen den Verarbeitungsschritten.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren sind vor allem in Cloud-Setups mit Virtualisierung schnelle Festplattezugriffe (bes. Latenz) nicht die Regel oder teuer zu bezahlen.</p>
+</div>
+<div class="paragraph">
+<p>Heutzutage ist Hauptspeicher reichlich vorhanden, schnell und relativ preiswert.
+Daher bietet sich an, hochperformante Verarbeitung von Daten direkt mittels optimal lokalisierten Operationen im Hauptspeicher vorzunehmen
+Zwischenergebnisse werden direkt über breitbandige Verbindungen zwischen Maschinen in räumlicher Nähe im selben Rechenzentrum transferiert.
+In vielen Fällen ist es sogar schneller, ein Ergebnis für eine Datenteilmenge (Partition) neu zu berechnen, als sie von Festplatte zu laden.
+Festplattenzugriff wird soweit wie möglich vermieden, selbst die Ergebnisse der Transformationen stehen vor allem im Hauptspeicher weiterhin bereit um sie dann interaktiv und performant abzufragen.</p>
+</div>
+<div class="paragraph">
+<p>Einige Projekte, besonders im Apache Umfeld nutzen einen solchen Ansatz: Spark, Flink und Ignite.
+Heute wollen wir uns <strong>Apache Spark</strong>, eine quelloffene, Hadoop-kompatible Datenverarbeitungsplattform, näher anschauen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_geschichte">Geschichte</h3>
+<div class="paragraph">
+<p>Spark entstammt der Feder des AMPLabs (Algorithms, Machine People) des University Berkely als Teil von BDAS (Berkeley Data Analytics Stack).</p>
+</div>
+<div class="paragraph">
+<p>Heute ist Spark ein Hauptprojekt der Apache Software Foundation, während die Gründer mit Databricks eine Firma zur Vermarktung und Weiterentwicklung einer Rechenzentrums (Cloud) Lösung für Spark gestarted haben.
+In der Industrie gibt es breite Unterstützung für Spark, die großen Hadoop-Distributoren und -anwender sind schnell auf den neuen Zug aufgesprungen und integrierten es in ihre Big-Data Plattformen.</p>
+</div>
+<div class="paragraph">
+<p>Spark vereint 3 wichtige Anwendungsgebiete in einem System - Batchverarbeitung, Streaming und interaktive Nutzung bzw. Abfragen.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://emerginginsightsnow.files.wordpress.com/2015/05/spark-ecosystem.png?w=1000" alt="spark ecosystem">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_schneller_einstieg">Schneller Einstieg</h3>
+<div class="paragraph">
+<p>Mit Spark kommt man sehr schnell zu den ersten Ergebnissen, die Online-Anleitungen sind verständlich geschrieben und enthalten direkt ausführbaren Beispielcode in Scala, Java und Python.</p>
+</div>
+<div class="paragraph">
+<p>Mittels der Spark-Shell, die eine modifizierte Scala-REPL darstellt, welche schon einen lokalen, minimalen Spark-Cluster hochgefahren hat, können Operationen interaktiv ausgeführt werden.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein einfaches Beispiel, Worte in einer Datei zählen, das "HelloWorld" von verteilten Datenplattformen.</p>
+</div>
+<div class="paragraph">
+<p>Dabei wird eine Textdatei eingelesen, auf jede der Zeilen ein Split an Leerzeichen vorgenommen und die Anzahl der Worte pro Zeile aggregiert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="scala language-scala">val file = sc.textFile("gutenberg.txt")
+val wordsPerLine = file.map( line =&gt; line.split(" ").size )
+wordsPerLine.reduce( (a,b) =&gt; a+b )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die Operationen, die man interaktiv mit der Shell ausführt, würden in einer echten Spark-Anwendung so aussehen:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/scala/WordCountApp.scala</div>
+<div class="content">
+<pre class="highlight"><code class="scala language-scala">import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.SparkConf
+
+object WordCountApp {
+  def main(args: Array[String]) {
+    val fileName = "gutenberg.txt"
+    val conf = new SparkConf().setAppName("WordCount")
+    val sc = new SparkContext(conf)
+    val file = sc.textFile(fileName)
+    val wordsPerLine = file.map( line =&gt; line.split(" ").size )
+    val wordsPerFile = wordsPerLine.reduce( (a,b) =&gt; a+b )
+    println("Words in file %s: %d.".format(fileName, wordsPerFile))
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der Hauptunterschied ist, dass der SparkContext selbst erzeugt wird und nicht wie in der Shell zur Verfügung steht.
+Mittels <code>sbt</code> kann man die Spark-Anwendung als Scala Projekt aufsetzen.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.sbt</div>
+<div class="content">
+<pre>name := "WordCount"
+version := "1.0"
+scalaVersion := "2.10.4"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.1"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nachdem man die Anwendung mit all ihren eigenen Abhängigkeiten mit <code>sbt package</code> zu einem Jar zusammengepackt hat, wird sie mittels <code>spark-submit</code> an den lokalen Spark-Cluster zur Ausführung übergeben.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>bin/spark-submit \
+  --class "WordCountApp" --master local[4] \
+  target/scala-2.10/wordcount_2.10-1.0.jar</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_basiskonzepte">Basiskonzepte</h3>
+<div class="paragraph">
+<p>Spark integriert sich sehr gut mit Hadoop, es stellt eine kompatible Ausführungsumgebung dar.</p>
+</div>
+<div class="paragraph">
+<p>Der Hauptvorteil von Spark liegt in seiner viel effizienteren Map-Reduce Implementierung, die ich hier auch im Detail diskutieren möchte.</p>
+</div>
+<div class="paragraph">
+<p>In Spark wird Datenverarbeitung mit Hilfe einer kompakten Scala, Python oder Java DSL/API notiert, die Operationen auf den Kerndatenstrukturen von Spark, den <strong>Resilient Distributed Datasets (RDD)</strong> darstellen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resilient_distributed_datasets_rdds">Resilient Distributed Datasets (RDDs)</h3>
+<div class="paragraph">
+<p>Die Kernidee von Spark ist so einfach wie sinnvoll.
+Operationen werden auf einer Datenstruktur abgebildet, die auf Parallelisierung, Partitionen aufbaut Fehlertoleranz.
+Es sind "resilient distributed datasets" (RDD) also "ausdauernde, verteilte Daten".
+Sie stellen einen unveränderlichen Datencontainer dar, auf dem übliche Transformationen wie map, filter, sort, group-by, distinct usw. möglich sind, die neue RDDs erzeugen.
+Mit Aktionen wie reduce, collect, count und foreach werden stattdessen skalare Werte berechnet, oder normale Collections wie Arrays oder Maps eerzeugt, oder Funktionen auf dem RDD ausgeführt.
+Anders als bei anderen APIs erfolgt die Anwendung von Transformationen nicht sofort, sondern zeitverzögert, nur wenn sie benötigt werden.</p>
+</div>
+<div class="paragraph">
+<p>Die Operationen auf RDDs werden automatisch über entsprechend viele Datenpartitionen auf den Worker-Instanzen des Spark-Clusters (s.u.) verteilt ausgeführt.
+Partitionen kann man beim Erzeugen von RDDs angeben, aber es ist auch möglich, diese mittels Transformationen zu ändern, für manche Operationen macht Spark das auch selbstständig im Hintergrund.</p>
+</div>
+<div class="sect3">
+<h4 id="_aufgaben_in_spark">Aufgaben in Spark</h4>
+<div class="paragraph">
+<p>Der SparkContext wird am Anfang eines Jobs mit einer Konfiguration erzeugt und stellt dann die wichtigsten Funktionen zur Erzeugung von RDDs bereit.</p>
+</div>
+<div class="paragraph">
+<p>Er ist auch zuständig für die Verbindung zum Cluster und die Verteilung der Tasks der Jobs auf dem Cluster (s.u)
+Wenn erst einmal RDDs aus Rohdaten und Datenströmen erzeugt wurden, werden weitere Transformationen direkt auf den RDDs ausgeführt.
+Dieser Ansatz mittels einer "Fluent-DSL" bietet sich an, um den gewünschten Datenfluss zu beschreiben.</p>
+</div>
+<div class="paragraph">
+<p>Dabei wird durch diese Transformationen noch keine Ausführung angestossen, sie stellen lediglich die Beschreibung und Verkettung der Operationen dar.</p>
+</div>
+<div class="paragraph">
+<p>Aus jeder Transformation entsteht ein neues RDD das die Parititionen, Operation mit Parametern und Ergebnismapping enthält.
+Erst wenn die Ergebnisdaten der Transformationskette irgendwo gebraucht / benutzt werden, wird die Gesamtoperation materialisiert, indem sie aufgeteilt in Aufgaben (Tasks) auf dem Cluster entsprechend geplant und ausgeführt wird.</p>
+</div>
+<div class="paragraph">
+<p>Dieser DSL Ansatz erlaubt auch eine Menge von Optimierungen, von der Generierung von JVM Bytecode für nicht JVM-Sprachen wie Python und R über Selektives Laden von Daten nach ihrer Nutzung (z.b. nur einige Spalten einer Zeile) bis zur Weiterleitung von Filter-Prädikaten zur Datenquelle, die diese ggf. effizienter umsetzen kann. Diese Ansätze werden auch bei Spark-SQL genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Zwischenergebnisse können zwar in Variablen gehalten werden, aber nur der Aufruf von <code>rdd.persist()</code> oder <code>rdd.cache()</code> stellt wirklich sicher, dass die Ergebnisse zwischengespeichert werden.
+Der Speicherort (Heap, Off-Heap, Serialisiert, Festplatte, Tachyon-RAM Store) kann dabei angegeben werden.</p>
+</div>
+<div class="paragraph">
+<p>Beim Verlust eines Workers wird die Arbeit vom Master auf die anderen (oder neuen) Worker verteilt.</p>
+</div>
+<div class="paragraph">
+<p>Da jedes RDD ja die Beschreibung enthält, wie seine Daten aus den vorhandenen Partitionen berechnet werden, wäre das schnell getan, muss aber nicht, wenn diese nicht gerade aktiv angefragt werden.
+Erst wenn auf das RDD wieder zugegriffen wird, <strong>muss</strong> die Berechnung wieder angestossen werden.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_erzeugung_von_rdds">Erzeugung von RDDs</h4>
+<div class="paragraph">
+<p>Die Erzeugung von RDDs erfolgt mittels Funktionen des SparkContexts aus Dateien (lokales Dateisystem, Amazon S3, HDFS), Hadoop-Job-Ergebnissen oder Integrationen mit anderen Datenquellen (z.B. Cassandra).
+Auch existierende Datencontainer können mit <code>context.parallelize(collection)</code> in ein RDD gewandelt werden.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_transformationen">Transformationen</h4>
+<div class="paragraph">
+<p>Transformationen sind Operationen auf RRDs die die referenzierte Datenpartition verarbeiten und ein neues RDD erzeugen.
+Dabei wird die Transformation nicht direkt angewandt, sondern nur vorgesehen (lazy evaluation) und erst bei Bedarf ausgeführt.</p>
+</div>
+<div class="paragraph">
+<p>Beispiele für Transformationen sind im Folgenden aufgeführt:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<caption class="title">Table 1. Spark RDD Transformationen</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">map(f)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wendet eine Funktion auf jeden Wert des RDD an, neues RDD hat Typ des Rückgabewertes der Funktion</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mapPartitions[WithIndex]()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wie map() aber jeweils auf einer kompletten Datenpartition</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter(p)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Filtert das RDD mittels des Prädikats p</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">groupByKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transformiert Tupel in Aggregationen aller Werte pro Schlüssel</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sortByKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sortierung von Tuples</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">repartition(n)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Repartitioniert das RDD auf eine neue Partitionsanzahl n, dies ist eine datentransferlastige Transformation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8230;&#8203;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8230;&#8203;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_aktionen">Aktionen</h4>
+<div class="paragraph">
+<p>Aktionen sind Operationen auf dem RDD, die Daten aggregieren oder anderweitig auf skalare oder Collection-Ergebnisse projizieren, die dann nicht direkt weiter transformiert werden können.
+Es sei denn man wandelt sie mittels <code>sc.parallelize(coll)</code> wieder in ein RDD um.</p>
+</div>
+<div class="paragraph">
+<p>Aktionen beispielsweise Operationen wie:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<caption class="title">Table 2. Spark RDD Aktionen</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">reduce(f)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Aggregiert fortlaufend aus Werten ein skalares Ergebnis</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">collect()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gibt eine Array Repräsentation des RDD zurück, sollte vorher gefiltert werden</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">count()</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anzahl der Elemente im RDD</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">saveAsTextFile(file)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Speichert pro Zeile die <code>toString()</code> Repräsentation jedes RDD Elements</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">foreach(f)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">führt Funktion f auf jedem Element aus</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8230;&#8203;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8230;&#8203;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_ausgabe">Ausgabe</h4>
+<div class="paragraph">
+<p>Die Ergebnisse von Operationen können entweder direkt parallel von RDDs oder mittels Aktionen auf dem SparkContext in Dateien oder Datenbanken geschrieben werden.</p>
+</div>
+<div class="paragraph">
+<p>Meist ist das aber nicht notwendig, da die Ergebnisse einer Anwendung jederzeit in Echtzeit aus der Hauptspeicherrepräsentation abgefragt bzw. bereitgestellt werden können.</p>
+</div>
+<div class="paragraph">
+<p>Ein Beispiel für eine integrierte Datenvisualisierung von Spark-Ergebnissen ist [Apache Zeppelin].</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spark_cluster">Spark Cluster</h3>
+<div class="paragraph">
+<p>Spark kann sowohl auf existierenden Hadoop-Cluster-Infrastrukturen laufen, als auch selbst das Cluster-Management übernehmen.</p>
+</div>
+<div class="paragraph">
+<p>Für Entwicklung und Test kann auch lokal auf der eigenen Maschine ein Setup gestartet werden, in dem der Parallisierungsgrad über die Anzahl der Threads kontrolliert wird.</p>
+</div>
+<div class="paragraph">
+<p>Anders als in anderen Architekturen ist in Spark das Cluster-Management von der Ausführungssteuerung getrennt, daher kann Spark auch auf existierenden Cluster-Managern (Hadoop-YARN, Apache Mesos) laufen, es bringt aber auch einen eigenen (Standalone) Cluster-Manager mit, den man auch einfach auf der EC2-Infrastruktur deployen kann.
+Alles was es benötigt ist die Möglichkeit Ausführungsprozesse (Executors) auf dem Cluster zu erzeugen.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://spark.apache.org/docs/1.1.0/img/cluster-overview.png" alt="cluster overview">
+</div>
+</div>
+<div class="paragraph">
+<p>Dieses Prozessmanagement und die Partitionierung der Arbeit obliegt dem SparkContext(Driver), der pro "Anwendung" existiert.
+Anwendungen sind voneinander isoliert, sie laufen in verschiedenen JVMs und können nur über externen Speicher miteinander kommunizieren.
+Aktionen auf RDDs werden als Jobs in Spark repräsentiert und über die notwendigen Datenpartitionen und über die einzelnen (voneinander abhängigen) Ausführungsschritte in Aufgaben (Tasks) aufgeteilt die dann entsprechend auf den Prozessen koordiniert platziert werden.</p>
+</div>
+<div class="paragraph">
+<p>Anwendungen werden als JARs mit Abhängigkeiten (fat-jar) mittels <code>spark-submit</code> an den Cluster übergeben (submitted) und dann auf der Driver-Maschine gestartet von wo aus der Spark-Context die weitere Verteilung übernimmt.
+Diese Verteilung kann noch individuell je nach Anforderungen konfiguriert und gesteuert werden.</p>
+</div>
+<div class="paragraph">
+<p>Netterweise bringt Spark sein eigenens Monitoring mit, dessen Weboberfläche auf der Driver-Maschine auf Port 4040 erreichbar ist:</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spark_sql_dataframes">Spark-SQL &amp; DataFrames</h3>
+<div class="paragraph">
+<p>Spark-SQL, das kompatibel mit Hive ist, macht den Einsatz für all diejenigen einfacher, die viel vertrauter mit SQL als mit Java, Scala oder Python sind.
+Daher können auch DBAs Spark leichter nutzen als andere Frameworks.
+Spark-SQL kann auch mit HBase und mittels JDBC und ODBC mit existierenden relationalen Datenbanken und anderen Quellen / Senken kommunizieren.</p>
+</div>
+<div class="paragraph">
+<p>Im Februar wurden Spark DataFrames vorgestellt, eine wichtige Erweiterung der Plattform.
+Wie schon vorher in Python und R sind DataFrames Repräsentationen von Tabellen, d.h. eine Gruppe von Spalten mit Werten.
+DataFrames können aus einer Vielzahl von Quellen erzeugt werden, aus RDDs, relationalen Datenbanken oder Hive, CSV oder JSON Dateien uvm.</p>
+</div>
+<div class="paragraph">
+<p>Auf diesen können wie gehabt Transformationen und Aktionen ausgeführt werden, dabei stehen auch die DataFrame-Operationen von Python (Pandas) und R zur Verfügung.
+Auf DataFrames kann auch mittels eines temporären Schemas Spark-SQL direkt ausgeführt werden.
+Eine sehr nützliche Eigenschaft ist der Join über mehrere Datenquellen, so können Daten aus einer relationalen DB mit JSON aus HDFS verknüpft werden und dann die Ergebnisse aggregiert und projiziert.</p>
+</div>
+<div class="listingblock">
+<div class="title">Spark DataFrames</div>
+<div class="content">
+<pre># people.json
+{"name":"Michael","age":40,"bio":"Michael is father and husband."}
+{"name":"Rana","age":9,"bio":"Rana is a smart and friendly girl."}
+{"name":"Selma","age":7,"bio":"Selma is a clever and wild monkey."}
+
+val people = sqlContext.load("people.json", "json")
+// todo
+val young = people.filter(_.age &lt; 21)
+
+# Increment everybody’s age by 1
+young.select(young.name, young.age + 1)
+
+# Count the number of young users by gender
+young.groupBy("gender").count()
+
+# Join young users with another DataFrame called logs
+young.join(logs, logs.userId == users.userId, "left_outer")
+
+
+You can also incorporate SQL while working with DataFrames, using Spark SQL. This example counts the number of users in the young DataFrame.
+
+young.registerTempTable("young")
+context.sql("SELECT count(*) FROM young")
+
+df = context.load("/path/to/people.json")
+# RDD-style methods such as map, flatMap are available on DataFrames
+# Split the bio text into multiple words.
+words = df.select("bio").flatMap(lambda row: row.bio.split(" "))
+# Create a new DataFrame to count the number of words
+words_df = words.map(lambda w: Row(word=w, cnt=1)).toDF()
+word_counts = words_df.groupBy("word").sum()</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der spannende Aspekt an DataFrames ist, dass sie vor der Ausführung massiv optimiert werden können, da mehr über die Struktur bekannt ist.
+So können Operationen und Prädikate schon zur Datenquelle (z.B. Datenbank oder JSON-Loader) geschickt werden, so dass die Filterung, Selektion oder Voraggregation schon dort erfolgen kann.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren werden vom "Catalyst"-Optimierer Ausdrücke voroptimiert und dann für die gesamten DataFrame-Operationen JVM-Bytecode erzeugt.
+Damit erhält man mit Python, R und Scala (die dann nur als eine Art DSL betrachtet werden) die gleiche hohe Leistung wie für handoptimierten Java-Code.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_graphx">GraphX</h3>
+<div class="paragraph">
+<p>Immer mehr Entscheidungen basieren nicht mehr nur auf der Aggregation, Selektion und Projektion tabellarischer Daten, sondern auf der Auswertung der vielfältigen Beziehungen von Entitäten zueinander. Anwendungsfälle wie Routing, Matchmaking, Empfehlungsberechnung und Netzwerk- und Sensormanagement benötigen die Repräsentation von Informationen als Netzwerk auf dem Berechnungen ausgeführt werden müssen.</p>
+</div>
+<div class="paragraph">
+<p>In der Vergangenheit habe ich mit Neo4j eine Echtzeit-Graphdatenbank vorgestellt, die besonders im OLTP Umfeld Anfragen sehr schnell beantworten kann, die entlang der Verbindungen meiner Domänenobjekte navigieren, um nützliche Informationen zu ermitteln.</p>
+</div>
+<div class="paragraph">
+<p>Obwohl Datenbanken wie Neo4j auch globale Berechnungen auf dem Graph annehmbarer Zeit vornehmen können, sind bestimmte Algorithmen ab einer bestimmten Größe (mehr als 1Mrd Beziehungen) auf einer parallelisierten Infrastruktur effizienter und schneller auszuführen.</p>
+</div>
+<div class="paragraph">
+<p>Hier kommen Ansätze wie Giraph (Hadoop), GraphLab (Dato) und GraphX ins Spiel. Sie stellen eine Graph-Abstraktion auf einer verteilten Architektur bereit.</p>
+</div>
+<div class="paragraph">
+<p>GraphX ist der Ansatz von Spark, der sowohl Graph-Strukturen wie Knoten (Vertex) und Kanten (Edge) als auch Operationen darauf zur Verfügung stellt.
+Speichertechnisch werden sie klassisch auf zwei Tabellen abgebildet, einer Knoten-Tabelle (Id + Attribute), und einer Kanten-Tabelle (Start-Id, End-Id, Attribute).</p>
+</div>
+<div class="paragraph">
+<p>Die Algorithmen auf dem Graph werden nach dem PregelPrinzip von Google ausgeführt, von Knoten werden Nachrichten mit Werten an ihre Nachbarn geschickt, die diese dann mit ihrem internen Zustand integrieren und neue Nachrichten aussenden.</p>
+</div>
+<div class="paragraph">
+<p>Hier ist ein Beispiel in Spark für die Implementierung des Page-Rank Algorithmus der prinzipiell aussagt, dass der Rang eines Knoten sich aus der Summe der Ränge der darauf weisenden Nachbarn (Rang durch die Anzahl ihrer ausgehenden Verbindungen) ermittelt.
+Mit jeder Iteration des Algorithmus wird diese Berechnung erneut durchgeführt, bis eine Stabilisierung eintritt, meist in 5-20 Iterationen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="scala language-scala">// Laden der Kantenliste
+val graph = GraphLoader.edgeListFile(“hdfs://web.txt”)
+// Ermittlung der Kardinalitäten als Initial-Rang
+val prGraph = graph.joinVertices(graph.outDegrees)
+// Page-Rank, Initialisierung und 3 Funktionen zur
+// Nachrichtenverarbeitung und -aggregation und Ermittlung des neuen Inhalts
+val pageRank = prGraph.pregel(initialMessage = 0.0, iter = 10)
+  ((oldV, msgSum) =&gt; 0.15 + 0.85 * msgSum,
+          triplet =&gt; triplet.src.pr / triplet.src.deg,
+     (msgA, msgB) =&gt; msgA + msgB)
+
+// Top 20 Sortiert nach Rang
+pageRank.vertices.top(20) (Ordering.by(_._2)).foreach(println)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Sparks GraphX wurden zur Beschleunigung der Berechnung von Graph-Funktionen eine Menge von Optimierungen in der Infrastruktur integriert.
+Sowohl die Partitionierung des Graphs zur parallelen Berechnung, Caching von Zwischenergebnissen und Limitierung der Hauptspeichernutzung nur für die auch wirklich genutzten Attribute helfen dabei.
+Es werden auch speziellere Optimierungen genutzt, z.b. die Analyse des Algorithmus-Codes, um nicht benötigte Standardoperationen die sonst ausgeführt würden wegzulassen.
+Oder die Nutzung effizienter Speicherstrukturen wie Bitmaps oder spezieller Hash-Indizes.</p>
+</div>
+<div class="paragraph">
+<p>Damit konnten laut der Veröffentlichung [PageRankGraphX] z.B. die Berechnung von PageRank mit 20 Iterationen auf einem Twitter Datenset mit 1.4Mrd Kanten in 570 Sekunden vorgenommen werden. Die Berechnung erfolgte auf einem Cluster von 16 Maschinen mit jeweils 8 Kernen und 68 GB RAM.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_zum_schluss">Zum Schluss</h3>
+<div class="paragraph">
+<p>Wie immer gibt es natürlich viel mehr zu berichten, als Platz in einer Kolumne zur Verfügung steht. Da wäre zum einen die Machine-Learning Bibliothek von Spark (MLlib), zum anderen die Integration mit den verschiedenen Hadoop-Distributionen und die Anwendung von Spark im größeren Kontext mit mehr praktischen Beispielen. Ich hoffe, die Referenzen im Anhang sind ein guter Ausgangspunkt für die weitere Arbeit mit Spark.</p>
+</div>
+<div class="paragraph">
+<p>Ich plane auch in einer weiteren Kolumne mal weiter hinter die Kulissen von Spark und Apache Flink zu schauen und die beiden Frameworks miteinander zu vergleichen.</p>
+</div>
+<div class="paragraph">
+<p>Wie immer würde ich mich über Feedback freuen, einfach per Tweet oder E-Mail.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[MapReducePaper] <a href="http://research.google.com/archive/mapreduce.html" class="bare">http://research.google.com/archive/mapreduce.html</a></p>
+</li>
+<li>
+<p>[Apache Spark] <a href="https://spark.apache.org/" class="bare">https://spark.apache.org/</a></p>
+</li>
+<li>
+<p>[SortingBenchmark]<a href="https://databricks.com/blog/2014/10/10/spark-petabyte-sort.html" class="bare">https://databricks.com/blog/2014/10/10/spark-petabyte-sort.html</a></p>
+</li>
+<li>
+<p>[SparkEcosystem] <a href="http://emerginginsightsnow.com/2015/05/17/apache-spark-ecosystem-grows-rapidly-has-hadoop-met-its-match/" class="bare">http://emerginginsightsnow.com/2015/05/17/apache-spark-ecosystem-grows-rapidly-has-hadoop-met-its-match/</a></p>
+</li>
+<li>
+<p>[DZone Refcard Spark] <a href="http://refcardz.dzone.com/refcardz/apache-spark" class="bare">http://refcardz.dzone.com/refcardz/apache-spark</a></p>
+</li>
+<li>
+<p>[SparkSlides]<a href="http://slideshare.net/databricks/databricks-primer-spark" class="bare">http://slideshare.net/databricks/databricks-primer-spark</a></p>
+</li>
+<li>
+<p>[Spark Ökosystem]<a href="http://emerginginsightsnow.com/2015/05/17/apache-spark-ecosystem-grows-rapidly-has-hadoop-met-its-match/" class="bare">http://emerginginsightsnow.com/2015/05/17/apache-spark-ecosystem-grows-rapidly-has-hadoop-met-its-match/</a></p>
+</li>
+<li>
+<p>[Apache Flink] <a href="http://data-artisans.com/apache-flink-new-kid-on-the-block.html" class="bare">http://data-artisans.com/apache-flink-new-kid-on-the-block.html</a></p>
+</li>
+<li>
+<p>[GraphXPaper] <a href="https://amplab.cs.berkeley.edu/wp-content/uploads/2014/02/graphx.pdf" class="bare">https://amplab.cs.berkeley.edu/wp-content/uploads/2014/02/graphx.pdf</a></p>
+</li>
+<li>
+<p>[Hadoop] <a href="https://blog.codecentric.de/2013/08/einfuhrung-in-hadoop-die-wichtigsten-komponenten-von-hadoop-teil-3-von-5/" class="bare">https://blog.codecentric.de/2013/08/einfuhrung-in-hadoop-die-wichtigsten-komponenten-von-hadoop-teil-3-von-5/</a></p>
+</li>
+<li>
+<p>[Zeppelin Data Visualization for Spark] <a href="https://zeppelin.incubator.apache.org/" class="bare">https://zeppelin.incubator.apache.org/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2015-06-02 20:59:03 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

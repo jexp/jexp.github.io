@@ -1,0 +1,878 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Performance relevante Java 9 Features (Teil 1)</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Die offizielle Verfügbarkeit von Java 9 wurde zwar auf März 2017 verschoben,
+das heisst aber nicht, dass wir nicht jetzt schon auf einige Features schauen können, die Relevanz für die Leistungsfähigkeit von Java-Anwendungen haben werden.</em></p>
+</div>
+<div class="paragraph">
+<p>Einige Trends werden sich definitiv in den nächsten Jahren fortsetzen und auch verstärken, die sich auch in den Verbesserungen in Java 9 widerspiegeln:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Mehr Parallelität wird die Normalität, sowohl innerhalb einer Maschine als auch in immer größeren Clustern, wobei Netzwerklatenz und -durchsatz relevanter werden.</p>
+</li>
+<li>
+<p>Effizientere Resourcenutzung, besonders im Bezug auf Energieersparnis in Rechenzentren, aber noch mehr bei mobilen Geräten, Automation und Sensornetzwerken, bei denen Leistung, Speicher und Energie immer knapp sind.</p>
+</li>
+<li>
+<p>Sichere Kommunikation und Datenspeicherung und die sichere Ausführung von Anwendungen auf nicht-vertrauenswürdiger Hardware</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Java 9 wird wie schon seid längerem durch JDK Enhancements Proposals (JEP) vorangetrieben, die neue Fähigkeiten und Features in genug Detail für Implementierung im OpenJDK und deren Nutzung beschreiben.</p>
+</div>
+<div class="paragraph">
+<p>Aktuell sind ca 80 JEPs auf der Java 9 Projektseite gelistet, die ihren Weg in die neue Version nehmen werden.</p>
+</div>
+<div class="paragraph">
+<p>Davon wollen wir uns einige Bereiche näher anschauen, die die Leistungsfähigkeit der JVM und von Java-Awendungen steigern werden.
+Weitbekannte JEPs wie Jigsaw zur Modularisierung lasse ich bei der Betrachtung aus.</p>
+</div>
+<div class="paragraph">
+<p><em>Aufgrund der schieren Menge von interessanten Änderungen wird dieser Artikel in 2 Teilen erscheinen.</em></p>
+</div>
+<div class="paragraph">
+<p>Mit dem 26. Mai 2016 sind die Änderungen der JEPs in Java 9 fixiert und mit Tests im Master Branch integriert, ab jetzt wird sich auf Tests, Feedback, Leistungsoptimierung und Fehlerbehebung konzentriert.</p>
+</div>
+<div class="paragraph">
+<p>Man kann sich Java 9 von [Java 9 Download] herunterladen und die benannten Änderungen selbst testen.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<caption class="title">Table 1. Tabelle: Zeitplan für Java 9</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2016/05/26</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Feature Complete</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2016/08/11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All Tests Run</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2016/09/01</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rampdown Start</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2016/10/20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zero Bug Bounce</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2016/12/01</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rampdown Phase 2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2017/01/26</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Final Release Candidate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2017/03/23</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">General Availability</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_locking_und_parallelität">Locking und Parallelität</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit Mehrkernprozessoren und vielen Prozessoren in Servern (z.B. 160 Kernen in IBM&#8217;s Power8), setzt sich der Trend zur nebenläufigen Programmierung fort.
+Java 8 hat da mit den parallel-Streams, Fork-Join-Pool und Stamped Lock (siehe [Hung15]) schon deutliche Fortschritte gemacht, mit Java 9 geht die Arbeit in diesem Bereich weiter.</p>
+</div>
+<div class="sect2">
+<h3 id="_jep_143_improve_contended_locking">JEP 143:  Improve Contended Locking</h3>
+<div class="paragraph">
+<p>Locks sind ein Fluch und Segen der nebenläufigen Programmierung.
+Man benötigt sie um Zugriff zu Resourcen zu kontrollieren, z.B. für exclusives Schreiben oder paralleles Lesen.
+Oft wäre es schöne Algorithmen nutzen zu können die ohne Sperren auskommen (lock-free), aber diese zu entwickeln ist ungleich schwerer.
+Für Sperren wird oft der Fall optimiert, wenn kein konkurrierender Zugriff erfolgt, dass heisst den Overhead zu minimieren, wenn die Sperre nicht benötigt wird.
+Der Negativfall, d.h. (massiv) paralleler Zugriff wird meist als "worst-case" dargestellt und nicht besonders optimiert.
+Mit der Zunahme der Nebenläufigkeit wird das aber immer mehr der Normalfall.
+An bestimmten, kritischen Stellen (z.b. Kopf-Element einer Queue (siehe [Hung11])) ist der konkurrierende Zugriff besonders hoch.</p>
+</div>
+<div class="paragraph">
+<p>Dieser JEP macht es sich zum Ziel, diesen Aspekt von Sperren und <code>synchronized</code> (Monitors) in Java 9 deutlich zu verbessern, Verbesserungen für die internen Mechanismen in der JVM sind kein Fokus.
+Dazu wird eine Reihe von Benchmarks (u.a. SPECjbb2013, Volano, DaCapo) genutzt um die Optimierungen nachzuweisen.</p>
+</div>
+<div class="paragraph">
+<p>Eine Beschleunigung des Verhaltens folgender Operationen ist am aussichtsreichsten für die Zielerreichung dieses JEPs:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>unpark()</code></p>
+</li>
+<li>
+<p>Betreten und Verlassen der kritischen Regionen (Monitor-enter und -exit)</p>
+</li>
+<li>
+<p><code>notify()</code>, <code>notifyAll()</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Die Stress-Tests für diese Verbesserungen untersuchen eine ausreichend hohe Anzahl von parallelen Threads, die die kritischen Regionen nach bestimmten Mustern durchqueren (enter-exit, enter-wait-exit).
+Dabei ist zum einen das Betreten und Handhabung der Warte/Block-Operation bei hoher Konkurrenz als auch das Verlassen, wenn potentiell viele Kandidaten-Threads auf den Zugriff warten.
+Ein weiterer zu testender Aspekt ist das Management vieler Objekt-Monitors, dabei ist besonders wichtig dass keine Speicherlecks entstehen und keine Korruption der Management-Datenstrukturen, ebenso sollte CPU Cache-Line-Sharing minimiert werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_266_more_concurrency_updates_reactive_streams_support">JEP 266: More Concurrency Updates - Reactive Streams Support</h3>
+<div class="paragraph">
+<p>Unter dem unscheinbaren Titel versteckt sich eine wichtige Inititative von Doug Lea.
+Die von Erik Meijer in .Net eingeführten "Reactive Extensions", haben ihren Weg über alle Sprachen gefunden und sind mit Reactive Java schon seit längerem erfolgreicher Teil des Java Ökosystems.
+Immer mehr Frameworks setzen auf diese oder unterstützen sie zumindest, es gibt sogar jetzt sogar ein "Reactive Manifesto" für skalierbare, robuste Anwendungsentwicklung.</p>
+</div>
+<div class="paragraph">
+<p>Mit diesem JEP sollen innerhalb der Klasse <code>java.util.concurrent.Flow</code> Interfaces und Implementierungen bereitgestellt werden,
+die zu denen in Reactive Streams kompatibel sind und damit die Zusammenarbeit der verschiedenen asynchronen Frameworks auf der JVM unterstützen.
+Diese Komponenten sind schon seit einer Weile (Jan 2015) in Entwicklung und Review und halten jetzt endlich Einzug ins OpenJDK.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">TODO Beispiel</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Weiterhin sollen die Erfahrungen und Probleme mit der CompletableFuture API in Java 9 berücksichtigt werden, so kommen Verzögerungen und Timeouts hinzu, sowie einige andere Verbesserungen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_285_spin_wait_hints">JEP 285: Spin-Wait Hints</h3>
+<div class="paragraph">
+<p>Zum Thema "Spin-Wait-Hints" (JEP 285), habe ich von Gil Tene beim Abendessen aus erster Hand erfahren, wie schwierig es ist, eine Gruppe engagierter Java Experten auf Namen, Platzierung und Semantik einer "no-op" Methode, die überhaupt nichts macht, zu einigen.
+Mit der Methode <code>Thread.onSpinWait()</code> kann in Code der aktiv einen in einer Dauerschleife auf das Eintreffen einer Bedingung wartet, die JVM darüber benachrichtigt werden.
+Bei Unterstützung durch die Hardware (z.b. der PAUSE Prozessor-Befehl auf x86 CPUs) eine effizientere und stromsparendere Variante des CPU Betriebs gewechselt werden.
+Schleifen, die im Dauerbetrieb auf eine Bedingung warten werden, z.b. bei bestimmten CAS (Compare-And-Swap) Operationen genutzt, beim Stamped-Lock, aber auch bei und bei den Wartestrategien des LMAX Disruptor [Hung11].
+Zumindest für die sehr kurzen, ersten optimistische Versuche, wird damit verhindert dass teure Threadwechsel, inkl. Register und Cache-Konsistenzwechsel, stattfinden die die Parallelisierbarkeit beeinträchtigen würden und unseren wartenden Thread sehr wahrscheinlich viel länger pausieren würden als er minimal müsste.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_strings_in_java_9">Strings in Java 9</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strings sind überall, jeder Text den wir verarbeiten, erzeugen, loggen, unseren Nutzern senden oder als HTML/JSON/XML bereitstellen, wird aus einzelnen Strings zusammengesetzt die einen Großteil des Heaps ausmachen.
+In Java 9 sind diverse JEPs vorgesehen, die versuchen, diesen Bereich der JVM deutlich sparsamer zu gestalten, und die Verwendung von Strings zu verringern und ihre Größe einzusparen.
+In den Studien und Benchmarks die dafür vorgenommen wurden und in denen eine Vielzahl von Anwendungen untersucht wurde, wird zum Beispield dargestellt, dass durchschnittlich 25% der Objekte auf dem Heap Strings sind, mit einer Länge von ebenso durchschnittlich 45 Zeichen.
+Details können den referenzierten Quellen [StringDensity] entnommen werden.</p>
+</div>
+<div class="sect2">
+<h3 id="_jep_254_compact_strings">JEP 254  Compact Strings</h3>
+<div class="paragraph">
+<p>Ein wichtiger Beitrag zur Einsparung von Hauptspeicher wird der JEP 254 (Compact Strings) darstellen.
+Wie wir alle wissen, benötigen die meisten Strings kein UTF-16 sonder bestehen nur aus Zeichen aus dem Latin1 (8bit) oder sogar ASCII (7bit) Zeichentabellen.
+In Java wird aber jeder String als char-Array abgespeichert, so das zumeist die Hälfte ungenutzt bleibt.</p>
+</div>
+<div class="paragraph">
+<p>Der JEP ändert die interne Repräsentation von Strings in ein Flag für das Encoding (ISO-Latin1 oder UTF-16) und ein byte-Array in dem der String dann entweder mit einem oder zwei Byte pro Zeichen gespeichert wird.
+Damit wird erheblich Platz gespart, bei entsprechenden Betrachtungen wurde festgestellt dass in normalen Anwendungen ca 95% der Strings kompakt repräsentiert werden können.</p>
+</div>
+<div class="paragraph">
+<p>Im zweiteren Fall gibt es Mehraufwand beim Abspeichern und Lesen.
+Dieser soll durch Einsparungen bei der Garbage Collection und CPU- und Speicheroperationen kompensiert werden.
+Gerade heutige CPUs sollten von der Nutzung von Byte-Arrays stark profitieren, das sie damit ein bessers Vorladen von Speicherbereichen vornehmen können.</p>
+</div>
+<div class="paragraph">
+<p>Auswirkungen sollte das in allen Bereichen haben, da wir überall Text als Ein- und Ausgabeformate benutzen.
+Die öffentlichen APIs für Strings werden nicht geändert, das ist eine reine Anpassung der internen Repräsentation.</p>
+</div>
+<div class="paragraph">
+<p>Trotzdem erfordert eine solche grundlegende Änderung umfangreiche Kompatibilitäts- und Performance Tests.</p>
+</div>
+<div class="paragraph">
+<p>Abhängig von der Nutzungshäufigkeit der String-Operationen für den jeweiligen Format-Typ (oder auch deren Kombination für Operationen mit mehreren String-Parametern), macht sich der Mehraufwand mehr oder weniger stark bemerkbar.
+Dabei sind häufige Operationen wie <code>hashCode</code>, <code>equals</code> und Stringverknüpfung besonders ausschlaggebend.</p>
+</div>
+<div class="paragraph">
+<p>In Mikrobenchmarks zeigten sich die kompakten Strings bis zu 20% schneller bei bis zu 30% weniger Speichernutzung, siehe auch [StringDensity].
+Besonders in speicherkritischen Umgebungen macht sich die Ersparnis bemerkbar.</p>
+</div>
+<div class="paragraph">
+<p>Nach verschiedenen Ansätzen wurde das "Flag" einfach als ein-Byte Konstante im String realisiert und in den Operationen eine Fallunterscheidung gemacht, ähnlich wie beim polymorphen Inlining-Dispatch des JIT.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public class String {
+    private final byte[] value; private final byte coder;
+
+    // sample implementation
+    public int compareTo(String str) {
+        byte[] v1 = value;
+        byte[] v2 = str.value;
+        if (coder == str.coder) {
+            return (coder == LATIN1) ?
+                StringLatin1.compareTo(v1, v2) :
+                StringUTF16.compareTo(v1, v2);
+        }
+        return (coder == LATIN1) ?
+                StringLatin1.compareToUTF16(v1, v2) :
+                StringUTF16.compareToLatin1(v1, v2);
+     }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_192_string_deduplication_in_g1">JEP 192:  String Deduplication in G1</h3>
+<div class="paragraph">
+<p>Ein weiterer JEP in diesem Bereich ist <strong>Nummer 192</strong>, der das <em>Entfernen von String-Duplikaten durch den G1 Garbage Collector</em> zum Inhalt hat.
+Von den schon erwähnten Anteil von 25% String Objekten stellen rund 50% Duplikate dar.
+Somit kann man durch deren Entfernung ca. 10% Platz im Speicher gewinnen.
+In einem String ist der Hashcode in einem int-Feld und die Zeichenkette (noch) in einem Array (zur Zeit noch 2-Byte-Characters aber nach JEP 254 Bytes) abgelegt.
+Beide stellen private Implementierungsdetails dar, die von aussen unsichtbar und nicht exponiert sind.
+Die Zeichenkette wird nur einmal erzeugt, nie verändert und seit Java8 auch nicht mehr von Substrings geteilt, es gibt auch keine Synchronisierung auf dem Feld.</p>
+</div>
+<div class="paragraph">
+<p>Daher kann die Referenz auf das Feld gleichen Inhalts von mehreren String-Objekten genutzt werden.
+Damit bleiben zwar die Strings als unabhängige Objekte mit ihren 32 Bytes Overhead erhalten, aber zumindest die Zeichenkettenfelder werden geteilt.
+Das hat den Vorteil, dass es für die Nutzer vollkommen transparent ist, was beim Ändern der String-Objekt-Referenzen hinter dem Rücken durch den GC nicht der Fall wäre.</p>
+</div>
+<div class="paragraph">
+<p>Der G1 Garbage Collector kann nun also String Objekte, sobald sie den "Young-Heap" verlassen und ein bestimmtes Mindestalter haben, als Deduplikationskandiaten betrachten.
+Diese werden in einer Warteschlange zwischengespeichert bis ein asynchroner Thread kontrolliert, ob deren Zeichenkette schon einmal aufgetreten ist.
+Wenn ja wird die Referenz auf das char-Array umgelegt, wenn nein, wird ihre eigene Zeichenkette als potentieller Partner in der internen Hashtable eingetragen.
+Internalsierte Strings werden automatisch als Kandidat für die Deduplikation behandelt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_250_store_interned_strings_in_cds_archives">JEP 250: Store Interned Strings in CDS Archives</h3>
+<div class="paragraph">
+<p>Passend dazu gibt es auch noch einen Vorschlag im <strong>JEP 250</strong>, Strings die internalisiert wurden (interned), in einem Archiv (CDS class data sharing archive) zwischen JVM zu teilen, und damit erneut Speicher zu sparen.
+Das würde vor allem häufig vorkommende Konstanten, Symbole und Klassennamen betreffen.</p>
+</div>
+<div class="paragraph">
+<p>Das wird aber nur in 64-bit JVMs und mit dem G1 Garbage Collector funktionieren, da nur diese fixierte (pinned) Speicherbereiche unterstützt, in die dieses Archiv eingeblendet wird.</p>
+</div>
+<div class="paragraph">
+<p>Beim Starten der JVM würde dieses Archiv geladen und sein Inhalt auch in der Deduplikations-Hashtable von JEP 192 abgelegt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_280_indify_string_concatenation">JEP 280: Indify String Concatenation</h3>
+<div class="paragraph">
+<p>Der Vorschlag von Aleksey Shipilev in <strong>JEP 280</strong> ist auch sehr interessant.
+Wie allgemein bekannt, wird seit Java 5 die Stringverknüpfung mittels <code>+</code> vom Java Compiler, auf die effizientere Kette von <code>StringBuilder.append</code> Aufrufen abgebildet.
+Dabei werden auch aufeinanderfolgende String-Literale zusammengefasst, mittels <code>-XX:+OptimizeStringConcat</code> ist es sogar möglich noch aggressivere Optimierungen einzuschalten, wie z.B. die Vorinitialisierung der StringBuilder mit der richtigen Endlänge des Strings.</p>
+</div>
+<div class="paragraph">
+<p>Diesen Aufwand möchte der JEP 280 vom Compiler in die Java-Laufzeitumgebung verlagern.
+Damit können komplexe Regeln aus dem Compiler entfern werden und bei neuen Optimierungen muss er nicht mehr modifiziert werden.
+Erreicht werden soll das ganze durch die Nutzung von "invoke-dynamic" der dynamischen Wunderwaffe der JVM.
+Damit soll eine "virtuelle" API geschaffen werden, die das Konzept der Stringverknüpfung ausdrückt und dann von der Laufzeitumgebung beim Laden der Klassen und Methoden, auf vielfältige Weise umgesetzt, optimiert und angepasst werden kann.</p>
+</div>
+<div class="paragraph">
+<p>Die konkreten Verbesserungen sind noch nicht Bestandteil dieses JEP.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sicherheit">Sicherheit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im Zeitalter von Cloud Anwendungen, Abhöraffären, Speicherung und Zugriff von immer mehr privaten Informationen, sind Sicherheitsfunktionen systemkritisch.</p>
+</div>
+<div class="paragraph">
+<p>In Java wurde schon immer eine Vielzahl von Kryptomechanismen unterstützt.
+Auch das Sicherheitsmodell von Java, die Sandbox des SecurityManagers war von Anfang an dabei, auch wenn es immer wieder einmal Lücken in der Implementierung gab, die von Schadsoftware ausgenutzt wurde.</p>
+</div>
+<div class="paragraph">
+<p>Mit Java 9 wird die Unterstützung der Sicherheitsmechanismen weiter ausgebaut.</p>
+</div>
+<div class="sect2">
+<h3 id="_jep_246_leverage_cpu_instructions_for_ghash_and_rsa">JEP 246: Leverage CPU Instructions for GHASH and RSA</h3>
+<div class="paragraph">
+<p>Für die immer wichtiger werdenden kryptographischen Operationen wie AES-CBC (JEP 164 in JDK8), RSA, GHASH sollen, sofern möglich native CPU Befehle genutzt werden (z.B auf Intel x64 und SPARC).</p>
+</div>
+<div class="paragraph">
+<p>Neben der höheren Leistung (bis 8x schneller), ist auch die Reduzierung der Abhängigkeit von externen Krypotbibliotheken und damit eingesparte Komplexität und JNI-Aufrufe ausschlaggebend für diesen JEP.</p>
+</div>
+<div class="paragraph">
+<p>Diese Funktionaltität würde dann von de Hotspot-VM direkt angeboten und kann in die Security-Provider (z.b. SunPKCS11 und SunJCE) integriert werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_232_improve_secure_application_performance">JEP 232:  Improve Secure Application Performance</h3>
+<div class="paragraph">
+<p>Für Anwendungen (JavaSE, JavaEE) die mit dem SecurityManager laufen, ist bekannt, das die häufige Überprüfung von Rechten deutliche Leistungseinbussen (bis zu 10-15%) zur Folge haben kann.</p>
+</div>
+<div class="paragraph">
+<p>Im Rahmen dieses JEPs wurden verschiedene Optimierungen angedacht, getested und mit JMH (siehe [Hung14]) die Leistungsverbesserungen nachgewiesen (oder nicht).</p>
+</div>
+<div class="paragraph">
+<p>Einige der Verbesserungen wurden dann im Rahmen des JEP umgesetzt und integriert, die meisten davon beziehen sich auf Synchronization und Locking beim parallelen Zugriff auf Instanzen des Sicherheitssystem.</p>
+</div>
+<div class="paragraph">
+<p>Diese wurden jetzt aktualisiert und machen von den Möglichkeiten Gebrauch, die uns allen seit Java 5 zur Verfügung stehen (z.B. ConcurrentHashMap).
+Codeblöcke die bisher mittels exklusiver Synchronization geschützt wurden und damit den Zugriff praktisch serialisierten, skalieren nun beim Lesezugriff und blockieren nur während des Schreibens auf die Datenstrukturen.</p>
+</div>
+<div class="paragraph">
+<p>Traurig aber wahr, die <code>hashCode()</code> Methode von <code>java.security.CodeSource</code> machte bisher einen DNS Lookup, der jetzt dankenswerterweise entfällt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_273_drbg_based_securerandom_implementations">JEP 273:  DRBG-Based SecureRandom Implementations</h3>
+<div class="paragraph">
+<p>Zur Zeit gibt es 2 sichere Zufallszahlengeneratoren in Java.
+Die eine Variante greift auf die Betriebssystemfunktionen zurück, wie <code>/dev/urandom</code> in Unix, und die zweite ist eine schwächere, in Java implementierte Version.
+Der von [NIST] veröffentlichte, moderne Algorithmus (Deterministic Random Bit Generator (DRBG)) nutzt starke Kryptoalgorithment wie SHA-512 und AES-256 und ist auch noch konfigurierbar.</p>
+</div>
+<div class="paragraph">
+<p>Ein wichtiger Aspekt ist das für die Zufallszahlengenerierung eine Entropiequelle für kontinuierlich neue Seeds zur Verfügung stehen sollte.
+Die existierenden Java APIs in <code>SecureRandom</code> müssen dafür erweitert werden.
+Bei dieser Gelegenheit soll sie auch für die Bedürfnisse anderer, zukünftige Ansätze generalisiert werden.
+Als Teil des JEP wird vor allem auch der genannte DRBG Algorithmus implementiert, sowie einige weiere Kryptomechanismen (z.B: SHA-512/2xx).</p>
+</div>
+<div class="paragraph">
+<p>Im nächsten Artikel zu Java 9 wird es um Verbesserungen im Java Compiler, den schnelleren Zugriff auf Variablen bzw. Methoden mittels Reflection und Invoke-Dynamik und weitere JEPs gehen, die für die Leistungsfähigkeit von Java 9 relevant sind.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen:</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Java 9 Projektseite: <a href="https://jdk9.java.net/" class="bare">https://jdk9.java.net/</a></p>
+</li>
+<li>
+<p>Java 9 Download: <a href="https://jdk9.java.net/download/" class="bare">https://jdk9.java.net/download/</a></p>
+</li>
+<li>
+<p>Java 9 Features und Zeitplan, Liste der JEPs: <a href="http://openjdk.java.net/projects/jdk9/" class="bare">http://openjdk.java.net/projects/jdk9/</a></p>
+</li>
+<li>
+<p>[StringDensity]Performance-Betrachtungen für kompakte Strings <a href="http://cr.openjdk.java.net/~shade/density/state-of-string-density-v1.txt" class="bare">http://cr.openjdk.java.net/~shade/density/state-of-string-density-v1.txt</a></p>
+</li>
+<li>
+<p>Deterministic Random Bit Generator (DRBG): <a href="http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf" class="bare">http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf</a></p>
+</li>
+<li>
+<p>[Hung11] M. Hunger, Disruptorangriff: Hochperformanter Java-Code bringt Prozessoren an ihr Limit?, in: JavaSPEKTRUM, 6/2011</p>
+</li>
+<li>
+<p>[Hung14] M. Hunger, Java Microbenchmark Harness (JMH), in: JavaSPEKTRUM, 3/2014</p>
+</li>
+<li>
+<p>[Hung15] M. Hunger, StampedLock, in: JavaSPEKTRUM, 1/2015</p>
+</li>
+<li>
+<p>[Flow] Reactive Streams in JEP 266 <a href="http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/Flow.html" class="bare">http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/Flow.html</a></p>
+</li>
+<li>
+<p>[ReactiveStreams] <a href="http://www.reactive-streams.org/" class="bare">http://www.reactive-streams.org/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<h1 id="_ein_blick_hinter_die_kulissen_von_java_9_teil_2" class="sect0">Ein Blick hinter die Kulissen von Java 9, Teil 2</h1>
+<div class="paragraph">
+<p>Seit der Veröffentlichung meines ersten Artikel über Java 9 ist die Entwicklung und besonders auch der <strong>Test des JDK 9</strong> weiter vorangeschritten.</p>
+</div>
+<div class="paragraph">
+<p>Bei einem Vortrag von Dalibor Topic beim JUG Saxony Day Ende September in Dresden hat er noch einmal explizit um ein paar Dinge gebeten.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen gibt es das Java 9 Qualitätssicherungsprogramm (qualiy outreach), in dem Java Projekte ihre Kompatibilität zu Java 9 überprüfen und veröffentlichen können.
+Zur Zeit sind 80 Projekte Mitglied des Programms, darunter Programmiersprachen wie Groovy, Build-Tools wie Maven aber auch Server wie Wildfly.
+Falls Sie an einem größeren, offenen Java Projekt mitwirken, ziehen Sie bitte in Betracht auch an diesen Programm teilzunehmen.</p>
+</div>
+<div class="paragraph">
+<p>Zudem und das gilt für jeden Anwender von Java, gibt es den Aufruf, schon jetzt die Early Access Builds des Java 9 JDKs zu testen und vor allem Rückmeldung über Probleme und Inkompatibilitäten zu geben.</p>
+</div>
+<div class="paragraph">
+<p>Nun aber wieder zurück zu spannenden Features in Java 9, die sonst nicht soviel Beachtung wie JigSaw finden.</p>
+</div>
+<div class="sect1">
+<h2 id="_jep_223_Änderung_des_formats_der_java_version">JEP 223 Änderung des Formats der Java-Version</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Javas Versionsnummer waren schon immer etwas seltsam, sie enthielten aus historischen Gründen noch die führende 1 und das "u" für Update.</p>
+</div>
+<div class="paragraph">
+<p>Mit Java 9 wird es eine klarere Versionierung geben, die dem üblichen Verständnis entspricht:
+<code>$MAJOR.$MINOR.$SECURITY+$BUILD</code>, z.b. für das erste Security nach dem GA, Update, Build 20 <code>9.0.1+20</code>.</p>
+</div>
+<div class="paragraph">
+<p>Das ist zum einen erfreulich, zum anderen, muss man sich dessen bewusst sein, dass Code, der zur Zeit auf Java Versionen tested, dann sehr wahrscheinlich nicht mehr funktioniert.
+Die Dokumentation zum JEP listet Stolperfallen und Tips (z.B. reguläre Ausdrücke) zum Thema.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_260_kapselung_interner_apis">JEP 260: Kapselung interner APIs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Teilweise JigSaw geschuldet, aber noch viel mehr den Aufräumarbeiten im JDK, ist der Zugriff auf interne APIs besonders <code>sun.*</code> nicht mehr möglich.
+Prominentestes Beispiel ist natürlich <code>sun.misc.Unsafe</code>, das sich aufgrund seiner vielen Möglichkeiten (z.B. um effizient auf Hauptspeicher zuzugreifen) großer Beliebtheit erfreut.</p>
+</div>
+<div class="paragraph">
+<p>Bisher gab es dafür Compiler Warnungen, die auch nicht abschaltbar waren.</p>
+</div>
+<div class="paragraph">
+<p>Das ist besonders von Bedeutung für Entwickler von leistungskritischen Systemen wie Datenbanken, Netzwerk- und Nachrichtenverabeitungsysteme.</p>
+</div>
+<div class="paragraph">
+<p>Aber auch Anwender, die einige der Effizienztips aus vergangenen Kolumnen nutzen, müssten sich umstellen, wie das konkret aussieht, dazu später mehr.</p>
+</div>
+<div class="paragraph">
+<p>Für Unsafe selbst soll es für einen Übergangszeitraum ein Kompatibilitätsflag TODO geben, bis alle Funktionalitäten in andere APIs portiert wurden.</p>
+</div>
+<div class="paragraph">
+<p>Um zu testen, ob eigene Anwendungen oder genutzte Bibliotheken interne APIs benutzen, kann man das Tool <code>jdeps</code> mit dem Flag <code>-jdkinternals</code> benutzen.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein Beispiel für Neo4j:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$JAVA_HOME/bin/jdeps -jdkinternals neo4j-io-3.1.0-SNAPSHOT.jar
+
+neo4j-io-3.1.0-SNAPSHOT.jar -&gt; $JAVA_HOME/jre/lib/rt.jar
+ org.neo4j.io.pagecache.impl.SingleFilePageSwapper (neo4j-io-3.1.0-SNAPSHOT.jar)
+   -&gt; sun.nio.ch.FileChannelImpl                       JDK internal API (rt.jar)
+
+Warning: JDK internal APIs are unsupported and private to JDK implementation that are
+subject to be removed or changed incompatibly and could break your application.
+Please modify your code to eliminate dependency on any JDK internal APIs.
+For the most recent update on JDK internal API replacements, please check:
+https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Im Zuge der Aufräumarbeiten wurden auch einige APIs entfernt.</p>
+</div>
+<div class="paragraph">
+<p>Durch Änderungen von APIs und Nutzung neuer APIs von Java9 können damit gebaute Klassen und Jars inkompatibel mit früheren JDK Versionen werden.
+Daher stellt das neue JDK einige Mechanismen bereit, um die Abwärtskompatibilität zu bewahren.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_247_cross_compilation">JEP 247: Cross Compilation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Falls es wirklich notwendig ist, können, wie schon zuvor, Klassen für alte JDK Versionen erzeugt werden.
+Dazu muss man javac die <code>-release N</code> Option übergeben, die das Äquivalent zu <code>-source N -target N -bootclasspath &lt;bootclasspath-from-N&gt;</code> darstellt.
+Die API-Klassen und Signaturen der älteren Versionen werden im JDK in <code>$JDK_ROOT/lib/ct.sym file</code> bereitgestellt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_238_multi_release_jars">JEP 238: Multi-Release Jars</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Um sicherzustellen, dass mit und für Java 9 erzeugte Jar Dateien auch mit älteren Versionen funktionieren, können diese in Zukunft mehrere Versionen einer Klasse enthalten.</p>
+</div>
+<div class="paragraph">
+<p>Sogenannte Multi-Release-Jars stellen vor allem eine clevere Struktur innerhalb des Archives dar.
+Dabei liegen die Klassen für die ältere Version der JVM im Wurzelverzeichnis.</p>
+</div>
+<div class="paragraph">
+<p>Im Manifest gibt es dann einen <code>Multi-Release: true</code> Eintrag.
+In <code>META-INF</code> gibt es ein neues Unterverzeichnis namens <code>versions</code>, das dann wieder Verzeichnisse für die anderen JDK-Versionen mit den entsprechenden, abweichenden Klassen enthält.</p>
+</div>
+<div class="paragraph">
+<p>Dazu mussten diverse Tools, wie <code>jar</code>,<code>javac</code>, <code>javap</code> usw als auch die Classloader angepasst werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>jar root
+  - B.class
+  - D.class
+  - META-INF
+     - versions
+        - 9
+           - B.class</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_269_factorymethoden_für_collections">JEP 269 Factorymethoden für Collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Viele hofften auf kompakte literale Notation für Listen und Maps, wie bei Feldern.
+Das hat sich leider nicht erfüllt, aber es hat für einige statische Factory-Methoden auf den <code>List</code>,<code>Set</code> und <code>Map</code> Interfaces gereicht
+Ähnlich APIs bieten viele Collection Bibliotheken es schon seit Jahren an.</p>
+</div>
+<div class="paragraph">
+<p>Diese sind nicht so elegant und haben wahrscheinlich auch keine Compilerunterstützung, wie Felder oder Stringverknüpfung.
+Zumindest aber Overloads für die Methoden mit bis zu 10 Argumenten</p>
+</div>
+<div class="paragraph">
+<p>Für <code>Map.of</code> gibt es typsichere Überladung mit bis zu 10 Schlüsseln und Werten.
+Für mehr Elemente muss dann <code>Map.ofEntries</code> benutzt werden, denen ein Feld von <code>Map.Entry&lt;K,V&gt;</code> Instanzen übergeben wird.
+Dazu gibt es eine neue Factory Methode <code>Map.entry</code> die statisch importiert konkrete <code>Entry</code> Objekte erzeugen kann.</p>
+</div>
+<div class="paragraph">
+<p>Es wird keine Einfügereihenfolge garantiert, wer das benötigt, muss dann doch auf LinkedHashMap zurückgreifen.
+Die erzeugten Instanzen sind unveränderlich und optimiert implementiert für kleine Mengen von Werten.</p>
+</div>
+<div class="paragraph">
+<p><code>Null</code> ist als Wert hier nirgendwo erlaubt, weder bei den Collections noch bei Map als Schlüssel oder Wert.</p>
+</div>
+<div class="listingblock">
+<div class="title">Factory Methoden für Collections in jshell</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">Set.of(true,false,false,true)
+                   // duplicate Element Exception
+List.of(null)      // NullPointerException
+Set.of(true,false) // [true,false]
+List.of(1,2,3)     // [1,2,3]
+Map.of("name","Michael","age",41,"male",true)
+                   // {name=Michael, male=true, age=41}
+
+import static java.util.Map.entry
+Map.ofEntries(entry("MSFT",57.6),entry("AAPL",113.05),
+              entry("ORCL",39.28))
+                   // {ORCL=39.28, MSFT=57.6, AAPL=113.05}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jep_243_java_level_jvm_compiler_interface">JEP 243:  Java-Level JVM Compiler Interface</h3>
+<div class="paragraph">
+<p>In einem früheren Artikel [HungXX] hatte ich Truffle (AST Framework) und Graal (optimierender Compiler) beschrieben.</p>
+</div>
+<div class="paragraph">
+<p>Dort wurde die Notwendigkeit dargestellt, dass die dynamische Neuübersetzung von Code zur Laufzeit der JVM durch einen externen Compiler eine Schnittstelle benötigt, die in der Standard-JVM nicht vorhanden war.
+Bisher gab es einen spezielle Variante von Java 8 die das ermöglichte, in Java 9 soll das nun direkt in der Standard-JVM funktionieren.</p>
+</div>
+<div class="paragraph">
+<p>Dazu wird das JVM Compiler Interface (JVMCI) bereitgestellt, dass einem externen Compiler ermöglicht, auf die internen JVM Datenstrukturen für Klassen, Felder, Methoden und Metadaten zuzugreifen.
+Desweiteren wird dieser Compiler für die Neuübersetzung von Methoden aufgerufen und kann dann seine Ergebnisse in der JVM integrieren.</p>
+</div>
+<div class="paragraph">
+<p>In Java 9 ist die Schnittstelle noch experimentell und muss durch geeignete Flags aktiviert werden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:+UseJVMCICompiler -Djvmci.Compiler=&lt;name of compiler&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sicherheitsüberlegungen sind hier ein wichtiger Aspekt, da der Zugriff auf die internen JVM Daten und die Installation compilierten Codes sehr streng kontrolliert werden muss.
+Zur Absicherung der Schnittstelle wurde das Modul-System von Java 9 benutzt (JSR261).</p>
+</div>
+<div class="paragraph">
+<p>Ich finde das sehr spannend, da man so die Möglichkeiten des Truffle-Graal Gespanns für hochperformante Ausführung anderer Sprachen und DSLs in Java 9 direkt nutzen kann.
+Ich denke wir werden für Java 9 sehr effiziente Varianten von Ruby, R, Python usw. nutzen können.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_schneller_zugriff_auf_variable_und_methoden_mittels_reflection_und_invoke_dynamik">Schneller Zugriff auf Variable und Methoden mittels Reflection und Invoke-Dynamik</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_jep_193_variable_handles">JEP 193:  Variable Handles</h3>
+<div class="paragraph">
+<p>Mit der schon erläuterten Absicht, <code>sun.misc.Unsafe</code> zu ersetzen, muss für die notwendigen APIs die Unsafe bereitstellt, Ersatz geschaffen werden.</p>
+</div>
+<div class="paragraph">
+<p>Für den direkten, atomaren Zugriff auf Felder von Objekten, Feldelementen und Speicherbereichen wird diese Aufgabe in Zukunft von VarHandles übernommen.</p>
+</div>
+<div class="paragraph">
+<p>Dabei sollen die gewünschten Zugriffseffekte in Bezug auf das Java Speichermodell möglich sein, wie zum Beispiel eine volatile oder atomare Schreiboperation.</p>
+</div>
+<div class="paragraph">
+<p>Anders als bei Unsafe dürfen aber bestimmte Sicherheitsmechanismen nicht ausgehebelt werden, wie z.B. der Zuweisungstypcheck eines Objektfeldes oder die Indexüberprüfung bei Array-Zugriffen.</p>
+</div>
+<div class="paragraph">
+<p>Ein Ziel bei der Entwicklung war diesselbe Geschwindgkeit wie aber bessere Nutzerfreundlichkeit als für Unsafe.
+Der vom Java Compiler generierte Assembler-Code sollte dem von Unsafe genutzen weitgehend entsprechen.</p>
+</div>
+<div class="paragraph">
+<p>Für ihre Realisierung mussten Erweiterungen im JDK, der JVM und im Compiler vorgenommen werden.</p>
+</div>
+<div class="paragraph">
+<p>Warum ist das alles notwendig?</p>
+</div>
+<div class="paragraph">
+<p>Besonders in hochparallelen, perfomance-kritischen Anwendungen wie z.B. Big Data Frameworks und Datenbanken will man mit minimalem Aufwand and Speicher und CPU sichere Programme schreiben.
+Dazu sind atomare Operationen auf Feldern eine Grundvoraussetzung.</p>
+</div>
+<div class="paragraph">
+<p>Man kann das ganze zwar korrekt mit dem Hilfsklassen in <code>java.util.concurrent</code> erreichen, die CAS benutzen, wie <code>AtomicInteger</code> oder die verschiedenen <code>FieldUpdater</code>, aber halt nicht effizient.
+Daher wurde in der Vergangenheit meist zu Unsafe gegriffen, um solche Operationen umzusetzen.
+In Zukunft sollen das VarHandles übernehmen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Wie sieht deren API aus?</strong></p>
+</div>
+<div class="paragraph">
+<p>Zum einen werden VarHandles ähnlich wie MethodHandles über <code>MethodHandles.lookup()</code> ermittelt.</p>
+</div>
+<div class="paragraph">
+<p>Dann enthält VarHandle (siehe [VarHandle] sehr viele Methoden für Lese-, Schreib-, Bit-, CompareAndSwap-, Additions- und andere Zugriffsoperationen auf die Felder, wobei nicht jede Operation auf jedem Datentyp definiert ist.
+Z.B. gibt es keine Modifikationen auf <code>final</code> Feldern, keine <code>add*</code>-Operation auf booleschen Feldern, oder zur Zeit noch keine Bitoperationen auf <code>float</code> und <code>double</code>.
+Jede dieser Methoden hat dokumentierte Speicher-Sichtbarkeitsregeln, wie zum Beispiel volatiler Zugriff (auch ohne dass die Variable als <code>volatile</code> definiert ist).</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren gibt es eine Handvoll von statischen Marker-Methoden, wie z.B. <code>loadLoadFence()</code>, die die erlaubten  Operations-Reordering-Regeln abbilden (siehe Java-Memory-Modell Artikel [Hung]).</p>
+</div>
+<div class="paragraph">
+<p>Hier ist ein einfaches Beispiel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">class Transactions {
+    int count;
+}
+VarHandle counter =
+  MethodHandles.lookup().in(Transactions.class)
+  .findVarHandle(Transactions.class, "count", int.class);
+
+Transactions tx = new Transactions();
+
+int vol = (int)counter.getAndAdd(tx,1); // 0
+counter.get(tx); // 1
+counter.compareAndSet(tx,1,2); // true
+counter.getVolatile(tx); // 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um von den Compiler Optimierungen (Intrinsics, Constant-Folding) zu profitieren, sollte das VarHandle aber in einer <code>static final</code> Konstante abgelegt werden (und in einem static Initializer Block initialisiert).</p>
+</div>
+<div class="paragraph">
+<p>Ein interessanter Aspekt ist wie die Implementierung von VarHandles mit einer einzigen abstrakten Klasse vorgenommen werden kann, deren Methodensignatur aus einem Object-varargs und einem Object Rückgabewert bestehen, zum Bespiel: <code>Object VarHandle.getAndAdd(Object&#8230;&#8203;args)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Diese Methoden werden "signature-polymorphic" genannt, da sie nicht auf Subklassenvererbung beruhen, sondern rein vom Compiler und der Runtime gehandhabt werden.
+Für die Bestimmung der Zieltypen der Methodenparameter werden die Typen der übergebenen Parameter genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Damit wird die Compilierbarkeit sichergestellt, der Bytecode enthält die Informationen über die genutzen Typ-Parameter. Es wird aber kein Boxing von Objekten vorgenommen, das sieht nur so aus.</p>
+</div>
+<div class="paragraph">
+<p>Intern wird dann der Methodenaufruf komplett durch die Implementierung der Operation ersetzt, wie bei einer intrinsischen Methode.</p>
+</div>
+<div class="paragraph">
+<p>Der Rückgabetyp wird noch nicht aus Ziel-Typ der Call-Site inferiert, so dass immer noch ein Type-Cast notwendig ist.</p>
+</div>
+<div class="paragraph">
+<p>Ein cooles Feature ist die Behandlung eines Speicherbereiches (byte-Array) als die Repräsentation eines anderen Datentyps, z.B. <code>long</code> oder <code>double</code>.</p>
+</div>
+<div class="paragraph">
+<p>Ein Fallstrick ist hier aber die Berechung des Indexes für den Wert, den man selbst mit der Datenbreite (z.b. 8 bytes pro long Wert) inkrementieren muss.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>byte[] bytes = new byte[100]
+VarHandle view = MethodHandles
+  .byteArrayViewVarHandle(long[].class, ByteOrder.BIG_ENDIAN);
+
+view.get(bytes,8) // 0
+
+view.set(bytes,8,-1L)
+
+view.get(bytes,8) // -1
+
+view.set(bytes,0,98L)
+
+// byte[10000] { 0, 0, 0, 0, 0, 0, 0, 98, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Leider wurde in diesem JEP nicht die Gelegenheit genutzt, ähnlich wie für Methoden-referenzen, eine Feld-Referenz einzuführen, ala <code>Transactions::count</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jep_248_make_g1_the_default_garbage_collector_jep_158_unified_jvm_logging_gc_logging">JEP 248:  Make G1 the Default Garbage Collector / JEP 158: Unified JVM Logging / GC Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Nachdem in Java 7 und 8 reichlich Gelegenheit war, den G1 Collector in vielen Projekten und Anwendungen auf Herz und Nieren zu testen, und die doch vorhandenen Probleme zu beseitigen, fühlt sich Oracle für Java 9 sicher genug, diesen Garbage Collector zum Standard zu erklären.</p>
+</div>
+<div class="paragraph">
+<p>Damit können Java Anwendungen größere Heaps als bisher mit besserer Latenz und weniger Pausen nutzen.
+Der G1-GC ist ein &#8230;&#8203; Garbage Collector, der &#8230;&#8203;
+TODO G1 characteristics</p>
+</div>
+<div class="paragraph">
+<p>Damit einhergehend, werden einige der alten, schon länger als deprecated markierten GCs entfernt und auch diverse Flags für den Garbage-Collector aufgeräumt, die alten Flags werden transparent übersetzt.</p>
+</div>
+<div class="paragraph">
+<p>Als Teil der Aufräumarbeiten in der JVM werden auch die verschiedenen Log-Formate und Ansätze vereinheitlicht, so dass alle Ausgaben der JVM und der Collectoren ein konsistentes Format haben.</p>
+</div>
+<div class="paragraph">
+<p>Ich hoffe, meine zwei Artikel konnten etwas Licht in die performance-bezogenen Änderungen in Java 9 geben und Sie neugierig auf mehr machen.</p>
+</div>
+<div class="paragraph">
+<p>Die Liste der JEPs für Java 9 ist wirklich beeindruckend und die individuellen Vorschläge geben einen guten Überblick.</p>
+</div>
+<div class="paragraph">
+<p>Laden Sie sich das JDK 9 heute schon einmal herunter und versuchen Sie es regelmäßiger zu benutzen.
+Das Team freut sich über Feedback zur Vollständigkeit und Korrektheit.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen_2">Referenzen:</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Quality Outreach Program <a href="https://wiki.openjdk.java.net/display/quality/Quality+Outreach" class="bare">https://wiki.openjdk.java.net/display/quality/Quality+Outreach</a></p>
+</li>
+<li>
+<p>Java 9 Download: <a href="https://jdk9.java.net/download/" class="bare">https://jdk9.java.net/download/</a></p>
+</li>
+<li>
+<p>Jdeps Wiki: <a href="https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool" class="bare">https://wiki.openjdk.java.net/display/JDK8/Java+Dependency+Analysis+Tool</a></p>
+</li>
+<li>
+<p>Offene Diskussion zu Unsafe: <a href="https://www.infoq.com/news/2015/07/oracle-plan-remove-unsafe" class="bare">https://www.infoq.com/news/2015/07/oracle-plan-remove-unsafe</a></p>
+</li>
+<li>
+<p>JEP 223 Version String: <a href="http://openjdk.java.net/jeps/223" class="bare">http://openjdk.java.net/jeps/223</a></p>
+</li>
+<li>
+<p>VarHandle: <a href="http://download.java.net/java/jdk9/docs/api/java/lang/invoke/VarHandle.html" class="bare">http://download.java.net/java/jdk9/docs/api/java/lang/invoke/VarHandle.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2016-10-03 18:35:45 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

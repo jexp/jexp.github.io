@@ -1,0 +1,868 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Hinter den Kulissen: GPars (groovy parallel systems)</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_hinter_den_kulissen_gpars_groovy_parallel_systems">Hinter den Kulissen: GPars (groovy parallel systems)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die meisten Entwickler, die Brian Goetz' "Java Concurrency in Practice" gelesen haben, bekamen erst grosse
+Augen, dann ein nachdenkliches Gesicht und legten das Buch mit einem "das ist mir zu hoch beseite". Nun ist
+nebenläufiges Programmieren keine Sache vor der man einfach die Augen verschliessen kann und dann geht sie
+vorbei. Diese "schönen" Zeiten sind vorüber. Da die von Java angebotenen low-level Mechanismen, um korrekt nebenläufig zu
+programmieren zu können - "synchronized", wait(), notify[All](), "volatile" und "final" weder trivial noch gut zu
+komplexen Systemen komponierbar sind, haben sich diverse Autoren daran gemacht, das Leben für Entwickler
+einfacher zu gestalten.</p>
+</div>
+<div class="paragraph">
+<p>Da sind zum einen Doug Lea&#8217;s Helfer in java.util.concurrent, das schon vielerorts beschriebene
+Fork-Join-Framework von Java 7, Akka, die Scala Aktoren Bibliothek, die Ansätze in Clojure aus der letzten
+Kolumne und das schon früher beschriebene Disruptor Pattern von LMAX. Neben diesen gibt es noch viele weitere
+Ansätze.</p>
+</div>
+<div class="paragraph">
+<p>Einem davon, dem GPars Framework, wollen wir heute ins Getriebe schauen. GPars ist ein Groovy Framework von
+Václav Pech, das teilweise in Johannes Links' Artikel in JavaSpektrum 05/10 aus der Nutzersicht vorgestellt
+wurde. GPars stellt eine Vielzahl von Möglichkeiten bereit, in Groovy und Java Programmen mit einfach zu
+benutzenden Konzepten, parallele Programmierung anzugehen, ohne sich mit den Basisprimitiven herumzuärgern.
+Damit wird auch die Fehlerträchtigkeit der nebenläufigen Programmierung deutlich reduziert. Nur zum kleinen
+Teil wird die Mächtigkeit von Groovy benutzt, um z.B. mit Closures und DSLs übersichtlichen Code zu
+ermöglichen. Insgesamt stellt GPars Mechanismen bereit, die genauso gut in Java genutzt werden können.</p>
+</div>
+<div class="paragraph">
+<p>Mit GPars bekommt man ein ganzes Potpourri an Konstrukten bereitgestellt, das man in seiner nebenläufigen
+Programmierung nutzen kann:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"parallel collections" ermöglichen Operationen auf Datencontainern (halb)automatisch zu parallelisieren</p>
+</li>
+<li>
+<p>Map/Reduce, eine Umsetzung des bekannten Google Mechanismus zur parallelen Verarbeitung grosser Datenmengen</p>
+</li>
+<li>
+<p>asynchrone Funktionen erlauben existierende Funktionen in asynchrone Wrapper umzuwandeln und mittels einer DSL zu verketten</p>
+</li>
+<li>
+<p>Aktoren bieten den von Erlang und Akka genutzen Ansatz leichtgewichtige Nachrichtensender und -empfänger mit lokalen Zustand zu vernetzen</p>
+</li>
+<li>
+<p>Dataflow ist eine workflow-artige Herangehensweise, um Aufgaben mittels Datenflüssen zu verketten und zu synchronisieren</p>
+</li>
+<li>
+<p>Kanban-Flow steuert den Parallelitätsgrad wie im Kanbanprozess aus der Lean-Produktion mit einer festen Anzahl an Datencontainern</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Von allen Angeboten, die GPars offeriert, will ich heute nur auf die "Parallel Collections" und "Dataflow" eingehen. Den
+Abschluss soll ein kleiner Ausblick auf Dierk Königs interessanten Kanban Flow Ansatz bilden.</p>
+</div>
+<div class="paragraph">
+<p>Als Beispielprogramm möchte ich eine serielle Groovy Variante des "Game Of Life" nutzen, die ich vor längerem
+geschrieben habe. Der Game Of Life Algorithmus ist sehr vielfältig einsetzbar, z.b. für Code-Retreats und
+Sprachenvergleich. Ausserdem konnte ich diese Gelegenheit nutzen, um endlich einmal parallele Versionen davon zu
+schreiben.</p>
+</div>
+<div class="paragraph">
+<p>GPars ist ein CodeHaus open-source Projekt das jetzt als Teil von Groovy ausgeliefert wird, somit ist es unkompliziert
+sich die Quellen zu besorgen und in die Tiefen der Implementierung abzutauchen. Glücklicherweise ist GPars
+(anders als Doug Lea&#8217;s Schöpfungen) sehr gut strukturiert, dokumentiert und leicht lesbar. Danke Václav!</p>
+</div>
+<div class="sect2">
+<h3 id="_basis_infrastruktur_in_gpars">Basis-Infrastruktur in GPars</h3>
+<div class="paragraph">
+<p>GPars nutzt unter der Haube die existierenden Java Bibliotheken, um die parallele Ausführung von Funktionen zu
+steuern. Vor allem die ThreadPools der ExecutorServices und das in JSR-166 entwickelte in Java7 vorhandene
+Fork-Join-Framework werden zur Anwendung gebracht. Um diese Funktionalität auch auf Java 6 zur Verfügung zu
+stellen, wird Doug Lea&#8217;s 166y Bibliothek für Fork-Join zusammen mit 166extras für Parallel-Arrays eingebunden.</p>
+</div>
+<div class="paragraph">
+<p>Die <code>PGroup</code> ist ein wichtiges Basiskonzept, sie erlaubt eine logische Gruppe von Aktoren, Flows, Operatoren oder parallelen Collections zu
+erzeugen, welche einen gemeinsamen ThreadPool nutzen und über die PGroup gesteuert werden können. Die PGroup
+bietet eine Menge Methoden zur Erzeugung der o.a. beteiligten Elemente und Konfiguration des ThreadPools.</p>
+</div>
+<div class="paragraph">
+<p>Beispielsweise wird hier ein DataFlow-Task erzeugt. (auf den später noch eingegangen wird):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public DataflowVariable task(final Callable callable) {
+    final DataflowVariable result = new DataflowVariable();
+    threadPool.execute(new Runnable() {
+        public void run() {
+            Dataflow.activeParallelGroup.set(PGroup.this);
+            try {
+                result.bind(callable.call());
+            } catch (Exception e) {
+                    result.bind(e);
+            } finally {
+                Dataflow.activeParallelGroup.remove();
+            }
+        }
+    });
+    return result;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für das Ergebnis des Tasks wird eine Datenflussvariable angelegt an die dann entweder Ergebnis oder Exception
+gebunden wird. Dann wird die aktuelle PGroup als aktiv gesetzt, der Task dem ThreadPool übergeben und
+nach erfolgreicher Ausführung die PGroup wieder deaktiviert.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_parallel_collections">Parallel Collections</h3>
+<div class="paragraph">
+<p>Zuerst einmal das obligatorische, einfache Beispiel:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>import static groovyx.gpars.GParsPool.withPool
+// oder
+import static groovyx.gpars.GParsExecutorsPool.withPool</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>withPool { pool -&gt;
+   (1.10000).toList().findAllParallel { it % 2 == 0}
+       .collectParallel { it * it }
+       .groupByParallel { it % 10 }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Was passiert hier? <code>withPool</code> ist eine Methode aus <code>GParsPool</code> und nutzt eine Groovy <code>Category</code>, um den innerhalb
+des Blocks genutzten Collections die parallelen Methoden (<code>findAllParallel</code>, <code>collectParallel</code>, usw.) hinzuzufügen. Es gibt auch die
+Möglichkeit die Collection-Klasse manuell anzureichern, das passiert dann mit
+<code>ParallelEnhancer.enhanceClass(HashSet)</code> (oder <code>enhanceInstance()</code> pro Objekt). Mittels
+<code>collection.makeConcurrent()</code> werden die originalen Methoden wie <code>collect</code>, <code>sort</code> usw. gekapselt
+und werden dann parallel ausgeführt, so dass nicht einmal Quellcodeänderungen notwendig sind.</p>
+</div>
+<div class="paragraph">
+<p>Ausserdem fügt <code>withPool</code> einem internen Stack einen neuen Verweis auf den aktuellen <code>PGroup</code>
+(ParallelGroup, s.o.) hinzu, der für die aktuelle Ausführung genutzt wird. Mit optionalen Parametern von <code>withPool</code>
+lässt sich dieser ThreadPool noch konfigurieren.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_was_passiert_nun_in_diesen_parallelen_methoden">Was passiert nun in diesen parallelen Methoden?</h3>
+<div class="paragraph">
+<p>Die beiden Varianten von <code>GParsPool</code> benutzen sehr verschiedene Mechanismen zur parallelen Ausführung von
+Methoden auf Containern.</p>
+</div>
+<div class="paragraph">
+<p>GParsPool macht es sich einfach und bedient sich der Parallel Arrays von Doug Lea (aus der 166extras
+Bibliothek). Diese basieren auf Fork-Join und nutzen einen Fork-Join Pool zur Ausführung. Da es sich hierbei
+um eine Java Bibliothek handelt, kann sie auch problemlos in eigenen Projekten direkt eingesetzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Eine wichtige Aussage im Fork-Join Framework [ForkJoinTask] ist, dass Container so in Fragmente zerlegt werden
+sollten, das zwischen 100 und 10000 Basis-Operationen pro Task erfolgen, um optimal ausgeführt zu werden. Kleinere
+Fragmente machen den Overhead zu teuer, wohingegen zu grosse Fragmente zu lange dauern um optimal verteilt zu
+werden.</p>
+</div>
+<div class="paragraph">
+<p>Für Parallel Arrays ist anzumerken, dass ihre Erzeugung mit O(n) relativ kostspielig ist, sie aber in der
+Ausführung sehr gut skalieren. Die Implementierung von <code>collectParallel()</code> wie folgt aus:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>static &lt;T&gt; Collection&lt;T&gt; collectParallel(Collection collection, Closure&lt;? extends T&gt; cl) {
+    return GParsPoolUtilHelper.createPAFromCollection(collection, retrievePool()).
+           withMapping(new ClosureMapper(new CallClosure(cl))).all().asList();
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zuerst wird ein Parallel Array aus der Liste erzeugt (wenn es nicht schon eines ist). <code>withMapping()</code> ist die
+collect-Funktion von Parallel Arrays, der dann ein (doppelter) Wrapper für die übergebene Closure mitgegeben
+wird. Mittels <code>all().asList()</code> werden alle Elemente des Mappings zurückgeliefert und in eine Liste gewandelt.</p>
+</div>
+<div class="paragraph">
+<p>Prinzipiell können Parallel Arrays dedizierte Operatoren übergeben werden. Um optimale Ausführung auch für
+primitive Datentypen zu erlauben gibt es diese deklariert für alle möglichen Typ-Kombinationen (für Filter und
+Mappings). Ebenso sind die angebotenen Methoden "dupliziert" um der kombinatorischen Explosionsvielfalt
+gerecht zu werden. In typischer Doug Lea Manier manifestiert sich das ganze in einer höchst komplexen Klasse
+mit ca. 8000 Zeilen Code.</p>
+</div>
+<div class="paragraph">
+<p>Generell ist ein Operator, wie erwartet, definiert als:</p>
+</div>
+<div class="paragraph">
+<p>interface Ops.Op&lt;A,R&gt; {
+  R op(A a);
+}</p>
+</div>
+<div class="paragraph">
+<p>In der Implementierung von [PAGameOfLife] wird deutlich, wie man parallel Arrays in Java einsetzen kann.</p>
+</div>
+<div class="paragraph">
+<p>class PAGameOfLife {</p>
+</div>
+<div class="paragraph">
+<p>Ein paar andere Methoden von ParallelArray sind:</p>
+</div>
+<div class="paragraph">
+<p><code>withFilter(predicate)</code>, <code>withMapping(mapping)</code>, <code>withBounds(from,to)</code>, <code>sort()</code>, <code>allUniqueElements()</code>,
+<code>all()</code>, <code>reduce(reducer,base)</code>, <code>apply(procedure)</code>, <code>max()</code></p>
+</div>
+<div class="paragraph">
+<p>Die ursprüngliche GPars-Implementierung für parallele Container bedient sich der Java 5 <code>ThreadPools</code> und lässt für
+die meisten Operationen einfach einen Task pro Container-Element ablaufen. Dort wäre die Bildung entsprechend
+grosser Fragmente schon hilfreich, um den Overhead zu minimieren. In <code>GParsExecutorsPoolUtil</code> werden die
+Methoden deklariert, beispielsweise (vereinfacht):</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public static def collectParallel(Object collection, Closure cl) {
+    return processResult(collection.collect(callParallel(cl)))
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>private static Future callParallel(Closure task) {
+    final ExecutorService pool = GParsExecutorsPool.retrieveCurrentPool()
+    if (!pool) throw new IllegalStateException("No ExecutorService ...")
+    return pool.submit(new Callable() {
+        @Override
+        Object call() {
+            return task()
+        }
+    })
+}
+static List&lt;Object&gt; processResult(List&lt;Future&lt;Object&gt;&gt; futures) {
+    final Collection&lt;Throwable&gt; exceptions = new ArrayList&lt;Throwable&gt;()</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>final List&lt;Object&gt; result = futures.collect {
+    try {
+        return it.get()
+    } catch (Throwable e) {
+        exceptions.add(e)
+        return e
+    }
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    if (exceptions.empty) return result
+    throw new AsyncException("Some asynchronous operations failed. ${exceptions}", exceptions)
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die Closure <code>cl</code> mit der Operation für die Liste wird also pro Element der Collection in einem ThreadPool ausgeführt und die
+Ergebnisse aus den zurückgegebenen <code>Futures</code> dann anschliessend aufgesammelt und etwaige Exceptions
+herausgezogen.</p>
+</div>
+<div class="paragraph">
+<p>Auch das ist ebenso einfach direkt in Java umzusetzen. Den Charme von GPars macht die sinnvolle und einfache
+API zu Nutzung dieser Features aus, ohne dass man in die Tiefen der Implementierung absteigen muss und sich
+mit Pools, Konvertierungen, Wrappern und den low-level APIs herumschlagen muss.</p>
+</div>
+<div class="paragraph">
+<p>Wo Licht ist, ist natürlich auch Schatten. An meinem "Game of Life" Beispiel [PGoLStatic] wird schnell deutlich, dass die
+hohen Kosten der Erzeugung von Parallel Arrays nur für grosse, zu verarbeitende Datenmengen sinnvoll sind.
+Daher hatte meine initiale Parallelisierung des Problems eher negative Auswirkungen. Erst mit einem entsprechend
+grossen Bord wurde eine Einsparung von ca. 50% auf 4 Kernen sichtbar. Dazu war es aber auch noch notwendig,
+die Gemütlichkeit von Groovy wie wir es kennen, zu verlassen. In der Kommunikation mit Václav erfuhr ich,
+dass Groovy im dynamischen Modus Methodenaufrufe synchronisiert. Und zwar um Änderungen an den
+Metaklassen determistisch zu bestimmten Zeitpunkten anzuwenden (ähnlich der Savepoints des JIT in Hotspot).
+Somit wurde mein hübsches Programm mit Typdeklarationen und <code>@CompileStatic</code> Annotationen "verschandelt", um dem zu
+entgehen. Erst danach zeigte sich der gewünschte Leistungszuwachs. Natürlich stellt sich dann die Frage,
+ob es nicht sinnvoller wäre, dann gleich ein Java Programm zu schreiben und in den sauren Apfel zu beissen und
+ParallelArrays direkt zu verwenden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dataflow_datenflüsse_zur_arbeitssynchronisierung">DataFlow - Datenflüsse zur Arbeitssynchronisierung</h3>
+<div class="paragraph">
+<p>Im zweiten Teil der Kolumne geht es um die Nutzung von Datenfluss-Modellierung via GPars.</p>
+</div>
+<div class="paragraph">
+<p>Der Datenfluss Ansatz nimmt Anleihen bei bekannten Workflowmechanismen. Wie Mitarbeiter in einer Produktion
+erst beginnen können, wenn all ihre Ausgangsstoffe vorhanden sind, so können Workflow-Prozesse erst beginnen
+wenn ihre Vorbedingungen erfüllt sind und Daten bereitstehen. Eine ähnliche Herangehensweise ist auch von
+Rule-Engines bekannt.</p>
+</div>
+<div class="paragraph">
+<p>Auch hier erst einmal ein einfaches Beispiel von Dataflows. In 3 getrennten Aufgaben werden x und y Werte
+zugewiesen und dann separat addiert. Dabei können die ersten beiden Aufgaben parallel ausgeführt werden und
+die finale Ausgabe von z erfolgt erst, nachdem der Wert bereitsteht. Schön ist, dass die
+Parallelitäts-Implementierung im Programm nicht prominent ist und die eigentliche Geschäftslogik überschattet.</p>
+</div>
+<div class="paragraph">
+<p>Die im folgenden genutzte <code>Dataflows</code>-Klasse ist ein Groovy-Bean das dynamisch Properties als <code>DataFlowVariables</code>
+hinzufügt, so dass deren Nutzung noch bequemer wird. Die Lese- und Schreibzugriffe werden dann auf die dahinterliegenden
+Datenflussvariablen-Instanzen weitergeleitet.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>import groovyx.gpars.dataflow.*
+import static groovyx.gpars.dataflow.Dataflow.task</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>final def flows = new Dataflows()</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>task {
+    flows.z = flows.x + flows.y
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>task {
+    flows.x = 10
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>task {
+    flows.y = 5
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>println "Result: ${flows.z}"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Im Datenfluss Ansatz wird die Synchronisierung potentiell paralleler Aufgaben über die Verfügbarkeit von
+Variableninhalten vorgenommen. Normale Datenflussvariablen können nur einmal geschrieben werden und stehen
+dann sofort allen darauf wartenden Beteiligten zur Verfügung. Wenn alle Inhalte, die für eine Operation
+benötigt werden bereitstehen, kann diese Fortschritt machen, entweder bis zum Ende oder bis zur nächsten,
+nicht erfüllten Abhängigkeit.</p>
+</div>
+<div class="paragraph">
+<p>Es sollte darauf geachtet werden, dass jede Datenfluss-Aufgabe klein und überschaubar ist, deterministisch zum
+Ende kommt und Variablen erst dann liest, wenn es sie wirklich benötigt.</p>
+</div>
+<div class="paragraph">
+<p>Durch die Datenfluss Modellierung und den Fokus auf Daten statt Prozesse, können folgende Eigenschaften
+erreicht werden:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>maximaler Durchsatz</p>
+</li>
+<li>
+<p>keine Livelocks</p>
+</li>
+<li>
+<p>deterministische Deadlocks</p>
+</li>
+<li>
+<p>einfacher Code</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Livelocks treten nicht auf da die Aufgaben nicht selbst über die Blockierung und Freigabe von Resource
+bestimmen können.</p>
+</div>
+<div class="paragraph">
+<p>Deadlocks können, wie schon bei Neo4j beschrieben einfach als Zyklen im Abhängigkeitsgraph erkannt werden und
+sie treten immer wieder an denselben Stellen auf. Wenn z.B. Aufgabe 1 erst <code>beta</code> liest und dann <code>alpha</code> setzt,
+dagegen Aufgabe 2 umgekehrt erst <code>alpha</code> liest und dann <code>beta</code> setzt, dann verklemmen sie sich immer wieder.</p>
+</div>
+<div class="paragraph">
+<p>Aus den überschaubaren Tasks können komplexere Aufgaben durch Komposition entstehen. Etwas das mit den
+Basis-Synchronisationsmechanismen von Java nicht ohne weiteres möglich ist. Brian Goetz sagt in seinem Buch [JCP]:
+"Locking is not composable."</p>
+</div>
+<div class="sect3">
+<h4 id="_wie_funktioniert_dataflow_nun_in_gpars">Wie funktioniert Dataflow nun in GPars.</h4>
+<div class="paragraph">
+<p>Das Kernstück bilden <code>DataflowVariables</code>, die aus der Basisklasse <code>DataflowExpression</code> erben und eine Vielzahl
+von Methoden anbieten, von denen uns erst einmal nur <code>getVal()</code> und <code>bind()</code> interessieren.</p>
+</div>
+<div class="paragraph">
+<p>Wenn der Wert der Datenflussvariable mittels <code>getVal()</code> gelesen werden soll und er noch nicht gebunden wurde,
+wird der aktuelle Thread in eine verkettete Liste eingereiht und mittels <code>LockSupport.park()</code> angehalten. In
+<code>bind()</code> bzw. <code>doBindImpl()</code> wird der Variablenwert gesetzt und die Kette der Threads durchgegangen und sie wieder
+aufgeweckt. So kann man sich einfach verdeutlichen, dass Tasks die gerade in einem ThreadPool ablaufen beim
+Lesen der Datenflussvariable blockiert werden bis der Wert zur Verfügung steht. Die Ablaufreihenfolge
+ergibt sich direkt aus der Verfügbarkeit der Werte die zur Folge hat, dass der Task dann weiterlaufen kann.
+Ein kritischer Punkt ist hier natürlich die Größe des Threadpools, der ausreichen muss, um alle potentiell
+blockierten Tasks parallel aufzunehmen, damit die Tasks, die die Werte ermitteln bzw. setzen noch Fortschritt
+machen können. Die Ausführung der Tasks im Pool ist im ersten Code-Beispiel (aus PGroup) im Artikel dargestellt.</p>
+</div>
+<div class="paragraph">
+<p>Es gibt auch die Möglichkeit mittels getValAsync() einen GPars Aktor (oder MessageStream, s.u. der
+DataflowOperatorActor) dann eine Nachricht zu schicken, wenn der Wert gebunden wurde. Diese werden auch in die
+o.a. verkettete Liste eingereiht und werden in doBindImpl() benachrichtigt.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// aus DataflowExpression, leicht gekürzt und abgewandelt
+@Override
+public T getVal() throws InterruptedException {
+    ThreadLink threadLink = null;
+    while (state.get() != S_VALUE_BOUND) {
+        if (threadLink == null) {
+            threadLink = new ThreadLink(Thread.currentThread(), null, null, null);
+        }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>final ThreadLink previous = threads.get();
+if (previous == alreadyProcessing) break;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>        threadLink.previous = previous;
+        if (threads.compareAndSet(previous, threadLink)) {
+            // ok, we are in the queue, so writer is responsible to process us
+            while (state.get() != S_VALUE_BOUND) {
+                LockSupport.park();
+                if (Thread.currentThread().isInterrupted()) handleInterruption(threadLink);
+            }
+            break;
+        }
+    }
+    return value;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>protected void doBindImpl(final T value) {
+    this.value = value;
+    state.set(S_VALUE_BOUND);</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>final ThreadLink threadLink = threads.getAndSet(alreadyProcessing);</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    for (ThreadLink current = threadLink; current != null; current = current.previous) {
+        if (current.compareAndSet(false, true)) {
+            if (current.thread != null) {
+ // geparkten Thread aufwecken
+                LockSupport.unpark(current.thread);
+            } else {
+                // Nachricht an Aktor
+                if (current.callback != null) {
+                    scheduleCallback(current.attachment, current.callback);
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Es gibt in GPars viele Möglichkeiten mittels einer DSL (bzw. Groovy Operatoren) Datenflüsse miteinander zu
+verketten bzw. wie Leitungssysteme oder logische Schaltungen aufzusplitten, abzuzweigen, wieder
+zusammenzuführen oder per 1-aus-n Auswahl zu schalten. Für komplexere Verknüpfungen stehen auch Broadcasts
+bzw. 1-zu-n Kommunikation mittels <code>DataFlowStream</code> zur Verfügung.</p>
+</div>
+<div class="paragraph">
+<p>Bei den Operatoren kann man zwischen zwei Mechanismen unterscheiden, der einfachere sind die schon
+diskutierten Tasks die andere stellen eher generische Datenfluss-Operatoren dar, die eine Reihe von Eingabe-
+und Ausgabe-Kanälen, ihren Parallelitätsgrad und den auszuführenden Code deklarieren. Diese
+<code>DataflowOperators</code> basieren auf einem allgemeinem <code>DataFlowProcessor</code>, der auch noch für Selektoren (1 aus n,
+<code>DataflowSelector</code>) genutzt wird.</p>
+</div>
+<div class="paragraph">
+<p>Interessanterweise bildet ein Aktor das Herzstück des <code>DataflowProcessors</code>, an den die Datenfluss-Kanäle
+abgelegt werden und dessen Empfangsmechanismen für das Sammeln der erwarteten Eingabewerte zuständig sind
+(neben denen die schon aus den Eingabe-Kanälen direkt gelesen werden können).</p>
+</div>
+<div class="paragraph">
+<p>Wenn alle geforderten Werte vorhanden sind wird der in Form einer Closure bereitgstellte Code mit diesen Parametern ausgeführt und der Aktor/DatenflussOperator steht für die nächste
+Runde bereit. Der Nachrichtenempfang kümmert sich auch um das sanfte oder abrupte Ableben des Aktors beim Empfang der entsprechenden Nachrichten ("StopGently" oder "PoisonPill").</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>class DataflowOperatorActor extends DataflowProcessorActor {
+    private Map values = new HashMap(10);
+....
+    final void afterStart() {
+        queryInputs(true);
+    }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>private void queryInputs(final boolean initialRun) {
+    for (int i = 0; i &lt; inputs.size(); i++) {
+        final DataflowReadChannel input = (DataflowReadChannel) inputs.get(i);
+        if (initialRun || !(input instanceof DataflowVariable)) {
+// Registrierung dieses Aktors bei der Variablen, s.o. mit dem
+// "Attachment" i also dem Parameter-Index
+            input.getValAsync(i, this);
+        } else {
+            try {
+                values.put(i, input.getVal()); // blockierendes Lesen aus dem Kanal
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("....", e);
+            }
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>...
+@Override
+public final void onMessage(final Object message) {
+    if (message instanceof StopGently) {
+        stoppingGently = true;
+        return;
+    }
+    // eigentlicher Wert
+    final Object result = msg.get("result");
+    // numerischer Index
+    final Object attachment = msg.get("attachment");
+    if (checkPoison(result)) return;
+    values.put(attachment, result);
+    if (values.size() == inputs.size()) {
+        // ... sortieren nach Index
+        startTask(arrivedValues);
+        values = new HashMap(values.size()); // reset
+		// ... etwaiger stop
+    }
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// callback in doBindImpl aus DataFlowExpression / DataFlowVariable
+protected void scheduleCallback(final Object attachment, final MessageStream callback) {
+    if (attachment == null) {
+        callback.send(value);
+    } else {
+        Map message = new HashMap();
+        message.put(ATTACHMENT, attachment);
+        message.put(RESULT, value);
+        callback.send(message);
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das "attachment" bildet der numerische (Parameter-)Index des Wertes das vorher im erwähnten <code>doBindImpl</code> der
+DataFlowVariable zusammen mit dem eigentlichen Wert an den registrierten Ziel-Aktor geschickt wird.
+Registriert wird es z.b. im <code>queryInputs()</code> des Aktors.</p>
+</div>
+<div class="paragraph">
+<p>Ganz allgemein erfolgt die Verkettung von Datenfluss-Operatoren mittels <code>DataFlowChannels</code> von denen
+<code>DataFlowVariable</code> eine Inkarnation darstellt. Andere Varianten, die auch das Binden mehrerer Werte oder
+Variablen erlauben sind <code>DataFlowQueue</code> oder für 1:n / n:m Kommunikation ein <code>DataflowBroadcast</code> der auf in
+einem synchronisierendem WriteAdapter gekapselten <code>DataFlowStreams</code> basiert. Der Broadcast erlaubt es beliebig
+viele ReadChannels zu erzeugen, die dann alle ähnlich wie Datenflussvariablen (und intern auch darauf
+aufbauend) mit <code>getVal()</code> auf die in den Broadcast geschriebenen Werte zugreifen können. Es stellt also eine Art
+Publish-Subscribe Modell dar.</p>
+</div>
+<div class="paragraph">
+<p>Der DataflowStream auf dem das ganze basiert nutzt <code>StreamCore&lt;T&gt;</code> das eine typisch funktionale Datenstruktur
+aus Head (<code>DataFlowVariable&lt;T&gt;</code>) und Rest (<code>AtomicReference&lt;StreamCore&lt;T&gt;&gt;</code>) darstellt und bei allen Operationen
+ebenso wie funktionale Äquivalente auf die rekursive Abarbeitung alá stream.apply(op) = op(head) &amp;
+rest.apply(oop) setzt.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kanban_flow">Kanban Flow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Dierk König hat vor einiger Zeit das Kanban Flow Pattern vorgestellt [König Kanbanflow]. Es bedient sich dem
+aus dem Lean Manufacturing bekannten Kanban Prinzip, das darauf basiert dass ein Beteiligter aktiv nach Arbeit
+(oder Werkstücken) fragt (Pull-Prinzip), wenn er freie Kapazität hat.</p>
+</div>
+<div class="paragraph">
+<p>sidebar/box</p>
+</div>
+<div class="paragraph">
+<p>Die Repräsentation dieser Nachfrage erfolgt durch eine Karte (oder Kiste, "Tray") aus einer limitierten (Work
+in Progress, WIP) Menge, die an das konkrete Werkstück gekoppelt wird solange es in Bearbeitung ist. D.h. die
+maximale Anzahl von Stücken im System ist durch die Anzahl Karten vorgegeben, sie sollte auf die Anzahl der
+Arbeitstationen limitiert sein, so dass keine Zwischenlager notwendig sind und alle Arbeit "just-in-time"
+erfolgen kann. In solchen Systemen wird auch schnell deutlich, wo ein Flaschenhals existiert. Davor (bzw. am
+Ende der vorherigen Stationen) würde sich die Arbeit sammeln.</p>
+</div>
+<div class="paragraph">
+<p>Die Abbildung dieser Karten erfolgt durch <code>KanbanTray</code>-Objekte (also "Kisten"), die die eigentlichen
+"Produkt"-Daten kapseln und deren Anzahl im System limitiert ist. Nur dadurch kann in KanbanFlow aufbauend
+Datenflussvariablen und Aufgaben (Tasks) die Parallelität kontrolliert und Deadlocks/Verklemmungen verhindert werden.
+Das ist auch darin begründet, dass das System erst einmal keine Zyklen enthalten darf. Die feste Anzahl
+limitiert auch automatisch die Grösse der Warteschlangen im System auf maximal n Elemente, so dass keine
+Überläufe oder Blockierungen durch zu hohe Produktionsfrequenz auftreten. Die Anzahl von Karten lässt auch
+leicht die Last auf dem System steuern und es bei WIP==0 anhalten, WIP==1 sequentiell abarbeiten
+ oder WIP &gt; 0 langsam wieder anfahren bis mit WIP==SUM(erzeuger + verbraucher) der optimale Wert erreicht ist.</p>
+</div>
+<div class="paragraph">
+<p>simples Code Beispiel:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>import static groovyx.gpars.dataflow.ProcessingNode.node
+import groovyx.gpars.dataflow.KanbanFlow
+def producer = node { down -&gt; down &lt;&lt; UUID.randomUUID() }
+def consumer = node { up   -&gt; println up.take() }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>new KanbanFlow().with {
+    link producer to consumer
+    start()
+    Thread.sleep(500)
+    stop()
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diese einfachste Konfiguration ist ein simpler <code>KanbanLink</code> zwischen einen Erzeuger und einem Verbraucher, die
+über einen Hauptkanal (downstream) für <code>KanbanTray</code> mit Produkt und Rückkanal (upstream) für die leeren
+<code>KanbanTrays</code> miteinander verbunden sind. Dabei bestehen die beiden Kanäle aus <code>DataFlowQueues</code>, die jeweils
+Ausgaben und Eingaben pro Erzeuger und Verbraucher abbilden. Das Hinzufügen und Entfernen von Containern
+erfolgt durch Setzen eines neuen Objektes auf dem Upstream bzw. Auslesen eines Objektes vom Downstream eines
+KanbanLinks. Wenn ein Produkt in eine Kiste gelegt wird, bindet sich diese an den Hauptkanal vom Erzeuger zum
+Verbraucher, für das Entnehmen des Produktes und zurücksenden, bindet sich die Kiste an den Rückkanal zum
+Erzeuger. Fortschritt auf der jeweils anderen Seite kann erst erfolgen wenn der vorherige Container aus dem
+jeweiligen Kanal entnommen wurde.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>class KanbanTray {</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>KanbanLink link
+Object product</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    // Produkt hinzufügen und tray downstream senden
+    void bind(product) {
+        this.product = product
+        link.downstream.bind this
+    }
+	// Produkt entnehmen und tray upstream senden
+    Object take() {
+        def result = product
+        product = null
+        link.upstream.bind this
+        return result
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für komplexere Setups ist es einfach, mehrere Erzeuber und Verbraucher in 1:n, n:1 oder 1:n:1 Konstellationen
+zu konfigurieren. Dann würden an der entsprechenden <code>DataFlowQueue</code> einfach mehrere Verbraucher "warten" bzw.
+mehrere Erzeuger in diesselbe Queue schreiben.</p>
+</div>
+<div class="paragraph">
+<p>Thread-Sicherheit wird erreicht, indem die Erzeuger und Verbraucher möglichst zustandslos sind, der einzige Zustand ist das
+Produkt das auf Reise geschickt wird. Und dieser wird immer nur von einem Verarbeitungsknoten zu einer Zeit bearbeitet.</p>
+</div>
+<div class="paragraph">
+<p>Prinzipiell ist es auch möglich Zyklen im Setup zu haben (muss explizit erlaubt werden). Dann wird ein Erzeuger
+zu seinem eigenen Verbraucher und bildet einen Generator. Wenn er seinen Zustand nur im Produkt hält ist er per Definition
+thread-sicher, ansonsten muss der interne Zustand synchronisiert werden.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Václav Pech <a href="http://www.vaclavpech.eu/" class="bare">http://www.vaclavpech.eu/</a></p>
+</li>
+<li>
+<p><a href="http://gpars.codehaus.org/Presentations" class="bare">http://gpars.codehaus.org/Presentations</a></p>
+</li>
+<li>
+<p>JSR 166 Concurrency <a href="http://g.oswego.edu/dl/concurrency-interest/" class="bare">http://g.oswego.edu/dl/concurrency-interest/</a></p>
+</li>
+<li>
+<p><a href="http://jaxenter.com/tutorial-gpars-making-parallel-systems-groovy-and-java-friendly-43529.html" class="bare">http://jaxenter.com/tutorial-gpars-making-parallel-systems-groovy-and-java-friendly-43529.html</a></p>
+</li>
+<li>
+<p><a href="http://www.infoq.com/presentations/GPars" class="bare">http://www.infoq.com/presentations/GPars</a></p>
+</li>
+<li>
+<p><a href="http://www.ibm.com/developerworks/java/library/j-gpars/index.html" class="bare">http://www.ibm.com/developerworks/java/library/j-gpars/index.html</a></p>
+</li>
+<li>
+<p><a href="http://skillsmatter.com/podcast/groovy-grails/concurrent-programming-for-you-and-me" class="bare">http://skillsmatter.com/podcast/groovy-grails/concurrent-programming-for-you-and-me</a></p>
+</li>
+<li>
+<p><a href="http://www.slideshare.net/VaclavPech/gpars-concepts-explained" class="bare">http://www.slideshare.net/VaclavPech/gpars-concepts-explained</a></p>
+</li>
+<li>
+<p>Game of Life als Sprachvergleich: <a href="http://jexp.de/blog/2010/03/game-of-life-javas-heirs-keynote/" class="bare">http://jexp.de/blog/2010/03/game-of-life-javas-heirs-keynote/</a></p>
+</li>
+<li>
+<p>Code Retreats: <a href="http://coderetreat.org/facilitating/structure-of-a-coderetreat" class="bare">http://coderetreat.org/facilitating/structure-of-a-coderetreat</a></p>
+</li>
+<li>
+<p>GPars Parallel Collections <a href="http://www.gpars.org/guide/guide/3.%20Data%20Parallelism.html" class="bare">http://www.gpars.org/guide/guide/3.%20Data%20Parallelism.html</a></p>
+</li>
+<li>
+<p>GPars Dataflow Concurrency <a href="http://www.gpars.org/guide/guide/7.%20Dataflow%20Concurrency.html" class="bare">http://www.gpars.org/guide/guide/7.%20Dataflow%20Concurrency.html</a></p>
+</li>
+<li>
+<p>[König Kanbanflow] <a href="http://people.canoo.com/mittie/kanbanflow.html" class="bare">http://people.canoo.com/mittie/kanbanflow.html</a></p>
+</li>
+<li>
+<p>[JCP] Brian Goetz, Java Concurrency in Practice</p>
+</li>
+<li>
+<p>JSR-166 ForkJoinTask <a href="http://www.jarvana.com/jarvana/view/org/codehaus/jsr166-mirror/jsr166y/1.7.0/jsr166y-1.7.0-javadoc.jar!/javadoc/jsr166y/ForkJoinTask.html" class="bare">http://www.jarvana.com/jarvana/view/org/codehaus/jsr166-mirror/jsr166y/1.7.0/jsr166y-1.7.0-javadoc.jar!/javadoc/jsr166y/ForkJoinTask.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2012-08-05 23:43:01 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

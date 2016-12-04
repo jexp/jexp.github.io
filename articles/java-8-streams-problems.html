@@ -1,0 +1,479 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_stromschnellen_oder_wo_man_mit_java_8_streams_aufpassen_muss">Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wie hier und vielerorts beschrieben sind die bekanntesten Features von Java 8 Lambda&#8217;s und die Streams-API.</p>
+</div>
+<div class="paragraph">
+<p>Diese erlauben eine kompakte und elegante Notation von Operationen auf Datenströmen und -containern.
+Damit nähert sich Java den funktionalen Ansätzen anderer Sprachen wie C#, Scala, Groovy, Ruby an, die schon seit langem erlauben, Operationen in einer kompakten Syntax darzustellen.</p>
+</div>
+<div class="paragraph">
+<p>Lambda&#8217;s könnten als syntaktische Vereinfachung der Nutzung von anonymen inneren Klassen interpretiert werden, besonders solchen die nur eine überschreibbare Methode enthalten (Single Abstract Method = SAM).
+Diese SAM&#8217;s sind Interfaces und Klassen, die maximal eine abstrakte Methode deklarieren, es können aber durchaus noch mehr nicht-abstrakte Methoden existieren.
+Um diese Art von Interfaces explizit zu dokumentieren wurde mit Java8 auch die Annotation @FunctionalInterface eingeführt.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein paar Bespiele:</p>
+</div>
+<div class="paragraph">
+<p>Consumer&lt;T&gt;, Transformer, Reducer, &#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>Die Collections API wurde um Methoden und Konstrukte (Streams-API) erweitert, die eine datenstrombasierte Sicht auf die enthaltenen Informationen zulässt und aufeinanderfolgende Operationen durch Verkettung von Methodenaufrufen mit Lambda-Codeblöcken als Parameter ermöglicht.</p>
+</div>
+<div class="paragraph">
+<p>Diese Operationen umfassen Filterung, Transformation, Aggregation, Gruppierung.</p>
+</div>
+<div class="listingblock">
+<div class="title">Streams-Beispiel:</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">Map&lt;Integer, List&lt;Integer&gt;&gt; ungeradeQuadrateIn100Gruppen =
+  range(1, 1_000)
+   .filter(i -&gt; i % 2 == 1)
+   .map(i -&gt; i * i)
+   .mapToObj((i) -&gt; i)
+   .collect(Collectors.groupingBy((i) -&gt; i % 100));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Operationen die auf einem Stream aufgerufen wurden, werden erst ausgeführt, wenn der Stream abgeschlossen wird, z.B mit <code>.collect()</code>, <code>.toArray()</code> oder <code>.sum()</code>.
+Die Operationen werden auch soweit wie möglich nach Bedarf (lazy) soweit nötig auf den Daten ausgeführt.
+Für einige Operationen wie Sortierung usw. ist das natürlich nicht möglich.</p>
+</div>
+<div class="paragraph">
+<p>Soweit, so gut.</p>
+</div>
+<div class="paragraph">
+<p>Ein weiteres Feature, das in Vorträgen und Artikeln über die Java8 Neuerungen immer hervorgehoben wurde, ist
+die leichte Parallelisierung von Operationen.
+Besonders im Zeitalter von Multi-Core Servern ist das natürlich ein wichtiges Argument, da man mit möglichst wenig Aufwand die vorhandene Hardware-Parallelität ausnutzen möchte.</p>
+</div>
+<div class="paragraph">
+<p>Einfach ein <code>stream.parallelStream()</code> einfügen und schon wird magischerweise alles viel schneller.</p>
+</div>
+<div class="paragraph">
+<p>Unter der Haube wird für die Parallelisierung von Operationen das Fork-Join-Framework genutzt, das von Doug Lea schon von einigen Jahren entwickelt wurde und welches bisher als separate Bibliothek verfügbar war.
+Ich hatte über einen Aspekt davon (ParallelArray) kurz im Artikel über GPars berichtet.
+Fork-Join ein teile-und-herrsche Ansatz, der die Datenmengen fortlaufender segmentiert, bis sie klein genug sind für eine sequentielle Abarbeitung.
+Jeder Thread arbeitet eine Warteschlange von Operationen ab und kann bei Leerlauf anderen Threads Arbeit abnehmen (Work-Stealing), indem er Operationen vom Ende ihrer Warteschlange entfernt.
+Alle Arbeitsthreads dieses Parallelisierungsmechanismus werden in einem Threadpool gemanaged, der über die ganze JVM geteilt wird.
+Das ist der Common-Fork-Join-Pool.</p>
+</div>
+<div class="paragraph">
+<p>Wo liegt jetzt eigentlich das Problem?</p>
+</div>
+<div class="paragraph">
+<p>Es ist nicht nur ein singuläres Problem sondern mehrere, die sich auch noch gegenseitig ungünstig beeinflussen.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen gibt einige Spezifika des Fork-Join Ansatzes die beachtet werden müssen damit man den Mechanismus auch tatsächlich ausnutzen kann.
+Fork-Join ist für klassische Massendatenverarbeitung gemacht, d.h. ein Datensegment sollte sinnvollerweise ca. 10000 Operationen zur Abarbeitung benötigen, um den Overhead des Managements der Parallelisierung zu kompensieren.
+D.h. eine einfache Operation mit vielen Daten oder bei weniger Daten entsprechend komplexere Operationen.
+Dass bedeutet aber auch, dass die Datenmengen die verarbeitet werden sollten mehrere Millionen oder Millarden gleichartige Elemente umfassen sollten, damit Fork-Join seine Stärken ausspielen kann.</p>
+</div>
+<div class="paragraph">
+<p>Beispiel: Berechnung von Primzahlen bis zu einem Max-Wert, O(sqrt(n))</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private long countPrimes(int max) {
+   return range(1, max).parallel().filter(this::isPrime).count();
+}
+private boolean isPrime(long n) {
+   return n &gt; 1 &amp;&amp; rangeClosed(2, (long) sqrt(n)).noneMatch(divisor -&gt; n % divisor == 0);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public void testSum() throws Exception {
+    int sum = range(0, TOTAL).sum();
+    System.out.println("testSum = " + sum);
+}
+@org.junit.Test
+public void testSumParallel() throws Exception {
+    int sum = range(0, TOTAL).parallel().sum();
+    System.out.println("testSumParallel = " + sum);
+}
+
+@org.junit.Test
+public void testSumBatched() throws Exception {
+    int sum = range(0, TOTAL / BATCH).map(i -&gt; range(i * BATCH, i * BATCH + BATCH).sum()).sum();
+    System.out.println("testSumBatched = " + sum);
+}
+@org.junit.Test
+public void testSumParallelBatched() throws Exception {
+    int sum = range(0, TOTAL / BATCH).parallel().map(i -&gt; range(i * BATCH, i * BATCH + BATCH).sum()).sum();
+    System.out.println("testSumParallelBatched = " + sum);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>single thread</p>
+</li>
+<li>
+<p>FJP mit 10 Zahlen pro Operation</p>
+</li>
+<li>
+<p>FJP mit 1000 Zahlen pro Operation</p>
+</li>
+<li>
+<p>FJP mit 100000 Zahlen pro Operation</p>
+</li>
+<li>
+<p>FJP mit 10000000 Zahlen pro Operation</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">single thread</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stream.parallel</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Ausser die Numerik fallen mir aber nicht viele Gebiete ein, die solche Datenmengen (Zahlenreihen) direkt im Prozessor oder Speicher generieren würden.
+Alle anderen Anwendungsfälle müssten diese Daten aus einer Quelle lesen: Dateisystem, Datenbank, Netzwerk usw.</p>
+</div>
+<div class="paragraph">
+<p>Diese Leseoperationen sind aber blockierend, was uns zum nächsten Problem mit der Implementierung von Fork-Join in Java8 bringt.
+Fork-Join ist darauf ausgelegt, dass die Operationen self-contained und nebenwirkungsfrei sind, um optimal arbeiten zu können.
+Blockierende Operationen blockieren auch den Arbeitsthread, und bei genügend blockierenden Operationen sorgt das Work-Stealing dazu, dass bald alle Threads auf Ergebenisse warten und das System keinen Fortschritt mehr macht.</p>
+</div>
+<div class="paragraph">
+<p>In einer besseren Implementierung gäb es eine extra API für blockierende Operationen, die dann basierend auf Selektoren z.B. über Callbacks ein effizientes Management dieser Blockaden vornehmen könnte.
+Zumindest aber sollte es einen separaten Pool für blockierende Operationen geben, so dass der Fork-Join-Pool nicht von diesen verstopft wird.</p>
+</div>
+<div class="paragraph">
+<p>Erschwerend kommt hier dazu, dass nur ein Fork-Join-Pool in der gesamten JVM exisitiert, das ist der Common-Fork-Join-Pool, zugreifbar über <code>ForkJoinPool.commonPool()</code>.
+Dieser wird nicht nur für die Parallelverarbeitung von Streams sondern auch das parallele Sortieren und asynchrone Aufrufe via <code>CompletionStage</code> benutzt.</p>
+</div>
+<div class="paragraph">
+<p>Der Grund dafür ist einleuchtend und wird auch bei OSX und iOS (GrandCentralDispatch???) ähnlich gehandhabt.
+Man will die Systemresourcen optimal ausnutzen indem das Erzeugen und Managen von Threads einer einzigen Stelle im System übertragen wird, die genau weiss, wieviel Resourcen (CPU-Cores) schon belegt oder noch frei sind.</p>
+</div>
+<div class="paragraph">
+<p>Wenn jeder seine eigenen Threads und Threadpools instanziiert und startet, ist eine Verschwendung und der Wettbewerb um die vorhandenen Ausführungseinheiten schon vorprogrammiert.
+Ich habe schon ganz schlimme Varianten davon gesehen.
+Daher ist im Prinzip nichts dagegen einzuwenden.</p>
+</div>
+<div class="paragraph">
+<p>Nur ist nicht jede Operation im System gleichen Kalibers.
+Zwischen sehr einfachen Operationen die nur wenige Taktzyklen benötigen bis zu aufwendigen Berechnungen, die im Sekunden- oder sogar Minutenbereich liegen ist alles vertreten.
+Und dazu kommen noch die blockierenden Operationen von denen man gar nicht weiss, wie lange sie benötigen. (Jedenfalls nicht wenn sie keinen standardmässigen Timeout haben.)</p>
+</div>
+<div class="paragraph">
+<p>Diese Operationen mit sehr differenzierter Komplexität und Ausführungszeit sollten auch in verschiedenen Pools abgearbeitet werden.
+Andere Systeme haben Pools verschiedener Prioritäten und einen separaten Pool oder Mechanismus für blockierende Aufrufe.</p>
+</div>
+<div class="paragraph">
+<p>Und wenn man das nicht hat?</p>
+</div>
+<div class="paragraph">
+<p>Dann kann ein kleiner Teil der Anwendung durch seine Operationen das komplette Restsystem (JVM) lahm legen.
+Das ist dann fast wie eine Denial of Service (DOS) Attacke auf das Systems.
+Selbst wenn man keine Böswilligkeit unterstellt, ist es ein Fettnäpfchen in das man schnell hereintippt,</p>
+</div>
+<div class="paragraph">
+<p>Leider sind viele Beispiele für die Parallelisierung von Streams genau so aufgebaut.
+Zum Beispiel hier:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private List&lt;StockInfo&gt; getStockInfo(Stream&lt;String&gt; symbols, int minVolume) {
+  return symbols.parallel()
+                .map(this::getStockInfo) //slow network operation
+                .filter(si -&gt; si.tradeVolume &gt; minVolume)
+                .collect(toList());
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sie führen für verschiedene Aktionen entfernte Aufrufe (z.B via REST) zu einer Börsen-API aus, um dann die Ergebnisse mittels der Streams API weiterzuverarbeiten.
+Das geht nur dann gut, wenn 1. das System genügend CPUs besitzt und 2. die entfernten APIs auch schnell genug antworten.
+Ansonsten kann man damit den Fork-Join-Pool schnell aushungern, so dass andere Module keinen Fortschritt in ihrer Datenverarbeitung mehr machen können.</p>
+</div>
+<div class="paragraph">
+<p>Besonders in einer komplexeren Anwendung oder in einem App-Server kann das kritisch werden, wenn sowohl die Server-Infrastruktur als auch die Anwendung(en) den gemeinsamen Pool nutzen.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein Beispiel für den Effekt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">// Fork-Join-Pool mit Parallelität von X
+
+// Start einer Summierung von Fenstern von jeweils einer Million Werten
+
+// starten von X+1 remote Aurufen, die jeweils 30s blockieren bevor sie antworten
+
+// Unsere numerische Berechnung wird für minimal 30 Sekunden blockiert</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Man kann zwar seinen eigenen Fork-Join-Pool erzeugen und diesen benutzen, um Aufgaben auszuführen, aber das ist zum einen nicht mehr so elegant und zum anderen öffnet es dem schon genannten Problem der unkontrollierten Erzeugung von Threadpools Tür und Tor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+
+forkJoinPool.submit(() -&gt;
+    range(1, 1_000_000).parallel().filter(PrimesPrint::isPrime)
+        .collect(toList())
+).get();</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parallelität des ForkJoinPools</div>
+<div class="paragraph">
+<p>Der numerische Parameter des Constructors von ForkJoinPool ist keine maximale Anzahl von Threads, sondern die gewünschte "Parallelität" auf dieser JVM (für Server mit nur einer JVM, implizit "auf diesem Computer").
+D.h. wieviele Threads parallel ausgeführt werden, nur bei Blockierung an bestimmten Concurrency-Primitiven (<code>Phaser</code>) werden neue Threads erzeugt, sonst aber nicht!</p>
+</div>
+<div class="paragraph">
+<p>Die maximale Anzahl von Threads eines ForkJoinPools beträgt 32767, was in den praktisch allen Systemen eine irrelevante Zahl darstellt.
+Die "Parallelität" ergibt sich aus <code>Runtime.getRuntime().availableProcessors() - 1</code>, dh. auf dual-core Systemen ist sie <strong>nur 1</strong> !</p>
+</div>
+<div class="paragraph">
+<p>Auch sonst ist, nicht darauf zu vertrauen dass dieser Funktionsaufruf den korrekten Wert für "Cores oder Hardware-Threads" liefert, manchmal sind es die maximalen HyperThreads, manchmal die Sockets, manchmal die Cores.
+Einmal hatte ich sogar auf einem SuperComputer mit CPU-Allocation, dass die Gesamtzahl der Prozessoren zurückgeliefert wurde (4096) anstatt der mir zugeteilten 16 Prozessoren.
+Zum Glück kann man diesen Wert von aussen mit der System-Property <code>-Djava.util.concurrent.ForkJoinPool.common.parallelism=128</code> kontrollieren.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Alle Aufgaben die innerhalb eines Pools implizit von <code>.parallel()</code> erzeugt werden, werden im aktuellen Pool gescheduled.</p>
+</div>
+<div class="paragraph">
+<p>Ein Aspekt, der mir nicht bekannt war, ist das bei der normalen Nutzung von <code>parallel()</code> der aktuelle Thread auch als Worker-Thread benutzt wird.
+Das ist ein ähnliches Verhalten wie bei der <code>CallerRunsPolicy</code> als <code>RejectedExecutionHandler</code> eines normalen Threadpools (s.u.).</p>
+</div>
+<div class="paragraph">
+<p>Damit wird er nicht nur blockiert (was ja gewünscht ist), sondern auch mit zum Arbeiten genutzt.
+Prinzipiell ist das schon ok, nur wenn der aktuelle Thread anders konfiguriert ist, als die Pool-Threads (z.b. Priorität, ThreadLocals, Daemon-Status) bzw. Exceptions während der Ausführung auftreten, dann verhält dieser sich nicht wie die Pool-Threads, was inkonsistentes Verhalten zur Folge haben kann.</p>
+</div>
+<div class="paragraph">
+<p>Der Common-ForkJoinPool nutzt Daemon Threads, was ggf. nicht gewollt sein kann, man kann die ThreadFactory und den Exception-Handler für den Pool mittels System-Properties konfigurieren.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private ExecutorService createPool(int threads, int queueSize) {
+    return new ThreadPoolExecutor(1, threads, KEEP_ALIVE, SECONDS,
+             new LinkedBlockingDeque&lt;&gt;(queueSize),
+             new ThreadPoolExecutor.CallerRunsPolicy());
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ein weiterer Vorteil ist, dass man dem <code>submit()</code> einen Timeout mitgeben kann, dh. wenn die Aktion zulange dauert, wird sie vorzeitig abgebrochen.</p>
+</div>
+<div class="paragraph">
+<p>Alternatives Beispiel, dass blockierende Aufrufe via Selector und Callback-API (Completion-Stage) abhandelt und nur ihre Ergebnisse in die Fork-Join-Operation einfliessen lassen.</p>
+</div>
+<div class="paragraph">
+<p>Das funktioniert auch</p>
+</div>
+<div class="paragraph">
+<p>Blockierende Operationen</p>
+</div>
+<div class="paragraph">
+<p>Minimale Operator-Size
+Parallelisierungs-Overhead</p>
+</div>
+<div class="paragraph">
+<p>Merge of Operations (ala Scala.views)</p>
+</div>
+<div class="sect2">
+<h3 id="_referenzen">Referenzen:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html" class="bare">http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html</a></p>
+</li>
+<li>
+<p><a href="http://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html" class="bare">http://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html</a></p>
+</li>
+<li>
+<p><a href="http://java.dzone.com/articles/whats-wrong-java-8-part-iii" class="bare">http://java.dzone.com/articles/whats-wrong-java-8-part-iii</a></p>
+</li>
+<li>
+<p><a href="http://java.dzone.com/articles/think-twice-using-java-8" class="bare">http://java.dzone.com/articles/think-twice-using-java-8</a></p>
+</li>
+<li>
+<p><a href="http://zeroturnaround.com/rebellabs/java-parallel-streams-are-bad-for-your-health/" class="bare">http://zeroturnaround.com/rebellabs/java-parallel-streams-are-bad-for-your-health/</a></p>
+</li>
+<li>
+<p><a href="http://www.javaspecialists.eu/archive/Issue223.html" class="bare">http://www.javaspecialists.eu/archive/Issue223.html</a></p>
+</li>
+<li>
+<p><a href="http://jaxenter.com/java-8-problems-112279.html" class="bare">http://jaxenter.com/java-8-problems-112279.html</a></p>
+</li>
+<li>
+<p><a href="http://blog.krecan.net/2014/03/18/how-to-specify-thread-pool-for-java-8-parallel-streams/" class="bare">http://blog.krecan.net/2014/03/18/how-to-specify-thread-pool-for-java-8-parallel-streams/</a></p>
+</li>
+<li>
+<p><a href="http://leakfromjavaheap.blogspot.de/2014/06/a-gentle-touch-of-functional.html" class="bare">http://leakfromjavaheap.blogspot.de/2014/06/a-gentle-touch-of-functional.html</a></p>
+</li>
+<li>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinTask.html#fork--" class="bare">http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinTask.html#fork--</a></p>
+</li>
+<li>
+<p>Doug Lea on When to use Parallel Streams <a href="http://gee.cs.oswego.edu/dl/html/StreamParallelGuidance.html" class="bare">http://gee.cs.oswego.edu/dl/html/StreamParallelGuidance.html</a></p>
+</li>
+<li>
+<p>Parallelität des Fork-Join-Pools <a href="http://www.javaspecialists.eu/archive/Issue220.html" class="bare">http://www.javaspecialists.eu/archive/Issue220.html</a>, <a href="http://www.javaspecialists.eu/archive/Issue220b.html" class="bare">http://www.javaspecialists.eu/archive/Issue220b.html</a></p>
+</li>
+<li>
+<p>A Java Parallel Calamity <a href="http://coopsoft.com/ar/Calamity2Article.html" class="bare">http://coopsoft.com/ar/Calamity2Article.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2015-01-30 19:50:13 CET</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

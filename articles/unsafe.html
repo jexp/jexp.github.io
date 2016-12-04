@@ -1,0 +1,550 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Die Zukunft von Unsafe</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_die_zukunft_von_unsafe">Die Zukunft von Unsafe</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Klasse <code>sun.misc.Unsafe</code> ist eine der Kuriositäten des Java Development Kits, die sich seit Jahren großer Beliebtheit erfreut, obwohl sie nie für die öffentliche Nutzung gedacht war.
+Jetzt soll sie mit Java 9 nicht mehr zugreifbar sein. Über die Auswirkungen dieser Entscheidung und über mögliche Alternativen, haben sich einige der besten Köpfe des Java-Ökosystems Gedanken gemacht.</p>
+</div>
+<div class="sect2">
+<h3 id="_wozu_das_ganze">Wozu das Ganze?</h3>
+<div class="paragraph">
+<p>Während der Entwicklung der Implementierung der JVM gab es immer wieder Systemfunktionen, die die Ingenieure von Sun plattformunhabhägig von Java aus zugreifbar machen wollten, ohne jeden Nutzer zu einer JNI Integration zu zwingen.</p>
+</div>
+<div class="paragraph">
+<p>Einige sind einfach als "native" Funktionen in der normalen API integriert. Z.B. <code>System.identityHashCode(Object)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Andere, die viel näher am Betriebssystemkern liegen, wie z.B Speichermanagement, oder CAS (compare-and-swap) Operationen sollten nur inner halb des JDK nutzbar sein (also von Klassen die im Boot-Classpath liegen), und nicht von jederman.</p>
+</div>
+<div class="paragraph">
+<p>Solche internen APIs wurden für die interne Nutzung in Klassen in Paketen mit den Präfixen <code>com.sun.<strong></code> oder <code>sun.</strong></code> bereitgestellt.
+Alle dieser APIs sind nicht offiziell supported und können von Oracle (Sun) jederzeit geändert werden, es gibt keine <em>Kompatibilitätsgarantie</em>.
+Man sollte sie auch nicht benutzen.</p>
+</div>
+<div class="paragraph">
+<p>Die interessanteste dieser Klassen ist <code>sun.misc.Unsafe</code>, die wie der Name schon verrät, mit Vorsicht zu benutzen ist.
+Über die Jahre ist sie zu einer Art Halde für alle möglichen Zugriffsfunktionen geworden, von Methoden zum Allozieren von Speicher bis zu Kontrollfunktionen für Locks und anderer Konstrukte fürs Multithreading.</p>
+</div>
+<div class="paragraph">
+<p>Die nachfolgende Übersicht zeigt einige Funktionen und Bereiche, die <code>Unsafe</code> abdeckt [Unsafe Funktionalität]:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Speichermanagement</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Speicherallokation, direkter Lese-, Schreibzugriff, Addressermittlung, Kopie von Speichersegmenten</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Sichtbarkeitssteuerung</p>
+<div class="ulist">
+<ul>
+<li>
+<p>volatile Speicheroperationen</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Synchronisation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>compare-and-swap, Monitor-Operationen,</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Threadmanagement</p>
+<div class="ulist">
+<ul>
+<li>
+<p>park, unpark</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Objektmanipulation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>direkte Instanziierung, Offsets von Feldern</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Klassenmanipulation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>direkte Erzeugung von Klassen,</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Felder</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Offsets und Größe von Elementen</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Der offizielle Zugriff auf <code>Unsafe</code> wird über eine Überprüfung, ob der Aufrufer Teil des Boot-Classpaths ist, geschützt.
+Es war jedoch schnell klar, dass man mittels Reflection problemlos auf das Feld <code>Unsafe.theUnsafe</code>, das Instanz hält, zugreifen kann.</p>
+</div>
+<div class="paragraph">
+<p>Und somit sind die wertvollen Funktionen für Autoren von Bibliotheken, die effizienteste Implementierungen für Speicher-, Netzwerkmanagement oder Parallelprogrammierung nutzbar.
+Und genutzt werden sie!
+Ich denke, Unsafe ist eines der "unerlaubtesten" Konstrukte überhaupt, das am meisten ausserhalb seines grünen Bereiches genutzt wird.</p>
+</div>
+<div class="paragraph">
+<p>Für viele der nützlichen Funktionen gibt es <strong>keine sinnvollen Alternativen</strong>, d.h. sonst müsste man eigene native C-Implementierungen der Funktionalität für alle Plattformen schreiben und diese mittels JNI einbinden.</p>
+</div>
+<div class="paragraph">
+<p>Davon abgesehen, dass dieser Ansatz nicht trivial ist, muss man auch viel Aufwand für die Wartung betreiben, obwohl diese Funktionen nicht die Kernaufgaben der eigenen Bibliothek oder Anwendung darstellen.</p>
+</div>
+<div class="paragraph">
+<p>Hier sind <em>einige</em> der bekanntesten Java Projekte, die Unsafe benutzen:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Netzwerk, Processing</th>
+<th class="tableblock halign-left valign-top">Testing</th>
+<th class="tableblock halign-left valign-top">Datenbanken</th>
+<th class="tableblock halign-left valign-top">Frameworks / Sprachen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Netty</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mockito</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cassandra</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Framework</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hazelcast</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EasyMock</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Neo4j</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Grails</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kafka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JMock</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MapDB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JRuby</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Storm</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PowerMock</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hibernate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scala</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hadoop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scala Specs</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GWT</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Akka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spock</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spark</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disruptor</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Daraus wird schnell ersichtlich, dass fast jede Java-Anwendung <code>Unsafe</code> zumindest implizit über ihre Bibliotheken benutzt.</p>
+</div>
+<div class="paragraph">
+<p>Mit den Modularisierungsmechanismen in Java 9 (Jigsaw) soll <code>Unsafe</code> nur noch vom Bootclassloader zugreifbar sein.
+Das wäre nicht das Ende der Welt, da man auf diesen ClassLoader auch zugreifen kann (z.b. <code>String.class.getClassLoder()</code>).
+Aber es startete aber eine Diskussion über genau diese APIs, die zwar so nützlich, aber so unglücklich exponiert sind.
+Was nun?</p>
+</div>
+<div class="paragraph">
+<p>Die einen sagen <em>Selbst dran schuld, Unsafe war nie für die öffentliche Nutzung gedacht</em>, andere <em>Unsafe muss bleiben</em>.
+Realistischere Ansichten schlagen eine stufenweise Migration auf durchdachte, sinnvolle und offizielle APIs vor, die über den JCP / JEP (JDK Enhancement Proposal) entwickelt werden sollen.
+Leider geht das nicht von heute auf morgen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_unsafe_umfrage">Unsafe-Umfrage</h3>
+<div class="paragraph">
+<p>Vor ca einem Jahr hat Oracle eine Umfrage [UnsafeUmfrage] gemacht, um festzustellen in welchem Umfang und wofür Unsafe benutzt wird (über 300 Teilnehmer).</p>
+</div>
+<div class="paragraph">
+<p>Paul Sandoz hielt eine interessante Präsentation [UnsafeUmfragePräsentation] über deren Ergebnisse, die viele der hier genannten Punkte verdeutlicht.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vielfältige Nutzung von Unsafe in Bibliotheken</p>
+</li>
+<li>
+<p>Viele der genannten Funktionen sind wichtig und nützlich</p>
+</li>
+<li>
+<p>Die Anwendungsfälle sollten über offizielle APIs (entwickelt via JEP) abgebildet werden</p>
+</li>
+<li>
+<p>Schrittweise Ablösung von Unsafe Funktionalität</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Hauptanwendungsfälle der Teilnehmer sind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>erweiterte Operationen für nebenläufige Entwicklung,</p>
+</li>
+<li>
+<p>De/Serialisierung, sowie</p>
+</li>
+<li>
+<p>Off-Heap Management, welches sich noch einmal in</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reduktion von Garbage Collection,</p>
+</li>
+<li>
+<p>effizientere Speicherstrukturen,</p>
+</li>
+<li>
+<p>Handhabung großer Datenmengen und</p>
+</li>
+<li>
+<p>Inter-JVM Kommunikation unterteilen lässt.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Für diese Anwendungsfälle zeigt er (in der folgenden Tabelle dargestellt), welche Alternativen sich jeweils in der Entwicklung befinden oder schon abgeschlossen sind.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use-Case</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alternative API / JEP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enhanced atomic access</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JEP 193 Enhanced Volatiles</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">De/Serialization</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JEP 187 Serialization 2.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reduce GC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value types / JEP 189 Shenandoah: Low Pause GC</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Efficient memory layout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value types, Arrays 2.0 &amp; Layouts</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Very Large Collections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value types, Arrays 2.0 &amp; Layouts</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Communicate across JVM boundary</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project Panama &amp; JEP 191 FFI</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Der Ansatz besteht darin, die Alternative zu entwickeln, die zumindest so <strong>gut, schnell und mächtig</strong> wie Unsafe-Funktionalität sein sollte.
+Migration der Nutzung innerhalb der JDK Klassen auf diese neue API, dann Entfernung der Funktionalität aus Unsafe.</p>
+</div>
+<div class="paragraph">
+<p>Damit ist ein sinnvoller Weg aufgezeigt, vom heutigen ungesteuerten Wildwuchs und -nutzung von Unsafe zu einer sichereren, saubereren Lösung zu kommen.</p>
+</div>
+<div class="paragraph">
+<p>Das war schon 2014, viele der genannten APIs und JEPs sind aber noch mitten in der Entwicklung.</p>
+</div>
+<div class="paragraph">
+<p>Und jetzt passiert das Undenkbare, mit dem vor der Tür stehenden Java 9 Release soll Unsafe unzugänglich gemacht werden, ohne dass die gerade dargestellte schrittweise Migration vorgenommen wurde.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_eine_zukunft_ohne_unsafe">Eine Zukunft ohne Unsafe?</h3>
+<div class="paragraph">
+<p>Nach einem ersten Aufschrei "Das können die doch nicht machen!" [Disaster], haben sich einige der bekanntesten Entwickler der Java-Gemeinde zusammengefunden und in einem Dokument zusammenegetragen welche Aspekte von <code>Unsafe</code> in welcher Form als offizielle APIs in Einzug in das JDK halten sollten.</p>
+</div>
+<div class="paragraph">
+<p>Dazu gehört auch, erst einmal den unstrukturierten Haufen von Funktionen in klare APIs aufzuteilen und sinnvoll zu dokumentieren, so dass alle Rahmenbedingungen und kritischen</p>
+</div>
+<div class="paragraph">
+<p>Es wäre auch nicht anzunehmen, dass das Java Kernteam bei Oracle Unsafe ohne Ersatz verschwinden lässt.
+Zum einen wird ein Kommandozeilenflag diskutiert, dass auch in Java9 den Zugriff auf Unsafe gestattet.
+Zusammen mit den Vorschlägen der Community wird eine sinnvolle Alternative entwickelt werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kernaussagen">Kernaussagen</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Prinzipiell ist es richtig Unsafe zu ersetzen, aber nicht ersatzlos zu entfernen</p>
+</li>
+<li>
+<p>Für die notwendigen, "sicheren" Funktionen müssen Alternativen geschaffen werden</p>
+</li>
+<li>
+<p>Viele Bibliotheken und Frameworks werden unter Java 9 nicht nutzbar sein, ohne einen Ersatz</p>
+</li>
+<li>
+<p>Replikation von Unsafe mittels JNI wäre sehr aufwändig sowohl in Entwicklung als auch Wartung, für äquivalente Leistung müsste ein Großteil der umgebenden Funktionalität in C repliziert werden. Desweiteren wäre diese deutlich <em>unsicherer</em> als die existente Realsierung innerhalb des JDK.</p>
+</li>
+<li>
+<p>Ein großes Problem stellt die fehlende Spezifikation der Unsafe-Funktionalität dar, sie ist nur durch ihre Implmmentierung und Laufzeitverhalten "spezifiziert"</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Die Autoren listen auf, dass fast alle der von Paul Sandoz genannten APIs und JEPs <strong>nicht</strong> in Java 9 verfügbar sein werden.
+Einige sind sogar ganz von der Bildfläche verschwunden.</p>
+</div>
+<div class="paragraph">
+<p>Es muss einen Plan (Roadmap) als JEP für diese Aktivitäten geben, die Spezifikation der relevanten Unsafe Funktionalität sollte über einen JSR erfolgen.</p>
+</div>
+<div class="paragraph">
+<p>Die Community muss sich mittels des JEP  Prozesses an der Findung von Alternativen beteiligen, die Zeit bis zur Finalisierung von Java 9 (Nov 2015) ist dazu aber zu knapp.</p>
+</div>
+<div class="paragraph">
+<p>Im Dokument wird auch detailliert aufgestellt, welche Funktionen von Unsafe wie populär sind und welche davon, gegebenenfalls Alternativen in Java 9 haben werden.</p>
+</div>
+<div class="paragraph">
+<p>TODO Tabelle / Bild davon</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_fazit">Fazit</h3>
+<div class="paragraph">
+<p>Zur Zeit ist noch alles offen. Zum einen steht der November-Termin für Java 9, zum anderen gibt es keine wirklichen Alternativen für die Unsafe Funktionalität.</p>
+</div>
+<div class="paragraph">
+<p>Ich denke, es wird entweder auf eine halboffizielle Variante herauslaufen, die über ein JVM Kommandozeilenflag den Zugriff auf Unsafe erlaubt, oder über den Zugriff auf den Boot-Classloader passieren.
+Während der Lebenszeit von Java 9 ist dann dringend angeraten, die genannten Vorschläge umzusetzen und eine sinnvolle und nutzbare Alternative zu Unsafe zu schaffen.</p>
+</div>
+<div class="paragraph">
+<p>Wie zu erwarten, stößt dieses Ereignis auch Diskussionen rund um das Thema "Publikation von und Nutzung von APIs" an,
+die zumindest meines Erachtens einen wichtigen Aspekt aussen vor lassen.</p>
+</div>
+<div class="paragraph">
+<p>Warum kommt es zu solchen Situationen? Oft is eine fehlende Kommunikation bzw. Feedback zwischen Autoren einer API und deren Nutzern die Ursache.
+Wenn eine API nützlich ist, und irgendwie zugreifbar ist, wird sie auch genutzt.
+Wenn ich weiss, dass eine private API trotzdem genutzt wird, gibt mir das die Information das die Funktionalität relevant ist und dass Äquivalenzen in den öffentlichen APIs fehlen.
+Daher sollte ich <strong>aktiv</strong> ins Gespräch mit den Nutzern kommen und gemeinsam Alternativen entwickeln und nicht nur meine Augen verschliessen, bis es zu spät ist und dann meine Nutzer im Regen stehen lassen.</p>
+</div>
+<div class="paragraph">
+<p>Vielen Dank an Thomas Darimont für die Idee für diese Kolumne und and die Autoren des "Unsafe-Dokuments".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referenzen">Referenzen</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>sun.misc.Unsafe: <a href="http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/tip/src/share/classes/sun/misc/Unsafe.java" class="bare">http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/tip/src/share/classes/sun/misc/Unsafe.java</a></p>
+</li>
+<li>
+<p>Unsafe Funktionalität: <a href="http://mishadoff.github.io/blog/java-magic-part-4-sun-dot-misc-dot-unsafe/" class="bare">http://mishadoff.github.io/blog/java-magic-part-4-sun-dot-misc-dot-unsafe/</a></p>
+</li>
+<li>
+<p>Disclaimer "sun" Pakete: <a href="http://www.oracle.com/technetwork/java/faq-sun-packages-142232.html" class="bare">http://www.oracle.com/technetwork/java/faq-sun-packages-142232.html</a></p>
+</li>
+<li>
+<p>UnsafeUmfrage: <a href="http://www.infoq.com/news/2014/02/Unsafe-Survey" class="bare">http://www.infoq.com/news/2014/02/Unsafe-Survey</a></p>
+</li>
+<li>
+<p>UnsafeUmfragePräsentation "State of Unsafe": <a href="http://cr.openjdk.java.net/~psandoz/dv14-uk-paul-sandoz-unsafe-the-situation.pdf" class="bare">http://cr.openjdk.java.net/~psandoz/dv14-uk-paul-sandoz-unsafe-the-situation.pdf</a></p>
+</li>
+<li>
+<p>Unsafe-Dokument: <a href="https://docs.google.com/document/d/1GDm_cAxYInmoHMor-AkStzWvwE9pw6tnz_CebJQxuUE/edit#heading=h.yd883k3cq5e4" class="bare">https://docs.google.com/document/d/1GDm_cAxYInmoHMor-AkStzWvwE9pw6tnz_CebJQxuUE/edit#heading=h.yd883k3cq5e4</a></p>
+</li>
+<li>
+<p>Prashant Deva: "A disaster in the making": <a href="http://blog.dripstat.com/removal-of-sun-misc-unsafe-a-disaster-in-the-making/" class="bare">http://blog.dripstat.com/removal-of-sun-misc-unsafe-a-disaster-in-the-making/</a></p>
+</li>
+<li>
+<p>JNI: <a href="https://en.wikipedia.org/wiki/Java_Native_Interface" class="bare">https://en.wikipedia.org/wiki/Java_Native_Interface</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2015-07-28 16:12:12 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

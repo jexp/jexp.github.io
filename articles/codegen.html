@@ -1,0 +1,683 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | "Code"-Generierung in Java</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="__code_generierung_in_java">"Code"-Generierung in Java</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir alle sind es gewöhnt, Java als relativ statische Sprache zu betrachten.
+Wir schreiben Code, dieser wird compiliert und steht dann über den ClassLoader zur Ausführung zur Verfügung.</p>
+</div>
+<div class="paragraph">
+<p>In anderen Sprachen ist es üblich, ein Programm auch nach dem initialen Laden noch zu verändern, man denke nur an JavaScript oder die Metaprogrammierung von Ruby und Groovy.</p>
+</div>
+<div class="paragraph">
+<p>Wir können das im begrenzten Rahmen auch, mittels Reflection, Virtual Proxies oder den neuen <code>MethodHandle</code> APIs.
+Einige Ansätze gehen sogar noch viel weiter, wie JRebel immer wieder beeindruckend beweist.</p>
+</div>
+<div class="sect2">
+<h3 id="_warum_denn_eigentlich">Warum denn eigentlich?</h3>
+<div class="paragraph">
+<p>Für diverse Anforderungen ist es schon praktisch ausführbare Java-Klassen zur Lauf- oder Ladezeit zu erzeugen oder zu modifizieren.
+Insbesondere wenn dynamisches, oder nutzergeneriertes Verhalten nicht nur interpretiert, sondern effizient (inkl. JIT) von der JVM ausgeführt werden soll.</p>
+</div>
+<div class="paragraph">
+<p>Man denke nur man an dynamische Ausdrücke (siehe SpEL-Artikel von Thomas Darimont), Datenbankabfragen, die zur Laufzeit compiliert werden sollen.
+Oder die flexiblen Proxies von Sven Ruppert und Heinz Kabutz. Ein weiteres Beispiel sind Regeln von Rule- oder BPM-Engines oder andere externe DSLs.</p>
+</div>
+<div class="paragraph">
+<p>Weitere Anwendungsfälle sind die Generierung von Meta-Data Repräsentationen als Klassen, z.b. für Protokollformate oder Platzhalter für Datenbank-Schemata (Criteria API).
+Spannend ist auch die Generierung von internen DSLs mit fluent Interfaces und Methoden, z.b. aus Grammatiken oder von Parsern wie zum Beispiel bei ANTLR.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_quellcodegenerierung">Quellcodegenerierung</h3>
+<div class="paragraph">
+<p>Mit einem Generierungsansatz kann man den Aufwand zur Pflege eines solchen Codes, der aus einer wohldefinierten Quelle reproduziert werden kann deutlich reduzieren.
+Auch wird durch einen solchen "Single-Source"-Ansatz das etwaige Auseinanderlaufen von manuell gepflegtem Code vermieden.</p>
+</div>
+<div class="paragraph">
+<p>Auch wenn das endgültige Ziel Java-Bytecode darstellt, führt der "Umweg" über Source-Code genauso zum Ziel und kann teilweise sogar verständlicher sein.
+Seit Java 6 ist in der <code>tools.jar</code> des JDK ein Laufzeitcompiler (<a href="http://docs.oracle.com/javase/7/docs/api/javax/tools/JavaCompiler.html"><code>javax.tools.JavaCompiler</code></a>) enthalten, der genutzt werden kann, um Quellcode in Bytecode zu transformieren.
+Dieser kann dann direkt über ClassLoader oder mittels Instrumentierung geladen werden.</p>
+</div>
+<div class="paragraph">
+<p>Sowohl die JavaDoc des Compilers als auch <a href="http://www.javaspecialists.eu/archive/Issue180.html">Heinz Kabutz im Newsletter 180</a> beschreiben im Detail, wie dieser genutzt wird.</p>
+</div>
+<div class="paragraph">
+<p>Wer bei der Umsetzung einer solchen Anforderung einmal mit Code-Erzeugung mittels des Verknüpfens von Strings angefangen hat, ist schnell auf die häufige Duplikation von ähnlichen Aufrufen und Fragmenten gestossen und hat sich über die fehlende Typsicherheit und Nutzung von Literalen geärgert.
+Oft führt das zum kurzfristigen Refactoring in einem interne DSL, die dann angenehmer zu nutzen ist, aber natürlich nicht direkt zielführend für die eigentliche Aufgabe ist.</p>
+</div>
+<div class="paragraph">
+<p>Daher ist es sinnvoll zu wissen, welche nützlichen Tools es in diesem Bereich schon gibt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bytecode_generierung">Bytecode Generierung</h3>
+<div class="paragraph">
+<p>Für manche Anwendungsfälle, besonders aber in Bibliotheken oder Java-Agenten, wo man schnell zur Lauf- oder Ladezeit Integrationscode generieren muss, bietet sich eher die Bytecode Generierung an.
+Genauso bei Anreicherung von existierenden Systemen zur Laufzeit z.b. mit den klassischen Querschnittsfunktionalitäten wie Auditing oder Sicherheitschecks mittels AspectJ ist Bytecode unabdingbar.</p>
+</div>
+<div class="paragraph">
+<p>Die JVM ist eine Stack-Maschine ihr Bytecode ist nicht sonderlich schwer zu lesen, man muss nur gut aufpassen was auf den Stack bewegt wird und was wieder herunterkommt.
+Er ist langatmiger als Assembler besonders wegen der Typ- und Methodenliterale.</p>
+</div>
+<div class="paragraph">
+<p>Zum Glück muss man keinen reinen Bytecode manuell eingeben.
+Viele der Bytecode-Generatoren machen es dem Nutzer aber viel einfacher, da sie diesen entweder über eine DSL oder über das Umwandeln von Code-Fragmenten erzeugen.</p>
+</div>
+<div class="paragraph">
+<p>Einen anderen, sehr beeindruckenden Weg mit extrem effizientem Ergebnis hatte ich vor einer Weile mit dem AST-Transformer + Compiler Duo Truffle + Graal vorgestellt, das uns hoffentlich in Java 9 dann offiziell beehren wird.</p>
+</div>
+<div class="paragraph">
+<p>Aus all diesen Gründen, möchte ich heute einmal verschiedene Ansätze zur Codegenerierung für Java vorstellen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tools">Tools</h3>
+<div class="paragraph">
+<p>Die Liste der verfügbaren Tools ist erstaunlich lang und bei weitem nicht vollständig.
+Auch wenn es keine alltägliche Aufgabe ist, scheint der Schuh doch oft genug gedrückt zu haben.
+Verschiedene Autoren haben eine Menge Bibliotheken mit unterschiedlichen Ansätzen veröffentlicht, um den diversen Anforderungen gerecht zu werden.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Art der Generierung</th>
+<th class="tableblock halign-left valign-top">aktiv?</th>
+<th class="tableblock halign-left valign-top">beschrieben</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ASM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CGLib</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ByteBuddy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Janino</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode,Compiler</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kaum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AspectJ</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode, Weaving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">minimal</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JavaAssist</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JavaPoet</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quellcode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Groovy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Metaprogrammierung</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javax.tools.JavaCompiler</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bytecode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reflection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Laufzeitinteraktion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">XText</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quellcode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ja</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nein</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_aspectj">AspectJ</h3>
+<div class="paragraph">
+<p>AspectJ wird schon seit 2001 eingesetzt um Java-Systeme nachträglich durch dynamische und Querschnittsfunktionalitäten anzureichern.
+Es kann zur Compile- oder Ladezeitpunkt generierten Bytecode in existierende Klassen hineinweben und damit alle Aspekte der Ausführung beeinflussen.
+Von Feldzugriff über Instanziierung bis zur Methodenausführung.</p>
+</div>
+<div class="paragraph">
+<p>In <strong>Aspekten</strong> werden die AspektJ Bestandteile definiert.
+Man kann mit <strong>Erweiterungsmethoden</strong> neue Funktionalität definieren.
+Über sogenannte <strong>Pointcuts</strong> werden die Stellen (<strong>Join Points</strong>) festgelegt an denen Funktionalität angebunden werden soll.
+Und <strong>Advices</strong> legen fest welche Funktionalität an einem Pointcut auf welche Art und Weise aktiv wird (davor, danach, stattdessen).</p>
+</div>
+<div class="paragraph">
+<p>AspectJ hatte lange Jahre eine sehr starke Anwendung und Verbreitung (u.a. im SpringFramework), es ist jetzt aber eher in den Hintergrund getreten.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_asm">ASM</h3>
+<div class="paragraph">
+<p>ASM ist eines der ältesten (seit 2000) und bewährtesten Tools zur Bytecode-Manipulation.
+Wegen seiner Kompaktheit und Geschwindigkeit wird es innerhalb vieler anderer Frameworks eingesetzt.
+Es liegt mittlerweile in Version 5 vor.
+Mit ASM kann sowohl direkt Bytecode erzeugt, als auch Transformationen existierender Klassen und Methoden vorgenommen werden.
+Diese basieren auf einem extrem schnellen Bytecode-Scanner, der ereignisgesteuert über eine Visitor-API Informationen an den Aufrufer zurückliefert, aber auch erlaubt währenddessen den Bytecode zu modifizieren.
+Dabei werden gängige Transformationen und Analysen schon mitgeliefert.</p>
+</div>
+<div class="paragraph">
+<p>Ausgehend vom <code>Classreader</code> wird im <code>ClassVisitor</code> für jeden Aspekt der Klasse (Felder, Constructor, Methoden, Annotationen usw) eine Callback-Methode aufgerufen, z.b. <code>visitField</code> oder <code>visitMethod</code>. Einige dieser Methoden geben wieder eigene Vistoren (z.b. <code>MethodVisitor</code>,<code>InstructionAdapter</code>)  zurück die dann weiterhin aufgerufen werden um tiefere Details zu instrumentieren.</p>
+</div>
+<div class="paragraph">
+<p>ASM bringt in neueren Versionen ein Tool <code>ASMifier</code> mit, das für eine gegebene Klasse, die notwendigen ASM Aufrufe generiert, um eine ebensolche Klasse zu erzeugen.
+Es wird mittels <code>java -cp asm-all-&lt;version&gt;.jar org.objectweb.asm.util.ASMifier java.lang.Integer &gt; IntegerVisitor.java</code> aufgerufen.</p>
+</div>
+<div class="paragraph">
+<p>Prinzipiell läuft die Erzeugung von Bytecode mit ASM so ab:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Erzeugung eines <code>ClassWriter</code></p>
+</li>
+<li>
+<p>Aufruf von <code>cw.visit()</code> und Übergabe von FQN, Superklassen, Interfaces, Modifiern usw.</p>
+</li>
+<li>
+<p>Für jedes Feld: Aufruf von <code>cw.visitField(modifier, name, typ, &#8230;&#8203;)</code> und Zuweisung an einen <code>FieldVisitor</code></p>
+</li>
+<li>
+<p>Aufruf von <code>fv.visit*()</code> zur Übergabe des Initialisierungscodes</p>
+</li>
+<li>
+<p>Für jede Methode: Aufruf von <code>cw.visitMethod(modifier, name, type descriptor, signatur, exceptions)</code> und Zuweisung an einen <code>MethodVisitor</code></p>
+</li>
+<li>
+<p>Aufruf von <code>mv.visit*()</code> zur Übergabe von Instruktionen für den Methodenrumpf</p>
+</li>
+<li>
+<p>Aufruf von <code>cw.visitEnd()</code></p>
+</li>
+<li>
+<p>Aufruf von <code>cw.toByteArray()</code> zum Erhalten des Bytecodes</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Wenn Klassen nur partiell geändert werden sollen, dann erfolgt das über angepasste Instanzen der Visitoren, die in den entsprechenden <code>visit*</code> Methoden, vor, nach oder statt der Superklassen-Aufrufe die entsprechenden Bytecode-Instrumentierungs-Aufrufe durchführen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">// Ausgabe des Methodennamens in jeder Methode
+... extends MethodVisitor {
+  @Override
+  public void visitCode() {
+      super.visitFieldInsn(GETSTATIC, "java/lang/System",
+                          "out", "Ljava/io/PrintStream;");
+      super.visitLdcInsn("method: "+methodName);
+      super.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream",
+                             "println", "(Ljava/lang/String;)V");
+      super.visitCode();
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_javaassist">Javaassist</h3>
+<div class="paragraph">
+<p>Javassist, jetzt verfügbar in Version 3.20 macht die Generierung von Bytecode einfach, da er auch Java Source-Code Fragmente verarbeitet, die man den API Methoden als Strings übergibt, welche dann direkt umgewandelt werden.
+Der generierte Bytecode kann dann an spezifischen Stellen innerhalb von Methoden oder Klassen eingefügt werden.
+Es gibt auch eine reine Bytecode API, die die direkte Manipulation erlaubt.
+Klassen können zur Laufzeit geändert, aber auch beim Laden durch die JVM modifiziert werden.</p>
+</div>
+<div class="paragraph">
+<p>Das ganze basiert auf einer objektorientierten Repräsentation von Klassen (<code>CtClass</code>), Methoden (<code>CtMethod</code>) und Feldern (<code>CtField</code>), die direkt inspiziert, manipuliert und erzeugt werden können.
+Es gibt einige Einschränkungen, z.b. können keine Methoden gelöscht (sondern nur umbenannt) und auch nicht um Parameter ergänzt werden (stattdessen Overloading und Delegation).
+Neuer Code kann in Methoden am Anfang, am Ende, an bestimmten Zeilen und als umschliessender <code>try-catch</code> - Block eingefügt werden.
+Der Rumpf der Methode kann auch komplett ersetzt werden.
+Im übergebenen Quellcode können Substitutionen wie z.B. <code>$0,$1</code> für Parameter oder <code>$type</code> für den Ergebnistyp oder <code>$_</code> für das bisherige Ergebnis genutzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Der Zugriff auf Klassendefinitionen (<code>CtClass</code>) über einen <code>ClassPool</code>, der sich auch um weitere Aspekte wie Klassenpfade kümmert.
+Das Ergebnis der Manipulation kann dann auf diverse Weise in Bytecode bzw. geladene Klassen überführt werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">ClassPool pool = ClassPool.getDefault();
+CtClass cc = pool.get("company.Person");
+// ab hier kann die Klasse modifiziert werden
+cc.setSuperclass(pool.get("company.Entity"));
+
+CtMethod m = cc.getDeclaredMethod("call");
+m.insertBefore("{ System.out.println(\"Are you sure you want to call\"+$0+\"?\"); }");
+
+cc.writeFile();
+byte[] bytes = cc.toBytecode();
+// direkt Klasse erzeugen
+Class clazz = cc.toClass();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zugriff auf die darunterliegende Bytecodeinformationen kann über <code>ctClass.getClassFile()</code> und <code>ctMethod.getMethodInfo()</code> erlangt werden.</p>
+</div>
+<div class="paragraph">
+<p>Per se können Klassen nur modifiziert werden, wenn sie noch nicht geladen wurden.
+Also entweder vorher, oder während des Ladens mit einem <code>ClassTransformer</code> [Bernd Müller: ClassTransformer].
+Mit einem Java-Agent mit der Instrumentation-API und <code>redefineClasses</code>, könnte man das Neuladen einer Klasse erzwingen, ebenso mit der Debugger-API, oder mit der Neuerzeugung des ClassLoaders der die Klasse bisher geladen hat.
+Aber natürlich nur, wenn sie den Regeln des JVM-Hot-Reloads entspricht.
+Das alles wird in Bernd Müllers Vortrag gut erklärt.</p>
+</div>
+<div class="paragraph">
+<p>Zur Zeit unterstützt der Javaassist Compiler keine Enums und Generics, ebensowenig innere (anonyme) Klassen. Zugriff darauf ist nur über die darunterliegenden Bytecode-APIs möglich.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bytebuddy">ByteBuddy</h3>
+<div class="paragraph">
+<p>ByteBuddy ist eine moderne, kleine aber schnelle Integrationsbibliothek, von Rafael Winterhalter die darauf spezialisiert ist, existierenden Code miteinander zu verbinden.
+Sie benutzt ASM unter der Haube, um Bytecode zu manipulieren.
+Um die Komplexität des Erzeugens von Bytecode zu vermindern wird zumeist an in statischen Methoden vorliegende Implementierungen delegiert.</p>
+</div>
+<div class="paragraph">
+<p>Bytebuddy benutzt eine kompakte DSL, um die Verknüpfung von Klassendefinition, Ziel und die neuen Aufrufe zu beschreiben.
+Dabei werden oft Annotationen genutzt um Ziele der Anpassung zu markieren.
+Insofern ähnelt es etwas AspectJ nur dass hier eine interne Java DSL zum Einsatz kommt.</p>
+</div>
+<div class="paragraph">
+<p>Hier als Beispiel, die Implementation einer einfachen Absicherung von annotierten Methoden für eine notwendige Rolle.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">class ByteBuddySecurityLibrary implements SecurityLibrary {
+
+  // "Speicher" für aktuellen User
+  public static User currentUser = User.anonymous;
+
+  @Override
+  public  Class&lt;? extends T&gt; secure(Class type) {
+    return new ByteBuddy()
+      // mit @Secured annotierte Mehoden
+      .method(isAnnotatedBy(Secured.class))
+      // Delegation an diese ByteBuddySecurityLibrary.intercept
+      .intercept(MethodDelegation.to(ByteBuddySecurityLibrary.class))
+      .make()
+      .load(type.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+      .getLoaded();
+  }
+
+  @RuntimeType
+  public static Object intercept(@SuperCall Callable&lt;?&gt; superMethod,
+                                 @Origin Method method) throws Exception {
+    // Abfangen des Aufrufs und Prüfung der Zugriffsrechte
+    Role role = method.getAnnotation(Secured.class).requiredRole();
+    if (currentUser.hasRole(role)) return superMethod.call();
+    throw new SecurityException(method, role, user);
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_javapoet">JavaPoet</h3>
+<div class="paragraph">
+<p>JavaPoet von Square bietet eine interne DSL zum Generieren von Java-Code.
+Sie nutzt Fluent-Interfaces, um Methoden, Parameter, Felder, Annotationen, Klassen und Dateien zu generieren.
+Im Kern sind die genutzten Spec-Objekte aber unveränderlich und können so partiell und mehrfach genutzt und mit neuen Informationen abgeleitet werden.
+Dabei wird soweit wie möglich mit typsicheren Konstanten und Literalen (z.b. Klassenliterale) gearbeitet.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">// public static void main(String[] args) { System.out.println("Hello JavaPoet!"); }
+MethodSpec main = MethodSpec.methodBuilder("main")
+    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+    .returns(void.class)
+    .addParameter(String[].class, "args")
+    .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
+    .build();
+
+// "HelloWorld" Klasse mit der "main" Methode
+TypeSpec helloWorld = TypeSpec.classBuilder("HelloWorld")
+    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+    .addMethod(main)
+    .build();
+
+// .java Datei mit import Deklarationen und Package
+JavaFile javaFile = JavaFile.builder("com.example.helloworld", helloWorld)
+    .build();
+
+javaFile.writeTo(System.out);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für Methodenrümpfe und Ausdrücke werden Strings für Code-Fragmente genutzt.
+Um den Komfort dabei zu erhöhen, gibt es auch da eine kleine Fluent-DSL die Ausdrücke zusammenstellt und sich z.B. um Einrückungen, Umbrüche und Semikolons kümmert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">private MethodSpec computeRange(String name, int from, int to, String op) {
+  return MethodSpec.methodBuilder(name)
+      .returns(int.class)
+      .addStatement("int result = 0")
+      .beginControlFlow("for (int i = $L; i &lt; $L; i++)", from, to)
+      .addStatement("result = result $L i", op)
+      .endControlFlow()
+      .addStatement("return result")
+      .build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Code-Strings kann man semantische Platzhalter nutzen, die unterschiedlich interpretiert werden.
+Somit kann eine Typprüfung mit den übergebenen Parametern vorgenommen werden.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>$L</code> für Literale,</p>
+</li>
+<li>
+<p><code>$S</code> für Strings mit Anführungszeichen, Escapes und Umbrüchen.</p>
+</li>
+<li>
+<p><code>$T</code> für Typen aus Klassenliteralen oder <code>ClassName</code> Definitionen, mit automatischer <code>import</code> Deklaration am Dateianfang.</p>
+</li>
+<li>
+<p><code>$N</code> wird genutzt um auf Namen anderer Elemente (Spec-Objekte) der generierten Klasse oder Methode zuzugreifen.</p>
+</li>
+<li>
+<p>Für den Quellcode eines Spec-Objektes benutzt man dieses ebenfalls mit <code>$L</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>JavaPoet unterstützt auch die Erzeugung von Enums und inneren anonymen Klassen.</p>
+</div>
+<div class="paragraph">
+<p>Ich persönlich fände es schön, wenn JavaPoet einige API Bequemlichkeiten mitbringen würde, das würde duplikaten Code einsparen.
+Z.b. <code>TypeSpec.publicClassBuilder</code>, <code>addPrivateMethod</code>,<code>addPrivateFieldWithGetter</code> <code>addIfStatement</code> usw.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cglib">CGLib</h3>
+<div class="paragraph">
+<p>CGLib ist eine schon etwas in die Jahre gekommene, abstraktere API um Bytecode zu erzeugen.
+Sie wurde bisher zum Beispiel in Hibernate für das Anreichern von Entitäten für das dynamische Nachladen und andere Funktionalitäten genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Der häufigste Anwendungsfall ist die Erzeugung von Subklassen existierender Klassen, in denen Verhalten von nicht-finalen Methoden verändert wird, ähnlich wie bei (dynamischen) Proxies bei denen CGLib diverse Anleihen nimmt.
+Mittels der <code>Enhancer</code> API ist das relativ einfach möglich.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">Enhancer enhancer = new Enhancer();
+// welche Klasse soll abgeleitet werden
+enhancer.setSuperclass(MyFormatter.class);
+// welcher callback für alle Methoden
+// hier mit festem Rückgabewert
+enhancer.setCallback(new MethodInterceptor() {
+  public Object intercept(Object obj, Method method,
+   Object[] args, MethodProxy proxy) throws Throwable {
+    if(method.getDeclaringClass() != Object.class &amp;&amp;
+              method.getReturnType() == String.class) {
+      return "Fixed Format";
+    } else {
+      return proxy.invokeSuper(obj, args);
+    }
+  }
+});
+Formatter proxy = (Formatter) enhancer.create();
+proxy.format(new Date()) -&gt; "Fixed Format"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Neben diesem mächtigen aber aufwändigen <code>MethodInterceptor</code> gibt es für andere Einsatzfälle alternative Callbacks, wie den effizienten <code>InvocationHandler</code> sowie den simplistischen <code>FixedValue</code>-Callback.</p>
+</div>
+<div class="paragraph">
+<p>Die Dokumentation für CGLib ist ziemlich spärlich.
+Lustigerweise stammt die ausführlichste Beschreibung, das "missing Manual" aus 2013 von Rafael Winterhalter, dem Autor von ByteBuddy.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_fazit">Fazit</h3>
+<div class="paragraph">
+<p>Es gibt noch weitere Ansätze, wie die modellgetriebene Softwareentwicklung, die aus detailliert spezifizierten Modellen große Teile des Basisquelltexts (und andere Artefakte) eines Projekts generiert, der dann mittels Konfiguration, Ableitung oder Delegation konkretisiert wird.
+Das geht jedoch weit über das hinaus was ich hier vorstelle.</p>
+</div>
+<div class="paragraph">
+<p>Wie jede andere Methode sollte man Codegenerierung nur bewusst dann einsetzen, wenn es wirklich notwendig ist, und der Nutzen den Aufwand weit überwiegt.
+Dessen Einsatz zu übertreiben schadet eher als das es hilft.
+Ein wichtiger Aspekt ist die Wartbarkeit.
+Niemand will generierten Code warten.
+Daher sollte dieser in jedem Build neu erzeugt und nicht in die Versionsverwaltung eingecheckt werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referenzen">Referenzen</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>[Winterhalter Code Generation] <a href="http://zeroturnaround.com/rebellabs/how-to-make-java-more-dynamic-with-runtime-code-generation/" class="bare">http://zeroturnaround.com/rebellabs/how-to-make-java-more-dynamic-with-runtime-code-generation/</a></p>
+</li>
+<li>
+<p>[Winterhalter ByteBuddy] <a href="http://zeroturnaround.com/rebellabs/how-my-new-friend-byte-buddy-enables-annotation-driven-java-runtime-code-generation/" class="bare">http://zeroturnaround.com/rebellabs/how-my-new-friend-byte-buddy-enables-annotation-driven-java-runtime-code-generation/</a></p>
+</li>
+<li>
+<p>[ByteBuddy Tutorial - Security Library] <a href="http://bytebuddy.net/#/tutorial" class="bare">http://bytebuddy.net/#/tutorial</a></p>
+</li>
+<li>
+<p>[Annotation Processing] <a href="https://deors.wordpress.com/2011/10/31/annotation-generators/" class="bare">https://deors.wordpress.com/2011/10/31/annotation-generators/</a></p>
+</li>
+<li>
+<p>[Javaassist Tutorial] <a href="http://jboss-javassist.github.io/javassist/tutorial/tutorial.html" class="bare">http://jboss-javassist.github.io/javassist/tutorial/tutorial.html</a></p>
+</li>
+<li>
+<p>[Bernd Müller: ClassTransformer] <a href="http://www.jug-ostfalen.de/assets/wp/2014/08/jug-classloader.pdf" class="bare">http://www.jug-ostfalen.de/assets/wp/2014/08/jug-classloader.pdf</a></p>
+</li>
+<li>
+<p>[ASM-Tutorial] <a href="http://download.forge.objectweb.org/asm/asm4-guide.pdf" class="bare">http://download.forge.objectweb.org/asm/asm4-guide.pdf</a></p>
+</li>
+<li>
+<p>[ASM-Intro] <a href="http://www.javacodegeeks.com/2012/02/manipulating-java-class-files-with-asm.html" class="bare">http://www.javacodegeeks.com/2012/02/manipulating-java-class-files-with-asm.html</a></p>
+</li>
+<li>
+<p>[AspectJ Programming Guide] <a href="https://www.eclipse.org/aspectj/doc/released/progguide/" class="bare">https://www.eclipse.org/aspectj/doc/released/progguide/</a></p>
+</li>
+<li>
+<p>[Groovy Metaprogrammierung] <a href="http://www.groovy-lang.org/metaprogramming.html" class="bare">http://www.groovy-lang.org/metaprogramming.html</a></p>
+</li>
+<li>
+<p>[Hunger Truffle / Graal JS xx/xx]</p>
+</li>
+<li>
+<p>[Janino Homepage] <a href="http://unkrig.de/w/Janino" class="bare">http://unkrig.de/w/Janino</a></p>
+</li>
+<li>
+<p>[Janino Tutorial] <a href="https://today.java.net/pub/a/today/2007/02/15/tackling-performance-problems-with-janino.html" class="bare">https://today.java.net/pub/a/today/2007/02/15/tackling-performance-problems-with-janino.html</a></p>
+</li>
+<li>
+<p>[CGLib Tutorial] <a href="https://github.com/cglib/cglib/wiki/Tutorial" class="bare">https://github.com/cglib/cglib/wiki/Tutorial</a></p>
+</li>
+<li>
+<p>[Kabutz Source Compiler]&gt; <a href="http://www.javaspecialists.eu/archive/Issue180.html" class="bare">http://www.javaspecialists.eu/archive/Issue180.html</a></p>
+</li>
+<li>
+<p>[Oracle Java Proxy] <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Proxy.html" class="bare">http://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Proxy.html</a></p>
+</li>
+<li>
+<p>[Dynamic Proxy Tutorial] <a href="http://tutorials.jenkov.com/java-reflection/dynamic-proxies.html" class="bare">http://tutorials.jenkov.com/java-reflection/dynamic-proxies.html</a></p>
+</li>
+<li>
+<p>[Dynamic Proxy Tutorial DeveloperWorks] <a href="http://www.ibm.com/developerworks/library/j-jtp08305/" class="bare">http://www.ibm.com/developerworks/library/j-jtp08305/</a></p>
+</li>
+<li>
+<p>[JavaPoet Dokumentation] <a href="https://github.com/square/javapoet/blob/master/README.md" class="bare">https://github.com/square/javapoet/blob/master/README.md</a></p>
+</li>
+<li>
+<p>[JavaPoet Ankündigugn] <a href="https://corner.squareup.com/2015/01/javapoet.html" class="bare">https://corner.squareup.com/2015/01/javapoet.html</a></p>
+</li>
+<li>
+<p>[Kabutz, Ruppert Buch: Dynamic Proxies] <a href="http://www.amazon.de/Dynamic-Proxies-Dr-Heinz-Kabutz/dp/3868021531" class="bare">http://www.amazon.de/Dynamic-Proxies-Dr-Heinz-Kabutz/dp/3868021531</a></p>
+</li>
+<li>
+<p>[Kabutz, Ruppert Code-Generierung für Proxies] <a href="https://jaxenter.de/es-werde-code-13426" class="bare">https://jaxenter.de/es-werde-code-13426</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2015-10-12 14:43:49 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

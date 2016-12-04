@@ -1,0 +1,626 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Das Nashorn im Java-Zoo</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_intro">Intro</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir alle wissen, dass Javascript ungefähr soviel mit Java gemeinsam hat wie "carpet" mit "car".
+Man konnte schon seit langen JavaScript innerhalb von Java ausführen, aber nicht ernsthaft nutzen.
+Erst seit in Java8 "Nashorn" die "Rhino" Implementierung ersetzt, macht das Ganze richtig Spass.
+Mit welchen Techniken und Tricks dynamischer JavaScript Code effizient ausgeführt werden kann, soll Thema dieses Artikels sein.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sprachvergleich">Sprachvergleich</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Als Sprachen können sie verschiedener nicht sein, und neben einigen Schlüsselworten und Strukuren haben sie nur das Semikolon gemeinsam (welches in Javascript sogar weggelassen werden könnte).
+Das führt auch regelmässig zu Glaubensfrage, die für Softwareentwickler so typisch, aber nicht zielführend ist.</p>
+</div>
+<div class="paragraph">
+<p>Java ist eine objektorientierte, vererbungsbasierte, statisch getypte, compilierte und "sichere" Sprache, die zu Bytecode kompiliert wird und in Servern und Anwendungen portabel auf allen Betriebssystemen läuft.</p>
+</div>
+<div class="paragraph">
+<p>Javascript is eine objektorientierte, prototyp-basierte, dynamische, interpretierte Sprache, deren Mächtigkeit aus der flexiblen Erweiterbarkeit von Objekten zur Laufzeit
+und der starken Verbreitung als Browser-Scriptsprache kommt.
+Seit einigen Jahren ist es möglich mittels Node.js (basierend auf der V8-VM) Javascript auch ausserhalb des Browsers effizient auszuführen.
+Durch die Verbreitung als Sprache des Webs, gibt es viele Entwickler die "genug" JavaScript können, um sich durchzumogeln.
+Effizientes und wartbares JavaScript zu schreiben erfordert aber ebensoviel Erfahrung und noch mehr Disziplin als in Java.</p>
+</div>
+<div class="paragraph">
+<p>Beide Sprachen haben sehr grosse Ökosysteme, mittlerweile auch mit reichhaltiger Toolunterstützung und werden in jeder Art von Projekt eingesetzt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_geschichtliches">Geschichtliches</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im Navigator 2.0 veröffentlichte Netscape 1995 die von Brendan Eich entwickelte Scriptsprache "LiveScript".
+Die Namensänderung zu "JavaScript" kommt aus der Zeit als Netscape diese Scriptsprache enger mit Java-Applets integrieren wollte und Sun den notwendigen Integrationscode bereitstellte.
+Interessanterweise ist "JavaScript" seit der Übernahme von Sun jetzt eine Marke von Oracle!</p>
+</div>
+<div class="paragraph">
+<p>Schon relativ zeitig (1997) wurde innerhalb von Netscape der Javascript-Interpreter "Rhino" in Java implementiert, der Teil eines Java-basierten Browsers werden sollte.
+Ein Jahr später wurde diese Implementierung über Mozilla veröffentlicht.
+Seit Java6 (2006) ist Rhino ein Bestandteil der Java-Runtime.</p>
+</div>
+<div class="paragraph">
+<p>Die ersten Versionen von Rhino waren interessanterweise keine Interpreter, sondern generierten Bytecode, welcher schneller als die damaligen C/C++ Javascript Umgebungen war.
+Leider war dieser Prozess zu zeitaufwändig und speicherhungrig, so dass nachfolgend ein Interpreter die Ausführung des Javascripts übernahm.
+Den Compiler gab es noch im Hintergrund, dieser wurde aber nie weit verbreitet eingesetzt, obwohl es für serverseitiges Javascript schon interessante gewesen wäre.</p>
+</div>
+<div class="paragraph">
+<p>Mit Rhino konnte man nun von Java aus Javascript-Code interpretiert, ausführen.
+Es konnten Variablen in den Ausführungscope gebunden und Ergebnisse zurückgeliefert werden.
+Die Integration erfolgte auch später mit der <code>javax.ScriptEngine</code> des JSR-223, welche eine einfache Integration für jedes Java-Projekt ermöglicht.
+Wenn da nicht die Performance von Rhino gewesen wäre.
+Der reine Interpreter war zu langsam, als es irgend jemand ernsthaft ausserhalb von einfachem, dynamischen Scripting für Java-Anwendungen eingesetzt hätte.</p>
+</div>
+<div class="paragraph">
+<p>Das war der gesamten Java-Community lange ein Dorn im Auge, besonders da sich so viele andere, deutlich performantere dynamische Sprachen etablierten.</p>
+</div>
+<div class="paragraph">
+<p>Mit Google&#8217;s V8 hielt eine sehr moderne und schnelle C++ -basierte JavaScript Engine in Chrome Einzug, die dann als Basis von Node.js den Erfolg von JavaScript auf dem Server begründete.
+Damit gab es einen deutlichen Zugzwang auf der JVM eine ebenso performante Lösung für die Ausführung von JavaScript anzubieten.
+Das es möglich ist, haben andere Projekte wie jRuby, Groovy und Clojure schon längst bewiesen.</p>
+</div>
+<div class="paragraph">
+<p>2010 wurde ein Projekt als "Proof of Concept" für invokeDynamic gestartet, um zu zeigen dass MethodHandles die Implementierung dynamischer Sprachen auf der JVM viel einfacher und performanter machen.
+Da dieser PoC so erfolgreich war, wurde beschlossen, mit diesen Mechanismen eine neue, performante Javascript-Runtime zu entwickeln.
+Das Projekt wurde "Nashorn" genannt, als Anspielung auf "Rhino" und das JavaScript(Buch)-Nashorn und sehr zum Leidwesen englischer Muttersprachler.
+Es sollten alle modernen Ansätze für effiziente Ausführungsumgebungen für dynamische Sprachen genutzt werden, um eine zeitgemäße JavaScript-Runtime zu entwickeln.</p>
+</div>
+<div class="paragraph">
+<p>Die Entwicklung von Nashorn hat seit 2010 viele Iterationen durchlaufen, seit Java 8 ist es offiziell Teil des JDK.
+Während dieser Zeit wurden verschiedene Ansätzen für die Lösung von Performance und Interoperabilitätsproblemen, die von Markus Lagergren und Attila Szegedi jeweils auf den JVM-Language-Summits vorgestellt wurden.
+Im Abschnitt "Technisches" werde ich detaillierter darauf eingehen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_nützliches">Nützliches</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Nashorn ist eine der wenigen Javascript Runtimes, die 100% ECMAScript 5.1 compliant sind.
+Für Java 9 ist eine Unterstützung von ECMAScript 6/2015 geplant, die teilweise schon umgesetzt ist.
+Die Entwickler von Nashorn haben aber sehr deutlich gemacht, dass Javascript vom Design und der Semantik eine der schlimmsten Sprachen darstellt.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>"Und wer JavaScript performant auf der JVM zu laufen bekommt, hat die potentiellen Probleme der meisten anderen dynamischen Programmiersprachen auch gleich mit gelöst" [Lagergren JLS2014]</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Die Ausführung von Javascript auf der JVM erlaubt interessante neue Optionen, die Nutzung des breiten Ökosystems und der Klassenbibliotheken.
+Aber auch die bewährten Test-, Integrations and Deployment-Plattformen stehen zur Verfügung, so dass große Javascript-Projekte in verlässlichen Umgebungen laufen können.
+Desweiteren kann Profiling von Ausführung und Speichernutzung sowohl über Debugger, als auch über Java-Flight-Recorder wichtige Laufzeitinformationen bereitstellen.</p>
+</div>
+<div class="paragraph">
+<p>Für den Schnellstart mit Nashorn bedient man sich der mitgelieferten Shell "jjs", die im "bin" Verzeichnis des JDK/JRE zu finden ist:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">// JavaScript mit Kurzform für Funktionen
+[1,0].map(function(x) x*x).join("");
+
+// Konvertierung von Feldern
+var a = Java.to([1,"2","false"],"int[]");
+for(x in a) print(x) // 1,2,0
+Java.from(a) // 1,2,0
+
+// Überladung von Funktionen
+java.lang.System.out["println(double)"](12);  // 12.0
+
+// Java Klasse deklarieren, erzeugen, aufrufen
+var File = Java.type("java.io.File");
+new File("/etc/passwd").exists(); // true
+
+java.util.Array.asList(-1,1).stream()
+        .reduce(0, function(a,x) a+x); // 0
+
+// Funktionen als SAM-Parameter weitergeben
+new Thread(function() { print("new thread")});
+
+// Erweiterung von Klassen
+var r = new java.lang.Runnable
+       ({ run: function() { print('hello') }});
+// Kurzform
+var r = new java.lang.Runnable
+       { run: function() print('hello') };
+
+++[[]][+[]]+[+[]]; // 10</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die Einbindung in Java Programme erfolgt mittels der <code>javax.script.ScriptEngine</code> des JSR-223, von der man sich eine "nashorn" Runtime zurückgeben lässt.
+Da Nashorn nicht thread-safe ist, sollten Instanzen der ScriptEngine über <code>ThreadLocal</code> oder Pools verwaltet werden.</p>
+</div>
+<div class="paragraph">
+<p>Da bei der Entwicklung von Nashorn viel Wert auf die gute Integration von Java Typen und Mechanismen gelegt wurde, gibt es bei der Integration nur ein wenig zu beachten.
+Die meisten Java-Typen und deren Methoden, können ohne Verlust von Typinformationen direkt in Javascript genutzt werden.</p>
+</div>
+<div class="paragraph">
+<p>In Javascript können Klassen mittels <code>Java.extend</code> abgeleitet werden, neben den Typen (1 Klasse, n Interfaces) wird dann ein Javascript Objekt übergeben, dessen Properties die Funktionen und Eigenschaften enthalten, die für die Erweiterung genutzt werden können.
+Dabei müssen alle Methoden-Overloads mit demselben Namen durch diesselbe Javascriptfunktion gehandhabt werden, welche dann aufgrund der Parameteranzahl und -typen das Dispatching selbst vornehmen muss.</p>
+</div>
+<div class="paragraph">
+<p>Alle JavaScript Objekte (also auch Felder) sind Subklassen von <code>ScriptObjectMirror</code> und implementieren das <code>Map</code> interface.
+Felder in JavaScript können aufgrund ihrer sehr eigenwilligen Semantik - sie können verschiedene Typen enthalten und auch spärlich besetzt sein - nicht direkt auf Java-Felder abgebildet werden, sondern nur mit <code>Java.to(array[,"int[]"])</code>.
+Eine Abbildung von Feldern auf das <code>java.util.List</code> Interface ist leider auch nicht möglich da dessen <code>boolean Collection.remove(Object)</code> mit der <code>Object Map.remove(Object)</code> des Map-Interfaces von <code>ScriptObjectMirror</code> kollidiert.</p>
+</div>
+<div class="paragraph">
+<p>Java-Klassen sollten mittels ihres Paketes über <code>var HashMap = Java.type("java.lang.HashMap")</code> referenziert werden.
+Es gibt auch die Möglichkeit, globale Konstanten zu nutzen, die eine Paketstruktur simulieren, wie z.b. <code>new java.io.File()</code>, aber ihre eigenen Fehlerquellen mitbringen.</p>
+</div>
+<div class="paragraph">
+<p>Java-Features wie Streams können mit Funktionen kombiniert und Java-Collections/Felder mit foreach genutzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Ein cooles Gimmick ist, dass Javascript Funktionen an allen Stellen genutzt werden können, die ein Single-Abstract-Method (SAM) Interface bzw. Klasse entgegennehmen.</p>
+</div>
+<div class="paragraph">
+<p>Variablen können in den ScriptEngine-Kontext gelegt werden und Fragmente oder vollständige Skriptdateien ausgeführt werden, deren Kreationen dann ebenfalls im Kontext vorliegen.
+Für die Ausführung von in Javascript definierten Funktionen kann die <code>ScriptEngine</code> nach <code>Invocable</code> gecasted werden, um dann diese mit <code>invokeFunction("name",args)</code> auszuführen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public class Main {
+   public static void main(String[] args) throws Exception {
+       ScriptEngineManager manager = new ScriptEngineManager();
+       ScriptEngine engine = manager.getEngineByName("nashorn");
+       engine.eval("function encode(x) { return encodeURIComponent(x); }");
+       Invocable js = (Invocable)engine;
+       System.out.println(js.invokeFunction("encode", "süß"));
+   }
+}
+// s%C3%BC%C3%9F</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_technisches">Technisches</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Leistungsfähigkeit der dynamischen Runtime, setzt sich aus den Zeiten für Ausführung, Warmup, Erreichen eines stabilen Zustands und Ausführung der Laufzeitbibliotheken zusammen.
+Jeder dieser Aspekte wird im folgenden kurz beleuchtet.</p>
+</div>
+<div class="sect2">
+<h3 id="_ausführung">Ausführung</h3>
+<div class="paragraph">
+<p>Die JVM ist zuallererst eine <strong>Java</strong>-Bytecode Maschine.
+Dass heisst, sie ist dafür geschaffen, stark getypten Bytecode - möglichst mit primitiven Datentypen und Operationen - am schnellsten auszuführen und am höchsten zu optimieren (JIT, Inlining, Unrolling).</p>
+</div>
+<div class="paragraph">
+<p>Daher besteht das Hauptproblem für die Implementierung von JavaScript und anderer dynamischer Sprachen in ihrer potentiellen Dynamizität, bei JavaScript zusätzlich noch in der mangelnden Konsistenz und totalen Freiheit der Sprache.</p>
+</div>
+<div class="paragraph">
+<p>Für die Transformation von JavaScript in Java-Bytecode bedeutet dass, dass man im korrekten Ansatz jeden Wert als Objekt behandeln muss.
+Bei jeder Operation ist dann ein Typ- und Überlaufs-Checks sowie Umwandlung und Unboxing vorzunehmen, damit dann die eigentliche Operation (z.b. Addition or Methodenaufruf) ausgeführt werden kann.</p>
+</div>
+<div class="paragraph">
+<p>Nashorn war von Anfang an ein Vorzeigeprojekt für die invokedynamic Operation (JSR-292), ca. 10-20 Prozent der Instruktionen die von Nashorn generiert werden sind <code>invokedynamic</code> Bytecodes.</p>
+</div>
+<div class="paragraph">
+<p>In jedem Schritt kann sich theoretisch auch jeder Bestandteil eines Objekts und Kontextes ändern, so dass man diese erneut laden und überprüfen muss.
+Dasselbe gilt für alle aufgerufenen Funktionen.</p>
+</div>
+<div class="paragraph">
+<p>Aus dieser Dynamizität ergibt sich, dass wir für jeden Zugriff oder Aufruf immer wieder auf die JS-Runtime zugreifen müssen, um die letzte, aktuellste Variante einer Eigenschaft oder Methode zu erhalten.</p>
+</div>
+<div class="paragraph">
+<p>Dieser dynamische Zugriff auf die Informationen erfolgt über <code>MethodHandles</code> die dann mittels <code>invokeExact</code> oder <code>invoke</code> aufgerufen werden und über die deklarierte Meta-Informationen der Runtime die Auflösung und Entscheidung überlassen.</p>
+</div>
+<div class="paragraph">
+<p>In Nashorn wird für diese Entscheidung und Umwandlung die "dynalink" Bibliothek genutzt, die in diesem Rahmen schon viele hilfreiche Ansätze für dynamische Auswertung und Konvertierung umsetzt.</p>
+</div>
+<div class="paragraph">
+<p>Dieser pessimistische Ansatz zwar korrekt, aber viel zu langsam als dass man ihn ernsthaft in Betracht ziehen kann.
+Zum Beispiel ist eine Addition von zwei Werten in einer Schleife zwischen mit dem Integer-Ansatz 150 mal schneller als mit Objekten</p>
+</div>
+<div class="paragraph">
+<p>Zum Glück sind dynamische Sprachen in der Realität gar nicht so dynamisch, wie es zuerst den Anschein hat.
+Zwar ist es theoretisch möglich, zu jeder Zeit, jeden Typ, Methode, Variable oder Eigenschaft in Typ oder Wert zu ändern, selbst als Seiteneffekt eines anderen Methodenaufrufs.
+Nach der Anlaufphase am Anfang einer Javascript-Anwendung, sind die meisten dynamischen Rekonfigurationen vorgenommen worden und es gibt in den Kernbereichen der Anwendung den meisten kaum noch Überraschungen.</p>
+</div>
+<div class="paragraph">
+<p>Diesen Umstand hat sich das Nashorn Team zunutze gemacht, in dem es von optimistischen Vorhersagen ausgehend, mit einer optimalen Implementierung für die effizientesten Typen (int, double, long) einer Methode beginnt.
+An allen Stellen an denen eine Verletzung dieser Annahmen auftreten kann (z.b. Variablenzugriff oder Operationen) werden innerhalb der Methode <strong>markiert</strong> und beim Abweichen des aktuellen vom erwartetem Typ wird eine <code>UnwarrantedOptimismException</code> erzeugt.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://dl.dropboxusercontent.com/u/14493611/optimistic_types.jpg" alt="optimistic types" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Diese wird dann am Ende der Methode behandelt und führt dazu, dass die Methode mit höherem Pessimismus für die Typerwartungen neu erzeugt und geladen wird.
+Die aktuellen lokalen Variablen werden gesichert und eine maximal pessimistische Implementierung der Methode ab der Markierung generiert und ausgeführt.
+Dieser Continuation-Ansatz funktioniert erstaunlich gut, man erreicht im optimalen Fall fast die Leisungsfähigkeit von getypten Java-Bytecode.</p>
+</div>
+<div class="paragraph">
+<p>Er ist im JEP-196 "Nashorn Optimistic Typing"[JEP196] noch einmal im Detail beschrieben.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">function() {
+   return a + b;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="asm language-asm">public static f(ScriptFunction;Object;)I
+0	aload 0
+1	invokevirtual ScriptFunction.getScope()ScriptObject;
+4	astore 2
+5	aload 2
+// Zugriff auf a mit Annahme dass es ein int ist
+6	invokedynamic dyn:getProp|getElem|getMtd:a(Object;)I
+11	istore 3
+12	iload 3
+13	aload 2
+// Zugriff auf b mit Annahme dass es ein int ist
+14	invokedynamic dyn:getProp|getElem|getMtd:b(Object;)I
+// Integer-Addition mit Überlaufschutz
+19	invokedynamic iadd(II)I</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">try {
+  operation; // Zugriff auf a,b  und Addition
+} catch (final UnwarrantedOptimismException e) {
+  throw new RewriteException(e.getLocalVariables(), e.getProgramPoint());
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dieser Ansatz ist ähnlich zu dem der von Truffle und Graal genutzt wird, nur dass dort die Kommunikation zwischen Interpreterframework und Compiler automatisch funktioniert.</p>
+</div>
+<div class="paragraph">
+<p>Durch die fehlende Typisierung kann die Vorhersage von Typen von Variablen nur indirekt abgeleitet werden, aus ihrer Deklaration, den Operationen die auf ihnen ausgeführt werden (z.b. Multiplikation auf Zahlen) und dem Fluss von Werten durch das Programm.
+Das macht man sich für die initiale, optimistische Variante zunutze, da man für bestimmte Variablen "weiss" welchen Typ sie haben und ihn damit für andere inferieren kann.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_Überläufe">Überläufe</h3>
+<div class="paragraph">
+<p>Für die mathematischen Operationen ist nachteilig dass die JavaScript Typen nicht mit Java kompatibel sind.
+Zahlen in Javascript sind etwas größer als in Java, so dass man zwar alle mit <code>double</code> abbilden kann, aber halt nicht mit <code>int</code>.
+Damit würde man aber deutliche Leistungseinbussen hinnehmen.</p>
+</div>
+<div class="paragraph">
+<p>Für optimistische Integer-Operationen muss im Fall des Falles immer auf Überläufe reagiert werden können.
+In reinem Java-Code war der Überlaufs-Check zu langsam, daher wurde dieser mit neuen <code>-Exact</code> Operationen in <code>java.lang.Math</code> realisiert, z.B. <code>addExact</code>, die dann als intrinsische Methoden auf nur wenige Bytecode Operationen abgebildet werden können (jump on overflow).
+Somit kann man optimistisch <code>addExact</code> benutzen, und nur wenn der Integer-Wertebereich verlassen wird, muss die Operation mit Long oder Double wiederholt werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ableitungen">Ableitungen</h3>
+<div class="paragraph">
+<p>Wenn eine Java Klasse oder Interface mittels durch Javascript abgeleitet wird, werden im Bytecode der generierten Klasse Instanzvariablen für den Script-Kontext und MethodHandles <em>für die explizit überschriebenen Methoden</em>, sowie <code>toString</code>, <code>hashCode</code> und <code>equals</code> vorgesehen.
+Diese werden dann im Constructor via <code>JavaAdapterServices.getHandle()</code> aus dem ScriptObject extrahiert und gespeichert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Java.extend(java.lang.Runnable, function() print("test"))</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">package jdk.nashorn.javaadapters.java.lang;
+
+public final class Runnable implements Runnable {
+
+	ScriptObject global;
+	MethodHandle run;
+	MethodHandle toString;
+	MethodHandle hashCode;
+	MethodHandle equals;
+}
+
+this.run =  JavaAdapterServices.getHandle(target, "run", MethodType.type(void.class))
+this.global = Context.getGlobal()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Beim Aufruf der bytecode-generierten, überschriebenen Methoden wird dann immer wieder gecheckt ob das jeweilige MethodHandle eine Funktionsreferenz enthält, die aufgerufen werden kann, oder wenn nicht dann ggf. die Methode der Superklasse.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vergleiche">Vergleiche</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Schon als Nashorn noch im Beta-Stadium war, interessierte mich seine Leistungsfähigkeit, besonders im Vergleich zum in C++ implementierten V8.
+Eine kurze Recherche ergabt, dass es eine javax-Script-Engine Implementierung mittels V8[Jav8] gab, die über JNI angebunden wurde.</p>
+</div>
+<div class="paragraph">
+<p>Beim Vergleich von V8 und Nashorn für einige Javascript-Beispiele zeigte sich, dass Nashorn durchaus mit V8 mithalten kann, wenn reines Javascript ausgeführt wird.</p>
+</div>
+<div class="paragraph">
+<p>Sobald aber Callbacks und Datentransformationen zurück nach Java notwendig sind, hat Nashorn ganz klar die Nase vorn.</p>
+</div>
+<div class="paragraph">
+<p>Ich habe den Vergleich noch einmal für eine schnelle Gegenüberstellung aufgesetzt.
+Für diesen Beispielcode sind hier die Ergebnisse, die für sich sprechen:</p>
+</div>
+<div class="listingblock">
+<div class="title">Reines Javascript</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">function compute(a,b) { return ((b % 3) - 1) * Math.pow(b,a % 3); }
+function testRun(runs) {
+   var sum = 0;
+   for (var i=0;i &lt; runs;i++) sum += compute(sum,i);
+   return sum;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Javascript und Java</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">public static class Power {
+    public int raise(int base, int exp) {
+	    return (int)Math.pow(base,exp); }
+}
+
+engine.put("power", new Power());
+engine.eval("function compute(a,b) { "+
+  "return ((b % 3) - 1) * power.raise(b,a % 3); }");
+engine.eval("function testRun(runs) { ...");
+
+// 100 mal in Schleife
+((Invocable)engine).invokeFunction("testRun", 10000);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die Funktion testRun wurde mit 10000 Schleifendurchläufen aufgerufen.
+Nach einem Warmup, wurde die Zeit über 100 Durchläufe gemittelt und ein Benchmark berechnet 10 dieser gemittelten Zeiten.
+D.h. die <code>compute</code> Funktion wurde insgesamt 1 Million mal aufgerufen.</p>
+</div>
+<div class="paragraph">
+<p>Um den Aufruf von <code>java.lang.Math.pow</code> auch mit V8 zu ermöglichen wurde eine Instanz einer kleinen Wrapper Klasse in die ScriptEngine injiziert.
+Dann wurde statt <code>Math.pow</code>, <code>power.raise(base, exp)</code> aufgerufen.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Beispiel</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">V8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nashorn</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">reines Javascript</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1,32 ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0,42 ms</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Javascipt und Java</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12-200ms</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0,41 ms</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Die "jav8"-Engine scheint ein Probleme mit Speichermanagement beim Callback nach Java zu haben.
+Ich musste die Schleifendurchläufe von 10000 auf 1000 reduzieren, sonst reichte der Speicher nicht, die Laufzeit wurde auch mit jedem Run langsamer.</p>
+</div>
+<div class="paragraph">
+<p>Hier ist auch noch einmal für den <strong>reinen</strong> Javascript Benchmark <em>Octane</em> der Vergleich zwischen Nashorn, Rhino und V8 zu sehen.
+Dabei zeigt sich, dass V8 immer noch deutlich schneller ist, Nashorn aber in derselben Liga spielt.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://dl.dropboxusercontent.com/u/14493611/octane_benchmark_nashorn_jdk9.jpg" alt="octane benchmark nashorn jdk9">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_zukünftiges">Zukünftiges</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Interessanterweise scheint sich schon jetzt eine zukunftssichere Alternative abzuzeichnen.
+Das von mir schon vorgestellte Gespann aus Truffle und Graal [JS???] kann für beliebige, dynamische Sprachen, basierend auf der Implementierung von Truffle AST-Konstrukten in annotierten Java-Methoden, mittels des optimierenden Compilers Graal extrem effizienten, typsicheren Laufzeit-Bytecode für Runtimes generieren.
+Diese werden dann entweder direkt als Maschinencode-Binary lauffähig sein, oder vom Hotspot-Compiler auch zur Laufzeit unterstützt von Graal und Truffle optimal ausgeführt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.oracle.com/technetwork/articles/java/jf14-nashorn-2126515.html">Oracle Nashorn: A Next-Generation JavaScript Engine for the JVM</a></p>
+</li>
+<li>
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/api.html">Java Platform, Standard Edition Nashorn User&#8217;s Guide</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Nashorn_(JavaScript_engine)">Nashorn Wikipedia</a></p>
+</li>
+<li>
+<p><a href="https://dzone.com/articles/how-java-8-handles-javascript">How Java 8 handles JavaScript - A look inside The New Nashorn compiler</a></p>
+</li>
+<li>
+<p><a href="http://openjdk.java.net/projects/nashorn/">Project Nashorn</a></p>
+</li>
+<li>
+<p><a href="https://www.quora.com/What-are-some-good-uses-of-the-Nashorn-JavaScript-engine-for-the-JVM">What are some good uses of the Nashorn JavaScript engine for the JVM?</a></p>
+</li>
+<li>
+<p><a href="https://developers.google.com/v8">Google&#8217;s V8 Javascript Engine</a></p>
+</li>
+<li>
+<p><a href="https://de.wikipedia.org/wiki/JavaScript#Geschichte">Geschichte von JavaScript</a></p>
+</li>
+<li>
+<p>Rhino: <a href="https://en.wikipedia.org/wiki/Rhino_(JavaScript_engine)">Rhino</a></p>
+</li>
+<li>
+<p><a href="http://www.heise.de/developer/artikel/Entdecke-das-Nashorn-in-Java-1931616.html" class="bare">http://www.heise.de/developer/artikel/Entdecke-das-Nashorn-in-Java-1931616.html</a></p>
+</li>
+<li>
+<p><a href="http://winterbe.com/posts/2014/04/05/java8-nashorn-tutorial/" class="bare">http://winterbe.com/posts/2014/04/05/java8-nashorn-tutorial/</a></p>
+</li>
+<li>
+<p><a href="http://openjdk.java.net/jeps/196">JEP-196 Nashorn Optimistic Typing</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/technetwork/java/javase/community/jvmls2013-2013900.html">JVM Language Summit 2013</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/technetwork/java/javase/community/jlssessions-2255337.html">JVMLS 2014</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/technetwork/java/javase/community/jlssessions-2015-2633029.html">JVMLS 2015</a></p>
+</li>
+<li>
+<p><a href="https://code.google.com/archive/p/jav8/">V8 ScriptEngine für Java</a></p>
+</li>
+<li>
+<p><a href="http://github.com/jexp/javaspektrum/nashorn">QuellCode zum Artikel</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2016-02-03 16:12:27 CET</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

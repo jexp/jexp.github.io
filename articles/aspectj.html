@@ -1,0 +1,684 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Vorstellung</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_vorstellung">Vorstellung</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hallo erstmal. Sie finden es sicher ungewöhnlich, auf diesen Seiten einen neuen Namen zu lesen. Heinz Kabutz hat nach 3 Jahren "Effective Java" Kolumnen neben seinen Tätigkeiten als Trainer, Consultant, Speaker und "Java Specialists Club"-Betreiber nicht mehr die Zeit und Muße, umfassende Kolumnen über dieses spannende Thema zu schreiben. Natürlich wird er weiterhin im Java Specialists Newsletter darüber und über viele weitere Details Java&#8217;s und der JVM berichten. Dankenswerter Weise hat er mich der Redaktion als neuen Kolumnen-Autor empfohlen. Heinz und ich kennen uns schon eine Weile, haben uns im letzten Jahr bei ihm auf Kreta getroffen und immer viel Spass beim Diskutieren über JVM Themen gehabt.</p>
+</div>
+<div class="paragraph">
+<p>Ich hoffe, ich kann die hohen Ansprüche, die Heinz an diese Kolumne geschaffen hat gerecht werden und immer wieder mit spannenden Artikeln aus den Tiefen des Programmieralltags aufwarten.</p>
+</div>
+<div class="paragraph">
+<p>Auf jeden Fall freue ich mich über Feedback per E-Mail (<a href="mailto:javaspektrum@jexp.de">javaspektrum@jexp.de</a>), Twitter (@mesirii) oder GitHub Kommentar - Ich werde die Code-Beispiele auf <a href="http://github.com/jexp/javaspektrum" class="bare">http://github.com/jexp/javaspektrum</a> veröffentlichen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_einführung_aop">Einführung AOP</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir beginnen mit etwas leichter Kost zum Aufwärmen. Ich möchte zeigen, was sich in der Aspekt Orientierten Programmierung (AOP) in den letzten Jahren getan hat und wie man aus einem simplen POJO einen universalen Superhelden machen kann, ohne den Java-Code anzufassen. Das ist natürlich ein Extrembeispiel, soll aber die Möglichkeiten aufzeigen, die zur Verfügung stehen.</p>
+</div>
+<div class="paragraph">
+<p>Aspektorientierung hat schon ein paar Jahre auf dem Buckel. Seit es 1980 von Gregor Kiczales und Kollegen in Xerox PARC als solches ersonnen wurde, hat es in den verschiedensten Sprachen seine Höhen und Tiefen erlebt.</p>
+</div>
+<div class="paragraph">
+<p>Wie mit jeder Technologie gab es nach Anlaufschwierigkeiten einen ziemlichen Hype um AOP, der einem pragmatischen Einsatz Platz gemacht hat. Heutzutage wird es meist in Frameworks wie Spring unter der Haube eingesetzt um die typischen übergreifenden Belange (cross-cutting-concerns), wie Transaktionen, Logging und Security abzuhandeln. Aber auch exotischere Anwendungen, wie Dependency Injection in per "new" erzeugten POJOs (annotiert mit @Configurable) und die massive Nutzung von Inter Type Declarations in Spring ROO sind fest etabliert.</p>
+</div>
+<div class="paragraph">
+<p>Ich möchte die Gelegenheit nutzen um nach einer kurzen Wiederholung der Begrifflichkeiten und Bestandteile von AOP (insbesondere AspektJ) auf die aktuellen Entwicklung, neuen Möglichkeiten der Pointcut-Sprache, neue Fähigkeiten und auch Implementierungsdetails einzugehen. In anderen (dynamischen) Sprachen werden solche Anpassungen mittels Metaprogrammierung angegangen oder sind durch die Struktur der Sprache und Sprachkonstrukte (LISP, Scala) einfach umsetzbar.</p>
+</div>
+<div class="paragraph">
+<p>Zum Tooling - AspectJ war schon immer etwas schwergewichtig bezüglich der notwendigen Tools. Zum einen sind da der Compiler (ajc), Runtime (aspectjrt.jar) und Weaver (ajc oder LTW). Zum anderen die IDE-Unterstützung, die in Eclipse traditionell sehr gut durch die AJDT abgedeckt wird (Installation von AJDT von <a href="http://download.eclipse.org/tools/ajdt/36/dev/update" class="bare">http://download.eclipse.org/tools/ajdt/36/dev/update</a>). Ein interessanter Fakt am Rande - AJDT sind eigentlich nur die JDT (Java Development Tools) mit Aspekten angereichert, so dass sie alle AspectJ Besonderheiten unterstützen. IntelliJ IDEA hat nur rudimentären AspectJ Support, der laut JetBrains aber im Rahmen der Spring ROO Unterstützung bis zur Version 11 massiv verbessert werden soll.</p>
+</div>
+<div class="paragraph">
+<p>Ich habe für die Beispiele STS mit aktuellstem AJDT Plugin, sowie <code>gradle</code> eingesetzt, dessen AspectJ Unterstützung sich mit einem simplen Plugin realisieren lässt, das auf dem Ant-Task basiert.</p>
+</div>
+<div class="paragraph">
+<p>Was ist AOP für ein Paradigma? Wie in alle anderen Softwareentwicklungs-Paradigmen wird eine Möglichkeit geboten, Programme besser zu strukturieren und modularisieren. Besonderer Wert liegt dabei auf den Aspekten, die sich auf die gleichen Belange beziehen, aber im gesamten Programmcode verstreut sind und immer wieder eingebunden werden. Diese, auch "cross-cutting-concerns" genannten, übergreifenden Programmbestandteile vernünftig zu separieren und dann nach Bedarf automatisch an die Stellen zu verteilen, wo sie benötigt werden, ist der Kern von AOP. Desweiteren können statische Strukturen verändert und erweitert, sowie die Einhaltung von Architektur-Regeln angemahnt bzw. erzwungen werden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_begrifflichkeiten">Begrifflichkeiten</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wenn es um AOP geht sind, wird meist über 4 Dinge gesprochen - JoinPoints, PointCuts, Advices und Aspects.</p>
+</div>
+<div class="paragraph">
+<p>JoinPoints sind alle möglichen Stellen im Programm, an denen man Strukturen und Abläufe verändern kann. Variablenzugriffe, Methodenaufrufe, Konstruktion von Objekten, sowie die Strukturen innerhalb von Objekten oder Methoden sind Beispiele dafür.</p>
+</div>
+<div class="paragraph">
+<p>PointCuts sind Selektionen dieser JoinPoints. Ähnlich wie SQL Abfragen oder CSS Selektoren bilden sie eine Abfragesprache mit der man aus der Vielzahl von möglichen JoinPoints in einem Programm die heraussuchen kann, an denen die übergreifende Funktionalität eingefügt werden soll. Pointcuts gibt es in verschiedensten Ausprägungen, die mittels Operatoren (&amp;&amp;,||, !) miteinander kombiniert werden können. Als Platzhalter werden ".." für beliebig viele und "*" für ein Element genutzt. Subklassen werden mit "+" eingeschlossen. Ein kleiner, auszugweiser Überblick folgt:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Typ-Signatur: [Annotation] [Package].Typ
+z.B. @Entity com.example.domain.*</p>
+</li>
+<li>
+<p>Methoden-Signatur: [Modifier]  [Annotation] [ReturnTyp] [Package].Typ.Methode(Parameter) [throws Exception]
+z.B. public @Request (*) com.example.web.*Controller.handle*@RequestParameter (@Comparable \*,..)</p>
+</li>
+<li>
+<p>Feld-Signatur: [Modifier] [Annotation] [Typ] [Package].Typ.Feld</p>
+<div class="ulist">
+<ul>
+<li>
+<p>z.B. !static @NotNull Object+ @Entity *.*</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Ausführung von Methoden/Konstruktoren: execution(Methoden-Signatur), call(Methoden-Signatur)</p>
+</li>
+<li>
+<p>Zugriff auf Variablen: set() get()</p>
+</li>
+<li>
+<p>Initialisierung: staticinitialization(Typ), (pre)initialization(Konstruktor-Signatur)</p>
+</li>
+<li>
+<p>Exception-Handling: handler(Exception-Signatur)</p>
+</li>
+<li>
+<p>Ausführungskontext: cflow(), cflowbelow()</p>
+</li>
+<li>
+<p>strukturell: within(Typ), withinCode(Methoden-Signatur)</p>
+</li>
+<li>
+<p>Kontext binden: target(Instanz) this(Instanz), args(Argumente), @this(Annotation der Instanz), &#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Advices hingegen sind der Code, der an den gewünschten (durch Pointcuts selektierten) Stellen eingebracht wird, sie können davor, danach oder stattdessen (before, after, around) angewandt werden. Mit der mächtigsten <code>around</code>-Advice können die anderen Typen ebenfalls abgebildet werden. Man hat die Wahl, den umschlossenen Code 0..n mal auszuführen. Sie ermöglicht so spannende Anwendungen wie Caching, Retry, Transaktionen, Locking und zusätzliches Exception Handling.</p>
+</div>
+<div class="paragraph">
+<p>Beispiel, für simplen Argument-Check für Setter mit @NotNull:</p>
+</div>
+<div class="paragraph">
+<p><code><code>`
+before(arg) : call(@NotNull void <strong>.set</strong>(*)) &amp;&amp; args(arg) {
+   if (arg == null) {
+	 throw new IllegalArgumentException("Methode: "thisJoinPointStaticPart.getSignature()" wurde mit null aufgerufen");
+   }
+}
+</code>`</code></p>
+</div>
+<div class="paragraph">
+<p>Im Aspekt kommt dann alles zusammen, PointCuts und Advices sowie die im folgenden beschriebenen Inter-Type-Deklarationen. Aspekte können in der AspectJ eigenen Sprache, oder auch in Java Klassen mittels der @Aspect Syntax entwickelt werden.</p>
+</div>
+<div class="paragraph">
+<p>Aspekte, Pointcuts und Advices können als abstrakt definiert und in konkreten, abgeleiteten Aspekten konkretisiert werden. Aspekte können neben den bekannten Zugriffsmodifikatoren auch <code>privileged</code> sein und dann auf private Teile der Zieltypen zugreifen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_strukturelle_Änderungen">Strukturelle Änderungen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Inter-Type-Deklarationen umfassen das Hinzufügen neuer Member in einer Klasse, das können Variablen, Annotationen (auch auf Variablen und Methoden), Methoden, Konstruktoren und seit neuestem auch innere Klassen (nur static) sein. Mittels des <code>declare</code> Schlüsselworts können neue Superklassen oder Interfaces, sowie Annotationen eingefügt werden.</p>
+</div>
+<div class="paragraph">
+<p>Beispiele für ITDs:</p>
+</div>
+<div class="paragraph">
+<p>````java
+public int Konto.getWert() { return wert; }
+private Auditor Konto.auditor</p>
+</div>
+<div class="paragraph">
+<p>public static Comparable.Comparator&lt;? extends Comparable&gt; {
+	public int compare(Comparable o1, Comparable o2) {
+		return o1.compareTo(o2);
+	}
+}
+<code>``</code></p>
+</div>
+<div class="paragraph">
+<p>Beispiele für declare:</p>
+</div>
+<div class="paragraph">
+<p><code>``</code>
+declare @field : !static Object+ com.example.domain.<strong>.</strong> : @NotNull;</p>
+</div>
+<div class="paragraph">
+<p>declare parents : (com.example.domain.*) implements java.io.Serializable;</p>
+</div>
+<div class="paragraph">
+<p>declare @type : (com.example.domain.*) : @Domain;
+<code>``</code></p>
+</div>
+<div class="paragraph">
+<p>Ein typisches Muster ist, annotierten Klassen mittels <code>declare</code> ein neues Interface zu verpassen und auf diesem dann neue Variablen und Methoden einzuführen. Eine andere typische Anwendung sind Mixins (aus anderen Sprachen auch als Traits oder Module bekannt), die hier über Interfaces, die einen Aspekt enthalten, der diesem Interface konkretes Verhalten mitgibt, abgebildet werden.</p>
+</div>
+<div class="paragraph">
+<p>Wie kommt die Advice nun an die Stelle im Code, an die sie soll? Der Prozess der die kompilierten Aspekte und den Java-Bytecode miteinander verwebt (weaving) kann während des Kompilierens erfolgen (mittels des ajc Compilers oder build-tool plugins). Es gibt auch die Möglichkeit mittels der Java-Instrumentierungs-API (JVMTI) das zur Laufzeit beim Laden der Klassen vorzunehmen (Load-Time-Weaving). Der Weaver produziert sehr effizienten Code, da er auf viele statische Informationen zurückgreifen kann, nur für einige wenige, dynamische Pointcuts werden Laufzeit-Checks integriert.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_domänenobjekt_superheld">Domänenobjekt-Superheld</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Da es in diesem Artikel um "Domänenobjekt Superhelden" geht, will ich zuerst einmal kurz das Domänenobjekt unter Verdacht vorstellen. Wie in vielen AOP Beispielen ist es ein Konto, das - hoffentlich - Geld enthält und eine Methode um Geld abzuheben (oder auch einzuzahlen). Ich halte es mit Absicht ganz einfach, um Schritt für Schritt Zusatzfunktionalitäten per AOP anzuflanschen.</p>
+</div>
+<div class="paragraph">
+<p>````java
+package com.example.domain;</p>
+</div>
+<div class="paragraph">
+<p>@Entity
+public class Konto {
+	private @Min(10) int wert;
+	private String name;</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public Konto(int wert, String name) {
+	this.wert = wert;
+	this.name = name;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>@Transactional public void buche(int delta) {
+	wert += delta;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	public String toString() {
+		return String.format("%s: %d %s",name, wert , KontoRenderer.CURRENCY);
+	}
+}
+````
+Es gibt nun eine Menge von neuen Anforderungen, die das arme Konto mit einer Vielzahl an Zusatzaufgaben belasten würden.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Konto++:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Konto soll eine getWert() Methode erhalten</p>
+</li>
+<li>
+<p>das wert Feld des Kontos soll stets davor geschützt sein, negativ zu werden</p>
+</li>
+<li>
+<p>die buche Methode soll verhindern, dass das Konto ins Negative abrutscht</p>
+</li>
+<li>
+<p>nach erfolgreicher Buchung, soll der Vorgang geloggt werden</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Domänenobjekt Superhelden:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Bedingung: DomänenObjekte sind mit der Annotation @Entity annotiert</p>
+</li>
+<li>
+<p>Domänenobjekte sollen serialisierbar sein (Serializable)</p>
+</li>
+<li>
+<p>Felder mit @Min und @Max annotationen sollen vor dem Setzen des neuen Wertes geprüft werden (ala JSR-303)</p>
+</li>
+<li>
+<p>nicht primitive Felder von Domänenobjekten sollen eine @NotNull Annotation erhalten und damit einen Schutz vor Null-werten</p>
+</li>
+<li>
+<p>mit @NotNull annotierte Methoden dürfen keine Nullwerte-Parameter gesetzt bekommen und auch kein Null zurückgeben</p>
+</li>
+<li>
+<p>Domänen-Klassen mit @Entity annotation sollen automatisch Methoden für persist(), delete() erhalten</p>
+</li>
+<li>
+<p>Methoden mit @Transactional sollen in einem Transaktionskontext laufen  und bei Misserfolg zurückgerollt werden</p>
+</li>
+<li>
+<p>Zugriff auf UI-Layer aus den Domänen-Objekten ist untersagt</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>hausgemachte Dependency Injection:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Klassen mit @Inject Annotation bekommen bei Konstruktion auf alle Felder mit @Inject annotation eine Dependency injected (s. JSR-330)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Und als Sonderwusch:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Jede Klasse die von Iterable ableitet soll automatisch Methoden wie map, reduce usw. erhalten</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Die letzten beiden Anforderungen werden aus Platzgründen nur im Beispiel-Code enthalten sein.</p>
+</div>
+<div class="paragraph">
+<p>Statt das Konto und andere Domänenobjekte mit den notwendigen, verstreuten Code-Schnipseln auszustatten, werden wir diese in konkreten Aspekten deklarieren und vom Weaver über den Code verteilen lassen. Wir verteilen die Anforderungen an Konto und allgemeine Domänenobjekte auf zwei Aspekte: <code>KontoAspekt</code>  und <code>DomaenenAspekt</code>.</p>
+</div>
+<div class="paragraph">
+<p>Aber immer schön der Reihe nach, zuerst der Konto-Aspekt.</p>
+</div>
+<div class="paragraph">
+<p>````java
+public priviledged aspect KontoAspekt {</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public int Konto.getWert() { return this.wert; }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// pointcut fuer Aufrufe der Buchen-Methode, sammelt aktuelle Instanz
+// und Argument ein und stellt sie als Parameter zur Verfügung
+pointcut buchung(int delta, Konto konto) : call(void Konto.buche(int)) &amp;&amp; args(delta) &amp;&amp; this(konto);</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>  // before-Advice mit o.a. pointcut, enthält Überziehungs-Check
+  	before(int delta, Konto konto) : buchung(delta,konto) {
+	if (delta &lt; konto.wert) throw new IllegalArgumentException("Konto würde mit "+delta+" überzogen.");
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	// "Audit" Subsystem, hier als neue Variable im Konto eingeführt
+    private PrintStream Konto.audit = System.out;
+    // Audit-Augabe nach _erfolgreicher_ Ausfürhrung der Buchen Methode
+    after(int delta, Konto konto) returning : buchung(delta,konto) {
+		audit.printf("Konto %s Buchung erfolgt: %d",konto.name, delta);
+	}
+}
+````</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das Verhalten des Kontos bisher:</p>
+</div>
+<div class="paragraph">
+<p><code><code>`java
+&gt; konto = new Konto(10,"test")
+&gt; konto.getWert()
+&#8658; 100
+&gt; konto.buche(2)
+&#8658; Konto "test" Buchung erfolgt: 2
+&gt; konto.buche(-20)
+&#8658; IllegalArgumentException(Konto würde mit -20 überzogen.)
+</code>`</code></p>
+</div>
+<div class="paragraph">
+<p>Es geht weiter mit dem Domänen-Aspekt. Man kann neben Annotationen wie @Entity, natürlich auch Packages oder Type-Namens-Konventionen nutzen, um die Domänenobjekte zu identifizieren. Mixin-Methoden werden auf dem neuen "DomaenenObjekt"-interface eingeführt.</p>
+</div>
+<div class="paragraph">
+<p>````java
+package com.example.support;</p>
+</div>
+<div class="paragraph">
+<p>public privileged aspect DomaenenAspekt {</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// alle Domänenobjekte erhalten zusätzlich das Serializable interface
+declare parents : @Entity * implements java.io.Serializable;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// alle Domänenobjekte erhalten zusätzlich das DomaenenObjekt interface
+declare parents : @Entity * implements DomaenenObjekt;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// alle nicht statischen Objekt-Referenz Felder von DomänenObjekt Subklassen
+// erhalten eine @NotNull Annotation
+declare @field : !static Object+ DomaenenObjekt+.* : @NotNull;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// Felder mit @NotNull annotation bekommen einen Schutz vorm Null-Setzen
+before(Object neu) : set(@NotNull (Object+) *.*) &amp;&amp; args(neu) {
+	if (neu == null) throw new IllegalStateException("Feld "+thisJoinPointStaticPart.getSignature()+
+						" sollte null gesetzt werden! ");
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// Felder mit @Min annotation werden vorher auf den Mindest-Wert geprüft
+before(int neu, Min min) : set(@Min (int || long) *.*) &amp;&amp; args(neu) &amp;&amp; @target(min) {
+	if (neu &lt; min.value()) throw new IllegalStateException("Feld "+thisJoinPointStaticPart.getSignature()+
+						" kannt nicht kleiner als das Minimum "+min+" gesetzt werden!");
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// Persistenz-Manager wird global im Aspekt gehalten
+private PersistenceManager pm = new PersistenceManager();</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// Transaktions-Support, für mit @Transactional annotierte Methoden ind
+// Entitäten, nutzt die Aspekt-Variable
+Object around() : execution(@Transactional (*) @Entity *.*(..)) {
+	pm.begin();
+	try {
+		Object result=proceed();
+		pm.commit();
+		return result;
+	} catch(RuntimeException e) {
+		pm.rollback();
+		throw e;
+	} catch(Exception e) {
+		pm.rollback();
+		throw new RuntimeException(e);
+	}
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// persist Methode eingeführt, die an den PersistenceManager delegiert
+@Transactional public void DomaenenObjekt.persist() {
+	aspectOf().pm.persist(this);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// delete Methode eingeführt, die an den PersistenceManager delegiert
+public void DomaenenObjekt.delete() {
+	aspectOf().pm.delete(this);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// @Transactional annotation an delete() Methode angehängt
+declare @method: void DomaenenObjekt+.delete() : @Transactional;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// Null-Prüfung für Parameter und Rückgabewert der mit @NotNull annotierten Methode
+Object around() : call(@NotNull (*) @Entity *.*(..)) {
+	Object[] params=(Object[]) thisJoinPoint.getArgs();
+	for (int i=0;i&lt;params.length;i++) {
+		if (params[i] == null) {
+			MethodSignature signature= (MethodSignature)thisJoinPointStaticPart.getSignature();
+			throw new IllegalArgumentException("Parameter "+
+					signature.getParameterTypes()[i]+ " "+ signature.getParameterNames()[i]
+					+ " ist null!");
+		}
+	}
+	Object result=proceed();
+	if (result==null) {
+		throw new IllegalStateException("Methode "+(MethodSignature)thisJoinPointStaticPart.getSignature()+
+					"gab null für die Argumente "+Arrays.toString(thisJoinPoint.getArgs()));
+	}
+	return result;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>// erzeugt Kompilier-Fehler wenn aus dem domain-Package auf das ui-Package zugegriffen wird
+declare error : within(com.example.domain.*) &amp;&amp;
+(call(* com.example.ui.*.*(..)) || set(* com.example.ui.*.*) || get(* com.example.ui.*.*)): "Architektur: Domain ruft UI Layer";</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>}
+<code>``</code></p>
+</div>
+<div class="paragraph">
+<p>Wie verhält sich unser Konto jetzt, da der DomaenenAspekt eingebunden ist?:</p>
+</div>
+<div class="paragraph">
+<p><code><code>`java
+&gt; Serializable.class.isAssignableFrom(Konto.class)
+&#8658; true
+&gt; DomaenenObjekt.class.isAssignableFrom(Konto.class)
+&#8658; true
+&gt; new Konto(10,null)
+&#8658; IllegalStateException("Feld Konto.name sollte null gesetzt werden! ")
+&gt; new Konto(-1,"konto1")
+&#8658; IllegalStateException("Feld Konto.wert kannt nicht kleiner als das Minimum 10 gesetzt werden!")
+&gt; konto = new Konto(20,"konto1")
+&gt; konto.buche(5)
+&#8658; begin TX
+&#8658; commit TX
+&gt; konto.persist()
+&#8658; begin TX
+&#8658; "konto1 persistiert"
+&#8658; commit TX
+&gt; konto.delete()
+&#8658; begin TX
+&#8658; "konto1 gelöscht"
+&#8658; commit TX
+&gt; return String.format("%s: %d %s",name, wert , KontoRenderer.CURRENCY);
+&#8658; Compile-Error: "Architektur: Domain ruft UI Layer"
+&gt; Änderung auf:
+&gt; return String.format("%s: %d %s",name, wert , Waehrung.EUR);
+&#8658; kompiliert
+</code>`</code></p>
+</div>
+<div class="paragraph">
+<p>Weitere spannende Eigenschaften von Aspekten sind das Scoping (Association) - an welchen Gültigkeitsbereich wird eine neue Aspekt-Instanz gebunden. Dies wird mittels einer zusätzlichen Deklaration am Aspekt definiert. Standard - static singleton, über Aspekt-Instanz pro Typ (pertypewithin), pro Instanz (perthis) oder sogar pro Kontrollfluss-Ausführung (percflow) ist alles möglich.</p>
+</div>
+<div class="paragraph">
+<p>Weitere Bestandteile von AspectJ, wie die alternative @AspectJ Syntax, die Kontrolle des Load-Time-Weavers mittels aop.xml, Nutzung in Aspekt-Bibliotheken, Reihenfolge von Aspekten und vieles mehr sind aussen vor geblieben. Falls Interesse an diesen Themen besteht, dann bitte ich um Feedback, so dass es in einer späteren Kolumne eine Fortsetzung des Themas geben kann.t</p>
+</div>
+<div class="paragraph">
+<p>Die Entwicklung steht auch bei AspectJ nicht still und so habe ich den Projekt Lead Andy Clement, der sich bei SpringSource um die AspectJ Weiterentwicklung kümmert, gefragt welche bemerkenswerten Neuerungen es so in letzter Zeit gegeben hat.</p>
+</div>
+<div class="paragraph">
+<p>Mit Java 5 kamen zum Funktionsumfang von AspectJ die Unterstützung von Annotationen und Generics hinzu, die sukzessive ausgebaut wurden. Das bezieht sich sowohl auf die Pointcut Sprache und die Aspekte selbst als auch auf die möglichen strukturellen Modifikationen. Besonders auf Annotationen ruht als Code-Metadaten (Markern) ein besonderes Gewicht.</p>
+</div>
+<div class="paragraph">
+<p>Spring ROO und Spring Insight waren die stärksten Treiber der Weiterentwicklung. Nicht verwunderlich, da AspectJ auch bei SpringSource/VMware angesiedelt ist. Durch Roo hat vor allem ITDs vorangetrieben, z.b. das Entfernen von Annotationen mittels <code>declare</code> und das Hinzufügen von inneren Klassen. Roo bringt auch eine weitere interessante Funktion mit, das "Push-In Refactoring", das es erlaubt sämtlichen, in Aspekten enthaltenen Code an die entsprechenden Stellen im Sourcecode einzufügen und die Aspekte zu löschen.</p>
+</div>
+<div class="paragraph">
+<p>Die meisten der Weiterentwicklungen ab Version 1.6 bezogen sich auf Performance und Speicherverbrauch sowie die Anwendbarkeit auf nur teilweise kompilierbaren Code in der IDE. Performance bezogene Erweiterungen (-showWeaveInfo, -timers -verbose, AJDT Event Trace View).</p>
+</div>
+<div class="paragraph">
+<p>Neuerdings kann man auch über Parameter-Annotationen selektieren und Annotations-Attribute statisch, zum Weaving-Zeitpunkt binden.</p>
+</div>
+<div class="paragraph">
+<p>Für Java 7 liegen die Herausforderungen im neuen <code>InvokeDynamic</code> Schlüsselwort der JVM, später wird es dann noch einmal rund um die AspectJ Unterstützung für Closures interessant.</p>
+</div>
+<div class="paragraph">
+<p>Man sollte sich AspectJ in kleinen Schritten nähern, zuerst einmal für den lokalen Einsatz in der Entwicklung (z.b. Tracing, Mocking) über den Einsatz von Frameworks die AspectJ benutzen (Spring) bis zu (vielleicht) der Nutzung von Aspekten in Produktiv-Code, um die notwendigen Cross-Cutting-Concerns abzubilden oder sogar um zusätzliche Geschäftslogik zu implementieren.</p>
+</div>
+<div class="paragraph">
+<p>Ich habe tiefgehendere Erfahrungen mit AspectJ während der Entwicklung der Objekt-Graph-Mapping-Bibliothek (<a href="http://springsource.org/spring-data/neo4j)">"Spring Data Graph für Neo4j"</a> sammeln können und war von der Mächtigkeit schon beeindruckt. Diese "Magie" ist aber auch ein zweischneidiges Schwert, da sie von vielen Nutzern nicht verstanden wird, manchmal unvorhergesehene Auswirkungen hat (falsche Pointcuts) und eine gute IDE-Unterstützung bedingt.</p>
+</div>
+<div class="paragraph">
+<p>Gregor Kiczales meinte in dem Software-Engineering-Radio Interview, dass der wichtigste Auswirkung von AOP wäre, übergreifende Belange als solche zu erkennen und in der Entwicklung der Software entsprechend zu berücksichtigen. Der Einsatz von AOP-Werkzeugen wäre "nice-to-have" aber nicht unabdingbar.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen:</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.eclipse.org/aspectj/" class="bare">http://www.eclipse.org/aspectj/</a></p>
+</li>
+<li>
+<p><a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming" class="bare">http://en.wikipedia.org/wiki/Aspect-oriented_programming</a></p>
+</li>
+<li>
+<p><a href="http://www.se-radio.net/2010/04/episode-160-aspectj-and-spring-aop-with-ramnivas-laddad/" class="bare">http://www.se-radio.net/2010/04/episode-160-aspectj-and-spring-aop-with-ramnivas-laddad/</a></p>
+</li>
+<li>
+<p><a href="http://www.se-radio.net/2008/08/episode-106-introduction-to-aop/" class="bare">http://www.se-radio.net/2008/08/episode-106-introduction-to-aop/</a></p>
+</li>
+<li>
+<p><a href="http://www.se-radio.net/2006/04/episode-11-interview-gregor-kiczales/" class="bare">http://www.se-radio.net/2006/04/episode-11-interview-gregor-kiczales/</a></p>
+</li>
+<li>
+<p>AspectJ in Action, 2nd Edition, Ramnivas Laddad</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2011-05-23 11:09:27 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

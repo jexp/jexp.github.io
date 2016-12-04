@@ -1,0 +1,676 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Betrachtung Serialisierer</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="paragraph">
+<p>Effektive Objektserialisierung in Java</p>
+</div>
+<div class="paragraph">
+<p>Die meiste unserer Zeit verbringen wir in den Objektgraphen unserer Domänenmodelle. Leider müssen wir manchmal den warmen, heimigen Herd zurücklassen und mit der Welt da draussen interagieren.
+Immer wenn wir den Schoß der JVM verlassen, ergibt sich die Notwendigkeit unsere reichhaltigen und vernetzten Objektgraphen effektiv in ein Format zu konvertieren, das bestimmten Anforderungen
+gerecht werden muss:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ressourceneffiziente Konvertierung</p>
+</li>
+<li>
+<p>portables, universelles Zielformat</p>
+</li>
+<li>
+<p>Handhabung von Objektnetzwerken insbesondere mit Zyklen und Duplikaten</p>
+</li>
+<li>
+<p>hochperformante Umwandlung</p>
+</li>
+<li>
+<p>wenig Verlust von Typinformationen</p>
+</li>
+<li>
+<p>Unterstützung für Streaming</p>
+</li>
+<li>
+<p>Kompression, Verschlüsselung</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Für die Objektserialisierung und -deserialisierung gibt es eine Menge Möglichkeiten in Java und der JVM. Dieser Artikel soll einige davon beleuchten und feststellen, wie sie in Bezug auf die
+genannten Eigenschaften abschneiden.</p>
+</div>
+<div class="paragraph">
+<p>Eine der Unterscheidungskriterien für die Serialisierungsbibliotheken ist deren Herkunft.
+Von in die JVM integrierten Lösungen wie die JVM-Objektserialisierung, über Java-basierte Bibliotheken wie
+Gson, XStream und Kryo, bis zu Ansätzen wie Thrift und Corba, die aus Netzwerk bzw. Remote-Procedure-Call-(RPC)-Protokollen stammen ist alles vertreten.</p>
+</div>
+<div class="paragraph">
+<p>Bei der Entwicklung von Serialisierungstools muss, wie immer in der Softwareentwicklung eine Balance zwischen verschiedenen Faktoren gefunden werden.
+So stehen sich Ressourceneffizienz und effiziente Komprimierung oder Typinformationsspeicherung und portables Format gegenüber.</p>
+</div>
+<div class="paragraph">
+<p>Als Beispiel für den Test der verschiedenen Konvertierungsansätze soll ein generiertes Datenset dienen, dass eine Vielzahl verschieden getypter Feldern mit konfigurierbarer Größe enthält.
+Wir wollen messen, wie schnell die Serialisierung efolgt, wieviel Speicher dabei benötigt wird und wie effizient sie abläuft.
+Desweiteren wollen wir auch feststellen wie die anderen, nichtfunktionalen Aspekte gehandhabt werden.</p>
+</div>
+<div class="paragraph">
+<p>Für diesen Test werden definierte Mengen von Objektinstanzen serialisiert und benötigte Zeit und Speicherverbrauch gemessen.</p>
+</div>
+<div class="paragraph">
+<p>Um effizient, ohne weiteren Speicherverbrauch die Größe (in Bytes) der serialisierten Daten zu messen, wird ein CountingOutputStream benutzt,
+der die geschriebenen Daten verwirft und nur die aggregierten Bytes zählt.</p>
+</div>
+<div class="paragraph">
+<p>public class CountingOutputStream extends OutputStream {
+    private int count;</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public void write(int b) throws IOException {
+    count++;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public void write(byte[] b) throws IOException {
+    count += b.length;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public void write(byte[] b, int off, int len) throws IOException {
+    count += len;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    public int getCount() {
+        return count;
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für die jeweilige Serialisierung, erstellen wir ein einfaches Interface <code>Serializer</code> mit einem Lebenszyklus (<code>open</code>, <code>close</code>) und einer <code>serialize</code> Methode. Damit können wir dann die jeweilige Bibliothek kapseln und
+mit einem parametrisierten Test ausführen.</p>
+</div>
+<div class="paragraph">
+<p>Serializer Interface:</p>
+</div>
+<div class="paragraph">
+<p>public interface Serializer {</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    void open(OutputStream os) throws Exception;
+    void serialize(Object object) throws Exception;
+    void close() throws Exception;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Implementierung für Kryo:</p>
+</div>
+<div class="paragraph">
+<p>public class KryoSerializer implements Serializer {</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>private final Kryo kryo = new Kryo();
+private Output output;</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public void open(OutputStream os) {
+    output = new FastOutput(os);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public void serialize(Object object) {
+    kryo.writeObject(output, object);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    @Override
+    public void close() {
+        output.close();
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test:</p>
+</div>
+<div class="paragraph">
+<p>@RunWith(Parameterized.class)
+public class SerializerTest {
+    private final static int RUNS = 1000;
+    public static final int SIZE = 1000;
+    private final CountingOutputStream buffer = new CountingOutputStream();
+    private Serializer serializer;</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>@Parameterized.Parameters
+public static Iterable&lt;Object[]&gt; parameters() {
+    return Arrays.&lt;Object[]&gt;asList(
+            new Object[]{new NullSerializer()},
+            new Object[]{new ByteBufferMappingSerializer()},
+            new Object[]{new JavaSerializer()},
+            new Object[]{new KryoSerializer()},
+            new Object[]{new JacksonSerializer()},
+            new Object[]{new JacksonSmileSerializer()},
+            new Object[]{new GsonSerializer()},
+            new Object[]{new XStreamSerializer()}
+    );
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public SerializerTest(Serializer serializer) {
+    this.serializer = serializer;
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>@Test
+public void testWriteJavaSerialization() throws Exception {
+    serializeObjects(SIZE, serializer);
+}</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>...</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>private long serializeObjects(int size, Serializer serializer) throws Exception {
+    serializer.open(buffer);
+    long time = System.currentTimeMillis();
+    for (int i=0;i&lt; RUNS;i++) {
+        Root objects = Root.create(size);
+        serializer.serialize(objects);
+    }
+    serializer.close();
+    time = System.currentTimeMillis() - time;
+    String name = serializer.getClass().getSimpleName();
+    System.out.println(name +" writing "+ RUNS +" objects of size "+ size + " to a stream of size " + buffer.getCount() +" took " + time+" ms.");
+    return time;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>}</p>
+</div>
+<div class="paragraph">
+<p>Zum Vergleich sind angetreten:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>NullSerializer zur Messung der Geschwindigkeit des Test ohne eigentliche Serialisierung auszuführen</p>
+</li>
+<li>
+<p>ByteBufferMappingSerializer ist ein handgeschriebener Serialisierer für genau diesen einen Objekttyp</p>
+</li>
+<li>
+<p>JavaSerializer benutzt die in die JVM integrierte Serialisierung mittels ObjectOutputStream</p>
+</li>
+<li>
+<p>KryoSerializer nutzt die Kryo-Bibliothek</p>
+</li>
+<li>
+<p>JacksonSerializer ist der schnelle Standard-Serialisierungsmechanismus für JSON</p>
+</li>
+<li>
+<p>JacksonSmileSerializer nutzt das Smile-Binärformat für JSON</p>
+</li>
+<li>
+<p>GsonSerializer nutzt den JSON-Serialisierer von Google</p>
+</li>
+<li>
+<p>XStreamSerializer ist eine Serialisierungsbibliothek von Thoughtworks die häufig eingesetzt wird und XML erzeugt</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Hier zuerst einmal eine Übersicht der Ergebnisse und eine kurze Bewertung. Eine detailliertere Diskussion der verschiedenen Ansätze folgt im Anschluss.</p>
+</div>
+<div class="paragraph">
+<p>Mit 1000 Durchläufen und einer Objekt-Größe von 1000 Einheiten.</p>
+</div>
+<div class="paragraph">
+<p>name                        result-size  time (ms)
+NullSerializer                       0         40
+ByteBufferMappingSerializer   21032000         72
+JacksonSmileSerializer        24104000        361
+KryoSerializer                24106000        368
+JavaSerializer                27067471        621
+JacksonSerializer             45127000        852
+GsonSerializer                45127000       3574
+XStreamSerializer            187326032       5319</p>
+</div>
+<div class="paragraph">
+<p>Dabei wird der NullSerializer knapp von handgeschriebenen Serialisierer gefolgt, der auch relativ sparsam mit dem Speicher umgeht. An dritter Stelle
+steht Kryo der nur halb so lange benötigt wie die Java-Objektserialisierung.</p>
+</div>
+<div class="paragraph">
+<p>Weit abgeschlagen benötigen die portablen, nicht binären Serialisierer (Gson, Jackson, XStream) mindestens zehnmal so lange und doppelt bzw. zehnmal soviel
+Platz für die Format-Auszeichnungen (JSON-Syntax,XML-Elemente).</p>
+</div>
+<div class="paragraph">
+<p>Während der Suche nach weitergehenden Informationen, bin ich auf das Projekt von Eishay Smith [Eishay] gestossen, der sich intensiv mit dem Vergleich von verschiedenen
+Serialisierern auf der JVM auseinandergesetzt hat und ähnliche Ergebnisse wie unsere Tests liefert. Die Tests, sowie Ergebnisse sind auf GitHub verfügbar.</p>
+</div>
+<div class="paragraph">
+<p>Im folgenden sollen einige der Ansätze näher betrachtet werden:</p>
+</div>
+<div class="sect1">
+<h2 id="_betrachtung_serialisierer">Betrachtung Serialisierer</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_java_objektserialisierung">Java-Objektserialisierung</h3>
+<div class="paragraph">
+<p>Die integrierte Java-Serialisierung funktioniert nur mit Objekten, die <code>java.io.Serializable</code> implementieren und deren Feld-typen ebenso transitiv nur aus primitiven Werten oder
+deklarierten Typen bestehen, die <code>Serializable</code> implementieren.</p>
+</div>
+<div class="paragraph">
+<p>Felder werden direkt auf JVM-Level gelesen und geschrieben. Alternativ kann man mittels <code>writeObject</code> und <code>readObject</code> die Serialisierung selbst steuern, dass machen viele JDK-Klassen,
+ um eine effizientere Serialisierung der Daten und nicht de Struktur zu erlauben. Um Objekte nach bzw. vor dem (De-)Serialisieren zu ersetzen gibt es <code>writeReplace</code> und <code>readResolve</code>.
+Das wird zum Beispiel genutzt, um sicherzustellen, dass Singletons (wie Enums) nur eine Instanz in der ganzen JVM haben.</p>
+</div>
+<div class="paragraph">
+<p>Die Deserialisierung nutzt einen Mechanismus zur Objekterzeugung, der nicht über den Konstruktor der Klasse funktioniert, sondern die Instanz direkt erzeugt. Damit wird Initialisierungscode
+im Constructor nicht ausgeführt.</p>
+</div>
+<div class="paragraph">
+<p>Die Java-Serialisierung serialisiert jede Objektinstanz nur einmal. Bei weiteren Auftreten des Objektes wird nur eine Referenz gespeichert. Das ist für Objektgraphen mit Rekursion sinnvoll,
+da damit auch Zyklen behandelt werden. Leider führt es bei großen Objekt(graphen) zu massiver Speichernutzung da alle geschriebenen Objekte in eine Map gehalten werden müssen. Das ist
+auch kritisch, wenn Objekte dadurch vom Aufräumen durch den Garbage Collector verschont bleiben.</p>
+</div>
+<div class="paragraph">
+<p>Joshua Bloch diskutiert in Effective Java [Bloch] und Heinz Kabutz [JavaSpecialists] in seinem Newsletter viele Aspekte der Java-Serialisierung.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kryo">Kryo</h3>
+<div class="paragraph">
+<p>Kryo ist eine Serialisierungsbiliothek für Objektgraphen die mit absolutem Fokus auf Geschwindigkeit und Effizient entwickelt wurde. Die API für den Anwender ist
+sehr einfach gehalten. Ziele für die Serialisierung können Dateien, Datenbanken, Netzwerk oder Puffer im Speicher sein.</p>
+</div>
+<div class="paragraph">
+<p>Ausserdem kann man mit Kryo auch Objekte duplizieren, sowohl tiefe als auch flache Kopien werden mittels direkter Duplikation von Objekt zu Objekt durchgeführt,
+ohne zuerst eine Serialisierung / Deserialisierung durchzuführen.</p>
+</div>
+<div class="paragraph">
+<p>Die Output/Input-Klassen von Kryo puffern automatisch in einen Byte-Puffer (z.B. Byte-Array). Falls nötig wird dieser dann in den darunterliegenden Stream geschrieben.</p>
+</div>
+<div class="paragraph">
+<p>Seit neuestem bietet Kryo IO-Implementierungen an, die auf der Java "Unsafe"-SPI beruhen, damit kann direkt mit Heap und Off-Heap-Buffer sowie Dateien, die in den Speicher gemappt wurden
+gearbeitet werden.</p>
+</div>
+<div class="paragraph">
+<p>Die konkrete Umsetzung der Serialisierung in Kryo ist den individuellen "Serializer"n vorbehalten, sie bestimmen, wie ein bestimmter Objekttyp effizient gelesen und geschrieben wird.
+Kryo bietet dann das Framework drumherum, dass sich um den Aufruf der Serializer und I/O kümmert sowie die API nach aussen bereitstellt.</p>
+</div>
+<div class="paragraph">
+<p>Wie nicht anders zu erwarten sieht der Serializer so aus:</p>
+</div>
+<div class="paragraph">
+<p>public abstract class Serializer&lt;T&gt; {
+	public abstract void write (Kryo kryo, Output output, T object);</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>public abstract T read (Kryo kryo, Input input, Class&lt;T&gt; type);</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	....
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für zirkuläre Abhängigkeiten zu darüberliegenden Objekten, muss man sich ggf. gecachte Kopien des schon geladenen Objektes mit <code>kryo.reference(Object)</code> holen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_messagepack">MessagePack</h3>
+<div class="paragraph">
+<p>MessagePack wurde schon in JavaSpektrum 2/13 (Effiziente Kommunikation) vorgestellt. Es stellt ein kompaktes binäres Format für typische Objekthierarchien zur Verfügung, die sonst
+z.b. nach JSON gemappt würden. Dabei wird besonderer Wert auf die kompakte Repräsentation häufig vorkommender Werte gelegt, wie kleine Zahlen, boolesche Werte,
+leere Strings, Collections oder Maps.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jackson">Jackson</h3>
+<div class="paragraph">
+<p>Jackson ist der De-Facto Standard für die Serialisierung nach JSON, es ist mächtig und vielseitig und flexibel anpassbar aber trotzdem schnell. Jackson unterstützt JSON-Streaming
+und darauf aufbauend Java-Objektserialisierung sowie ein JSON-Tree (AST) Modell.</p>
+</div>
+<div class="paragraph">
+<p>Smile [JacksonSmile] ist ein Binärformat, dass trotzdem noch sehr nah an der JSON-Struktur bleibt, aber deutliche Vorteile in der Serialisierungsgeschwindingkeit und Kompaktheit des Ergebnisses
+liefert. Dem Jackson ObjectMapper kann einfach als Ersatz für die <code>JSONFactory</code> die <code>SmileFactory</code> übergeben werden und dann wird dieses Format genutzt. Ähnlich wie bei MessagePack
+werden für häufig vorkommende "JSON"-Fragmente platzsparende Encodings benutzt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_gson">Gson</h3>
+<div class="paragraph">
+<p>Gson ist eine beliebte JSON-Serialisierungs-Bibliothek von Google. Sie unterstützt die Serialisierung beliebig komplexer Java-Objekte, auch mit tiefen Vererbungshierarchien
+und Nutzung von Generics. Eigene Anpassungen der Serialisierung sind möglich. Für die Serialisierung werden die Felder der Objekte direkt gelesen und keine Getter oder Setter.
+Gson ist intern sehr einfach aufgebaut.</p>
+</div>
+<div class="paragraph">
+<p>GSon benutzt die Metainformationen des Zieltyps (auch Hierarchien und Referenzen) beim Deserialisieren. Damit werden ungenutzte JSON-Teilbäume gar nicht erst deserialisiert.</p>
+</div>
+</div>
+</div>
+</div>
+<h1 id="_kompression" class="sect0">Kompression</h1>
+<div class="paragraph">
+<p>Wenn die entstehende Datenmenge eine größere Rolle spielt, können verschiedene Methoden zur Kompression genutzt werden.
+Diese erreicht in den meisten Fällen eine Komprimierung der Daten um einen Faktor von 2-100 je nach Informationsdichte.
+Das ist auf bandbreitenbegrenzten Verbindungen wichtig, und verringert auf diesen auch die Gesamtübertragungszeit,
+da weniger Daten übertragen werden müssen. Die Latenz kann durch den initialen Kompressionsaufwand etwas höher werden.</p>
+</div>
+<div class="paragraph">
+<p>Besonders für Übetragungen auf Hochgeschwindigkeitsverbindungen (bis zum lokalen Prozessorbus) ist es immer dann interessant, wenn
+die Übertragungszeit deutlich größer ist als der Aufwand für die De-/Kompression.</p>
+</div>
+<div class="sect1">
+<h2 id="_gzipoutputstream">GZipOutputStream</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die einfachste Lösung ist, den Ausgabestrom in einen der Filter aus dem JDK zu kapseln, dem <code>GZipOutputStream</code>. Dieser komprimiert
+die Informationen transparent beim Schreiben (und kann auch für http-Anfrageergebnisse eingesetzt werden).</p>
+</div>
+<div class="paragraph">
+<p>Die Ergebnisse damit sind in der folgenden Tabelle dargestellt, es wird deutlich, dass die Zeit je nach Ausgangsdatenstruktur und Menge
+zwischen 1,5 bis 5x anwächst, aber die Datenkompression ist ziemlich deutlich, sie macht 2-3 Größenordnungen aus.</p>
+</div>
+<div class="paragraph">
+<p>Komprimiert Name                         Ergebnis  Zeit (ms)</p>
+</div>
+<div class="paragraph">
+<p>ja          ByteBufferMappingSerializer     42141        195
+            ByteBufferMappingSerializer  21032000         34</p>
+</div>
+<div class="paragraph">
+<p>ja          JavaSerializer                  67652       1896
+            JavaSerializer               27067471        436</p>
+</div>
+<div class="paragraph">
+<p>ja          KryoSerializer                  58838        460
+            KryoSerializer               24106000        175</p>
+</div>
+<div class="paragraph">
+<p>ja          JacksonSmileSerializer          58632        426
+            JacksonSmileSerializer       24104000        114</p>
+</div>
+<div class="paragraph">
+<p>ja          JacksonSerializer              201826       1059
+            JacksonSerializer            45127000        531</p>
+</div>
+<div class="paragraph">
+<p>ja          GsonSerializer                 201826       3220
+            GsonSerializer               45127000       2378</p>
+</div>
+<div class="paragraph">
+<p>ja          XStreamSerializer              904265       6428
+            XStreamSerializer           187326032       4379</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kompression_numerischer_werte">Kompression Numerischer Werte</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_delta_kompression">Delta-Kompression</h3>
+<div class="paragraph">
+<p>Ein paar interessante Anmerkungen / Überlegungen zur Kompression, besonders von aufeinanderfolgenden Zahlen und numerischen Id&#8217;s.
+Oft sind Felder mit numerischen Informationen aus einem ähnlichen Zahlenraum, oder aufeinander bezogen.</p>
+</div>
+<div class="paragraph">
+<p>Daher kann man die vorhandenen Informationen transponieren, indem man Differenzen bildet. Entweder immer die Differenz zu einem
+fixen Element der Liste (Anfang, Mitte, Ende, Durchschnitt), oder zum direkten Vorgänger. Damit können aus long-Werten mit einem
+Platzbedarf von 8 Byte (64 bit) sehr kleine Zahlen werden, die potentiell in wenige Bytes passen.</p>
+</div>
+<div class="paragraph">
+<p>Falls das Inkrement unserer Ausgangswerte gleich ist (z.b. meist Abstand 1) dann ergibt sich aus der Differenzbildung zum Vorgänger eine
+Anzahl von Blöcken, in denen sich dieselbe Zahl immer wiederholt. Das erlaubt uns, diese mit Lauflängenkompression zu verkürzen.
+So wird aus einem Block mit 250 mal der Ziffer 1, ein Konstrukt &lt;Marker&gt; &lt;Zähler&gt; &lt;Wert&gt;, z.b. FF FA 01 (255 250 001 dezimal).
+Beim Zähler kann man einen Maximalwert festlegen, der entweder 1 bis 4 Bytes umfassen kann, aber Platz für den Marker lassen muss.</p>
+</div>
+<div class="paragraph">
+<p>Somit können große Mengen aufeinanderfolgender Zahlen mit ähnlichem Abstand effizient kodiert werden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_vlq_kompression">VLQ-Kompression</h3>
+<div class="paragraph">
+<p>Für die Kodierung von Werten mit großem Wertebereich aber genügend kleinen Werten, gibt es aus einen interessanten Komprimierungsansatz
+aus dem Midi-Format [VLQ-Compression]. Dabei wird von jedem Wert nur die effektive Zahl mit der minimalen Anzahl Bytes kodiert.</p>
+</div>
+<div class="paragraph">
+<p>Die Zahl wird in 7-bit Blöcke zerlegt, das höchstwertige 8. Bit jedes Bytes (MSB) zeigt an, ob ein weiterer Block folgt, z.B. wenn es gesetzt ist, folgt
+noch ein weiterer Block. Hier ein Beipiel: Wir haben einen Long-Wert, der eigenlich 8 Bytes benötigt, aber nur die Zahl 4711 (0x1267) enthält.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man diese Zahl in 7-bit Blöcke (Base-128, also Division durch 128) aufteilt, erhält man zwei Bytes: höherwertig 36 und niederwertig 103, jetzt muss beim
+allen Bytes bis auf das letzte nur noch das erste Bit gesetzt werden und wir haben unsere Kodierung: 36+128 103 (A4 67).</p>
+</div>
+<div class="paragraph">
+<p>Original - 8 Bytes
+0000 0000 0000 0000
+0000 0000 0000 0000
+0000 0000 0000 0000
+0001 0010 0110 0111
+          = 0x12 67</p>
+</div>
+<div class="paragraph">
+<p>Split:
+<em>_01 00100 </em>_110 0111
+              = 0x24 67</p>
+</div>
+<div class="paragraph">
+<p>MSB gesetzt
+_1_01 00100 _0_110 0111
+              = 0xA4 67</p>
+</div>
+<div class="paragraph">
+<p><a href="http://upload.wikimedia.org/wikipedia/en/thumb/c/c6/Uintvar_coding.svg/600px-Uintvar_coding.svg.png" class="bare">http://upload.wikimedia.org/wikipedia/en/thumb/c/c6/Uintvar_coding.svg/600px-Uintvar_coding.svg.png</a>
+Abbildung der Kodierung von 106903 mittels VLQ (Quelle Wikipedia)</p>
+</div>
+<div class="paragraph">
+<p>Mit so einer Komprimierung kann man z.B. den Platzbedarf beim Kodieren von einer Million Long-Werte die normalerweise 8 Millionen Bytes belegen würden,
+bei einer Verteilung von: 10% - Longs (8 Bytes), 50% - Integers (4 Bytes) und 40% - Bytes (1 Byte) auf ca. 3.5 Millionen Bytes reduzieren.</p>
+</div>
+<div class="paragraph">
+<p>Einige der genannten Komprimierungen sind schnell genug, dass sie auch zur Laufzeit eingesetzt werden können. So nutzt das vor einer Weile
+vorgestellte MapDB die Delta-Kompression. Und auch in Neo4j setzen wir ähnliche Mechanismen ein.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ausblick">Ausblick</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kurz vor Redaktionsschluss für diesen Artikel hat mir Martin Thompson (u.a. LMAX-Disruptor) verraten, dass er bald eine sehr effiziente
+Java-Serialisierungs-Bibliothek vorstellen wird, die eine Performance aufweist, die mit C-Implementierungen vergleichbar ist.
+Er wurde von der FIX High Performance Working Group beauftragt, eine Referenzimplementierung für die SBE (Simple Binary Encoding)
+Spezifikation zu entwickeln.</p>
+</div>
+<div class="paragraph">
+<p>Das ganze basiert auf einem Compiler der dann Codebestandteile für die Bibliotheken für Java und C++ generiert. Er hat einen
+Geschwindigkeitsvorteil von 20-50x gegenüber Protocol-Buffers angekündigt.</p>
+</div>
+<div class="paragraph">
+<p>Es bleibt also spannend.</p>
+</div>
+<div class="paragraph">
+<p>Referenzen:</p>
+</div>
+<div class="paragraph">
+<p>Kryo <a href="https://github.com/EsotericSoftware/kryo" class="bare">https://github.com/EsotericSoftware/kryo</a>
+Gson: <a href="https://code.google.com/p/google-gson/" class="bare">https://code.google.com/p/google-gson/</a>
+Gson-Design-Document:
+[EisHay] JVM-Serializers Wiki: <a href="https://github.com/eishay/jvm-serializers/wiki" class="bare">https://github.com/eishay/jvm-serializers/wiki</a>
+[VLQ-Compression]: <a href="http://en.wikipedia.org/wiki/Variable-length_quantity" class="bare">http://en.wikipedia.org/wiki/Variable-length_quantity</a>
+[SimpleBinaryEncoding] <a href="http://www.fixtradingcommunity.org/pg/discussions/topicpost/168327/" class="bare">http://www.fixtradingcommunity.org/pg/discussions/topicpost/168327/</a>
+[JavaSpecialists] <a href="http://www.javaspecialists.eu/archive/archive.jsp" class="bare">http://www.javaspecialists.eu/archive/archive.jsp</a> Heinz Kabutz hat in seinem Newsletter und Training diverse Themen mit Bezug auf Objektserialisierung behandelt
+[SerializationComparisonHazelcast] <a href="http://blog.hazelcast.com/blog/2013/06/13/comparing-hazelcast-3-serialization-methods-with-kryo-serialization/" class="bare">http://blog.hazelcast.com/blog/2013/06/13/comparing-hazelcast-3-serialization-methods-with-kryo-serialization/</a>
+[Bloch] Effective Java 2nd Edition
+[JacksonSmile] <a href="http://wiki.fasterxml.com/JacksonForSmile" class="bare">http://wiki.fasterxml.com/JacksonForSmile</a></p>
+</div>
+<div class="paragraph">
+<p>------------ snip -----------------</p>
+</div>
+<div class="paragraph">
+<p>BSON <a href="http://bsonspec.org/" class="bare">http://bsonspec.org/</a>
+ProtoBuf: <a href="http://www.javacodegeeks.com/2012/06/google-protocol-buffers-in-java.html" class="bare">http://www.javacodegeeks.com/2012/06/google-protocol-buffers-in-java.html</a>
+<a href="https://developers.google.com/protocol-buffers/docs/javatutorial" class="bare">https://developers.google.com/protocol-buffers/docs/javatutorial</a>
+<a href="https://code.google.com/p/protobuf-java-format/" class="bare">https://code.google.com/p/protobuf-java-format/</a> - Provide serialization and de-serialization of different formats based on Google’s protobuf Message. Enables overriding the default (byte array) output to text based formats such as XML, JSON and HTML.</p>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2013-11-22 16:24:06 CET</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>

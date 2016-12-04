@@ -1,0 +1,690 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>JEXP | Microbenchmarks leicht gemacht</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+<!--HeaderText--><style type='text/css'><!--
+  div.wikibody { line-height: 1.6em; font-size:1.4em; }
+  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
+  code.escaped { white-space: nowrap; }
+  .vspace { margin-top:1.33em; }
+  .indent { margin-left:40px; }
+  .outdent { margin-left:40px; text-indent:-40px; }
+  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
+  a.createlink { text-decoration:none; position:relative; top:-0.5em;
+    font-weight:bold; font-size:smaller; border-bottom:none; }
+  img { border:0px; }
+   
+  table.tabtable { border-collapse: collapse; }
+  table.tabtable td { border:1px solid #cccccc; }
+
+div.sourceblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.sourceblock div {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }
+div.sourceblock div.head, div.sourceblock div.foot {
+	font: italic medium serif;
+	padding: 0.5em;
+}
+div.codeblock {
+	padding: 0.5em;
+	border: 1px solid #808080;
+	background-color: #F1F0ED; }
+div.codeblock pre {
+	font-family: monospace;
+	font-size: small;
+	line-height: 1; }.editconflict { color:green; 
+  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
+
+  table.markup { border:2px dotted #ccf; width:90%; }
+  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
+  table.vert td.markup1 { border-bottom:1px solid #ccf; }
+  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
+  table.markup caption { text-align:left; }
+  div.faq p, div.faq pre { margin-left:2em; }
+  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
+   
+    .frame 
+      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
+    .lfloat { float:left; margin-right:0.5em; }
+    .rfloat { float:right; margin-left:0.5em; }
+a.varlink { text-decoration:none; }
+
+--></style>
+  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
+
+
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='articles.html'>Articles</a></li>
+	<li><a class='urllink' href='books.html'>Books</a></li>
+	<li><a class='urllink' href='projects.html'>Projects</a></li>
+	<li><a class='urllink' href='bio.html'>Bio</a></li>
+<!--
+<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
+</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
+<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
+</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
+<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
+</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
+</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
+<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
+</li>
+-->
+
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<div class="sect1">
+<h2 id="_microbenchmarks_leicht_gemacht">Microbenchmarks leicht gemacht</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Während der letzen Jahre hat Aleksey Shipilev, ein Java Performance Experte bei Oracle als Teil des OpenJDK Projekts den "Java Microbenchmark Harness (JMH)" entwickelt. Dieses Microbenchmark-Tool erleichtert die Erstellung und Durchführung korrekter Benchmarks die nur wenige Operationen umfassen.</p>
+</div>
+<div class="paragraph">
+<p>Normalerweise sind diese schwierig korrekt zu gestalten. Da der zu testende Code meist sehr schnell (in wenigen Nano- oder Mikrosekunden) ausgeführt wird, muss er oft wiederholt werden. Das macht man normalerweise in Schleifen mit Hundertausenden oder Millionen von Durchläufen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fallstricke_für_mikrobenchmarks">Fallstricke für Mikrobenchmarks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Was kostet aber die Schleife selbst? Deren Laufzeit sollte man schon von der Gesamtlaufzeit abziehen. Und was ist mit Testdaten? Der Aufruf von Random sollte in diesen Schleifen tunlichst vermieden werden. Also vorher genügend große Felder mit Zufallswerten füllen und dann über Schleifenvariable modulo Feldgröße auf die Werte zugreifen.</p>
+</div>
+<div class="paragraph">
+<p>Was ist mit Compiler-Optimierungen? Wird der Code innerhalb der Schleife wegoptimiert, weil seine Ergebnisse sowieso nicht genutzt werden? Oder seine Eingabewerte konstant sind? Also Summen aufaddieren oder Zuweisungen an Variablen ausserhalb der Schleife einbauen. Andere Optimierungen wie Loop-Unrolling für Schleifen oder On-Stack-Replacement (OSR) für das unmittelbare Ersetzen von Interpreter-Code durch kompilierten Code, sind auch prädestiniert dafür, Microbenchmarks zu verfälschen. Andere Optimierungen werden nur im Mikrobenchmarks aktiv, da der Compiler den einfacheren Code viel leichter analysieren kann. Im komplexeren Produktivcode wäre diese Analyse dagegen nicht erfolgreich.</p>
+</div>
+<div class="paragraph">
+<p>Wann setzt eigentlich die Hotspot Compilierung ein? Der Sprung von interpretiertem Bytecode zu hochoptimiertem Code wird erst nach einigen (tausend) Zyklen durchgeführt. Hilfreich ist dazu der Kommandozeilenparameter
+(-XX:CompileThreshold=n, default ist 10000 für -server, 1500 für -client, sichtbar mit -XX:+PrintCompilation). Desweiteren ist Inlining (-XX:+PrintInlining) interessant, bis zu welcher Größe werden häufig aufgerufene Methoden in ihre Aufrufstellen platziert? (-XX:MaxInlineSize=n, standardmässig bis 35 bytes, es gibt auch noch: -XX:FreqInlineSize=n, das für besonders häufig aufgerufene Methoden noch eine zweite Schwelle angibt).</p>
+</div>
+<div class="paragraph">
+<p>Da Hotspot erst nach 10000 Durchläufen zuschlägt, sollte man also den zu messenden Code vorher genügend oft (warm-)laufen lassen. Hotspot-Compilierung, Laden von Klassen und Erst-Initialisierung (z.b. für Konsolenausgaben) während der Messung verzerren das Ergebnis. Deren Abwesenheit kann man sicherstellen, wenn keine Ausgaben von -verbose:class und -XX:+PrintCompilation in diesem Zeitraum erscheinen.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren ist ein einziger Durchlauf oft nicht ausreichend, um genügend Aussagekraft zu haben. Gerade auf Privatrechnern laufen zuviele Prozesse im Hintergrund, die sich negativ bemerkbar machen, besonders wegen paralleler und nicht-konstanter CPU- oder Speicherlast (IDE, Browser, Skype, Twitter Client, Hintergrundaktualisierungen, z.B. für die Desktop-Suche, Virenscanner usw.). Auch die Ausführung auf virtuellen, nicht dedizierten Maschinen in der Cloud liefert keine garantiert gleichen Ausführungszeiten.</p>
+</div>
+<div class="paragraph">
+<p>Also sollte man die Mikrobenchmarks auf einen blanken Rechner durchführen, auf dem sonst nichts weiter läuft und man volle Kontrolle über CPU, RAM und Festplattenaktivitäten hat. Oder man lässt den Test entsprechend häufig laufen, und sammelt die Laufzeiten (nicht einfach den Mittelwert bilden), um sich ein Histogramm (wie z.B. mit Gil Tene&#8217;s [HdrHistogram]) ausgeben zu lassen, in dem die relevanten Perzentilen der Laufzeiten erkennbar sind.</p>
+</div>
+<div class="paragraph">
+<p>Wie man schon sehen kann, wartet eine Menge Arbeit auf jeden, der einen verlässlichen Mikro-Laufzeittest durchführen wil. In der Präsentation [JmhPresentation] von Aleksey werden noch viele andere Aspekte genannt, die man bedenken sollte - nicht ohne Grund schürt er gewaltigen Respekt vor realistischen und nutzbaren Benchmark-Ansätzen.</p>
+</div>
+<div class="paragraph">
+<p>Mit dem Java MicroBenchmarks Harness sollen zumindest einige dieser Fallstricke besser handhabbar werden. Grund genug, uns dieses Tool mal etwas genauer anzuschauen. Als Testcode nehme ich einige Routinen, die ich schon lange einmal testen wollte. Diese dienen der effizienteren Speicherung von großen Mengen von Long-Werten in einem Speicherbereich (z.b. byte-Array).</p>
+</div>
+<div class="sect2">
+<h3 id="_java_measurement_harness">Java Measurement Harness</h3>
+<div class="paragraph">
+<p>JMH kümmert sich viele Aspekte des Benchmarks: WarmUp, Starten von JVM&#8217;s und Threads, Zeitmessung, Sammeln von Statistiken, usw.</p>
+</div>
+<div class="paragraph">
+<p>Anders als andere Benchmarks misst JMH standardmässig nicht, wie lange ein Stück Code läuft, sondern wie oft es in einer festen Zeitspanne ausgeführt werden kann. Wie andere Benchmarks ist JMH aber auch nicht vor Einflüssen aus der Umgebung oder anderen Hotspot-Aspekten gefeit, daher seien die Benchmark-Regeln aus [MBRegeln] noch einmal ans Herz gelegt.</p>
+</div>
+<div class="paragraph">
+<p>JMH basiert auf Maven, es ist aber auch ein Ant-Task verfügbar.  Der einfachste Weg mit JMH zu starten ist, sich ein Projekt mittels Maven-Archetype generieren zu lassen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mvn archetype:generate \
+          -DinteractiveMode=false \
+          -DarchetypeGroupId=org.openjdk.jmh \
+          -DarchetypeArtifactId=jmh-java-benchmark-archetype \
+          -DgroupId=de.jexp \
+          -DartifactId=jmh-example \
+          -Dversion=1.0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dabei ist zu beachten, dass der Package-Name auf die groupId gesetzt wird.</p>
+</div>
+<div class="paragraph">
+<p>Mit jmh-exampe/src/main/java/de/jexp/MyBenchmark.java wird auch gleich ein Beispiel-Benchmark erzeugt, der noch recht spartanisch aussieht:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">package de.jexp;
+
+import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+
+public class MyBenchmark {
+
+    @GenerateMicroBenchmark
+    public void testMethod() {
+        // place your benchmarked code here
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diesen kann man jetzt einfach per mvn clean install bauen lassen (dabei werden per Annotations-Prozessor die eigentlichen Test-Klassen generiert) und mittels java -jar target/microbenchmarks.jar ausführen lassen.</p>
+</div>
+<div class="paragraph">
+<p>Die Ausgabe sollte dann so aussehen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># Run progress: 0,00% complete, ETA 00:00:10
+# VM invoker: /Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/bin/java
+# VM options: &lt;none&gt;
+# Fork: 1 of 1
+# Warmup: 5 iterations, 1 s each
+# Measurement: 5 iterations, 1 s each
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: de.jexp.MyBenchmark.testMethod
+# Warmup Iteration   1: 3182454,485 ops/ms
+...
+# Warmup Iteration   5: 3260164,501 ops/ms
+Iteration   1: 3230647,136 ops/ms
+...
+Iteration   5: 3167623,557 ops/ms
+
+Result : 3215430,878 ±(99.9%) 140442,901 ops/ms
+  Statistics: (min, avg, max) = (3167623,557, 3215430,878, 3248612,634), stdev = 36472,575
+  Confidence interval (99.9%): [3074987,977, 3355873,779]
+
+Benchmark                      Mode   Samples         Mean   Mean error    Units
+d.j.MyBenchmark.testMethod    thrpt         5  3215430,878   140442,901   ops/ms</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die meisten Aspekte von JMH sind per Annotation konfigurierbar, hier ein typisches Set von Annotationen an der Mikrobenchmark-Klasse.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">// Messung der Durchschnittslaufzeit (mehr dazu s.u.)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(MILLISECONDS)
+@Warmup(iterations = 10, time = 1, timeUnit = SECONDS)
+@Measurement(iterations = 20, time = 1, timeUnit = SECONDS)
+@Fork(5)
+// die Klasse wird pro Benchmark neu Erzeugt, alternativ Scope.Thread
+@State(Scope.Benchmark)
+@Threads(8)
+class MyBenchmark {
+
+    int a,b;
+
+    // Initialisierung des Zustands (Resourcenfreigabe mit @TearDown)
+    @Setup
+    public void setup() {
+        long now = System.currentTimeMillis();
+        a=(int)now % 1000;
+        b=(int)now / 1000;
+    }
+
+    // Erzwungenes Inlining
+    @CompilerControl(CompilerControl.Mode.INLINE)
+    private int plus(int a, int b) {
+       return a + b;
+    }
+
+    // Testmethode
+    @GenerateMicroBenchmark
+    public int add(BlackHole bh) {
+       // Rückgabe zur Vermeidung von Dead-Code-Elimination
+       return plus(a,b);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Aber auch ein manuelles Aufsetzen ist kein Problem. Einfach diese Abhängigkeiten deklarieren:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="xml language-xml">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;
+        &lt;artifactId&gt;jmh-core&lt;/artifactId&gt;
+        &lt;version&gt;0.5.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.openjdk.jmh&lt;/groupId&gt;
+        &lt;artifactId&gt;jmh-generator-annprocess&lt;/artifactId&gt;
+        &lt;version&gt;0.5.5&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Beim Ausführen des Annotationsprozessors generiert JMH im target Verzeichnis diese Klassen:</p>
+</div>
+<div class="paragraph">
+<p>generated-sources/annotations/[generated-sources/annotations/de/jexp/generated/MyBenchmark.java]</p>
+</div>
+<div class="paragraph">
+<p>Das ist der Sourcecode für den eigentlichen Test. Dabei wird die Klasse mit vielen Zusatzvariablen und Methoden für Statistiken, Warmup usw. angereichert. Die meisten von ihnen sind mit viel Padding versehen, um Cacheline-Sharing auszuschliesen.</p>
+</div>
+<div class="paragraph">
+<p>In target/classes/META-INF/CompilerHints, legt JMH fest, welche Methoden vom Compiler zum Inlining vorgesehen werden dürfen und welche nicht. Im Beispielfall sind das:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>dontinline,de/jexp/generated/MyBenchmark.testMethod_Throughput_measurementLoop
+dontinline,de/jexp/generated/MyBenchmark.testMethod_AverageTime_measurementLoop
+dontinline,de/jexp/generated/MyBenchmark.testMethod_SampleTime_measurementLoop
+dontinline,de/jexp/generated/MyBenchmark.testMethod_SingleShotTime
+inline,de/jexp/MyBenchmark.testMethod
+inline,org/openjdk/jmh/logic/BlackHole.clearSinks</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ausführen kann man das erzeugte JAR dann mittels:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">// -wi=warmups, -i=iterations, -f=forks, -h=Hilfe (mit sehr vielen Optionen)
+java -jar target/microbenchmarks.jar [ -wi 5 -i 5 -f 1]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oder programmatisch, direkt aus der Klasse heraus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+            .include(".*" + MyBenchmark.class.getSimpleName() + ".*")
+            .warmupIterations(5)
+            .measurementIterations(5)
+            .threads(4)
+            .forks(1)
+            .build();
+
+    new Runner(opt).run();
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_benchmark_modes">BenchMark-Modes:</h3>
+<div class="paragraph">
+<p>JMH kennt verschiedene Modi zur Durchführung der Benchmarks. Sie können sowohl als Annotationen (@BenchmarkMode) an den Benchmarkklassen, als auch als Startparameter definiert werden. Im Einzelnen sind das:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Modus (Mode.)</th>
+<th class="tableblock halign-left valign-top">Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Throughput</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Misst die Anzahl der Operationen pro Zeiteinheit (siehe @Measurement(timeUnit))</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AverageTime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Durchschnittlich Ausführungszeit einer Operation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SampleTime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Individuelle Zeiten werden erfasst für die Ermittlung von Perzentilen, Verteilungen usw.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SingleShotTime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nur einmalige Messung, wenn z.b. der Sonderfall einer unoptimierten Ausführung betrachtet werden soll</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AverageTime, SampleTime, ..</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modi können komma-separiert gelistet werden</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alle Modi zur Zeitmessung sind gleichzeitg aktiv</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_testzustände">Testzustände</h3>
+<div class="paragraph">
+<p>Mit @State(scope) werden Klassen annotiert, die als Zustandsobjekte für die Mikrobenchmarks genutzt werden sollen. Sie können in 3 verschiedenen Scopes definiert werden:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 100%;">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 80%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scope</th>
+<th class="tableblock halign-left valign-top">Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scope.Benchmark</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zustand wird für den gesamten Benchmark geteilt, Setup- und TearDown-Methoden werden nur einmalig aufgerufen</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scope.Thread</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Zustand wird pro Therad und auch im Thread erzeugt</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scope.Group</p></td>
+<td class="tableblock halign-left valign-top"><div><div class="paragraph">
+<p>Zustand wird für eine Gruppe von Benchmarks geteilt, diese müssen dann auch mit derselben @Group("name") Annotation bezeichnet sein</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Innerhalb der Zustandsklassen können @Setup- und @TearDown-Methoden für den Lebenszyklus, besonders für das Resourcenmanagement genutzt werden. Selbst die Testklasse kann mit @State annotiert werden und dient dann diesem Zweck.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">// Zustand für den ganzen Benchmark, effektiv zwischen Threads geteilt
+@State(Scope.Benchmark)
+static class MyState {
+    int a=23;
+    int b=12;
+    int c=0;
+}
+
+// Zustand pro Thread, so kein Sharing / konkurrierender Zugriff
+@State(Scope.Thread)
+static class MyThreadState {
+    double answer=42d;
+}
+
+@GenerateMicroBenchmark
+public void add(MyState state, MyThreadState state2) {
+    state.c = state.a + state2.b;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>State-Objekte werden nach Bedarf erzeugt, sind aber in den angegebenen Scopes gültig. Die Erzeugung erfolgt im Benchmark-Thread, so dass z.B. ThreadLocals korrekt zugeordnet sind und bleiben.</p>
+</div>
+<div class="paragraph">
+<p>Für die Vermeidung der Eliminierung von ungenutztem Code, kann man Ergebnisse z.b. von der Test-Methode zurückgeben lassen oder sich einen BlackHole Parameter übergeben lassen, der beliebige Objekte konsumieren kann und damit für den Compiler eine Weiterverwendung der berechneten Ergebnisse darstellt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_konkretes_beispiel">Konkretes Beispiel</h3>
+<div class="paragraph">
+<p>Wie schon angekündigt, beschäftigt der Code, den ich mir genauer anschauen wollte mit der effizienten Speicherung von Long Werten in einem ByteBuffer. Das ist z.B. notwendig wenn man größere Mengen von Long-IDs aufeinanderfolgend abspeichern will, aber nur sowenig Speicher wie möglich nutzen möchte. Normalerweise belegt jeder Long-Wert 8 Bytes, so dass eine Million Long-Werte 8 Millionen Bytes belegen. Wenn man diesen Wert auf die Hälfte oder weniger reduzieren kann, spart das eine Menge.</p>
+</div>
+<div class="paragraph">
+<p>Es gibt viele verschiedene Ideen zur Kompression, zwei die ich mir genauer angeschaut habe, sind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Speicherung der relevanten Bytes pro Long, d.h. alle nicht-Null Bytes und deren Anzahl, reduziert die Speichernutzung auf ca 3.4 Bytes pro Long in meinem Anwendungsfall</p>
+</li>
+<li>
+<p>Speicherung des relevanten Anteils als aufeinanderfolgende Fragmente, die in einem High-Bit festhalten ob noch weiterer Block kommt oder ob der aktuelle der letzte ist. Die Anzahl muss somit nicht gespeichert werden aber man hat nur 7 Bit pro Block zur Verfügung, siehe [Variable Length Quantity]</p>
+</li>
+<li>
+<p>Falls der VLQ Ansatz auch negative Zahlen speichern können soll, muss er diese Information irgendwo ablegen, so dass nur 6 statt 7 Bit zur Informationsspeicherung pro Block zur Verfügung stehen</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Zum Vergleich habe ich noch eine Variante hinzugefügt, die die Long-Werte einfach direkt im Puffer ablegt ohne Kompression.</p>
+</div>
+<div class="paragraph">
+<p>All diese LongEncoder implementieren dieses Interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public interface LongEncoder {
+    int encode( ByteBuffer target, long value );
+    int size( long value );
+    long decode( ByteBuffer source );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die individuellen Implementierungen sind zu lang zum Abdrucken und enthalten nur langweiligen Code mit vielen Bit-Operationen, daher hier ist nur die einfache Vergleichsvariante:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public class StoringLongEncoder implements LongEncoder {
+
+    public int encode(ByteBuffer target, long value) {
+        target.putLong(value);
+        return 8;
+    }
+
+    public int size(long value) {
+        return 8;
+    }
+
+    public long decode(ByteBuffer source) {
+        return source.getLong();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um die verschiedenen Encoder zu testen, habe ich als Use-case das Speichern und Lesen inkrementell wachsender Werte genutzt. Ausgehend von einem Startwert (z.B. 7) der pro Durchlauf mit 11 multipliziert wird, hat jeder MicroBenchmark, eine Encoding, Decoding und Vergleichsoperation.</p>
+</div>
+<div class="paragraph">
+<p>Der Benchmark sieht also wie folgt aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">buffer.rewind();
+encoder.encode(buffer, value);
+
+buffer.rewind();
+long decoded = encoder.decode(buffer);
+
+if (decoded != value) throw new AssertionError("Incorrectly decoded, original: "+ value+" != decoded: "+ decoded);
+value*=11;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für einen direkteren Test der Algorithmen wäre es ggf. sinnvoll den ByteBuffer wegzulassen und direkt auf ein Byte-Array (oder gar nicht) zu schreiben. Aber ich wollte sie ja nur im Vergleich sehen.</p>
+</div>
+<div class="paragraph">
+<p>Aber der Puffer und der inkrementierende Wert führen dazu, dass wir das @State Feature von JMH zeigen können. Wie schon erwähnt werden mit @State annotierte Klassen von JMH den Benchmarkmethoden als Parameter übergeben und dabei im richtigen Scope (Benchmark, Thread, Group) erzeugt und bereitgestellt.</p>
+</div>
+<div class="paragraph">
+<p>In unserem Fall sind das dann Subklassen von LongEncoderHolder, die die beiden Attribute (Buffer und Wert), sowie die Operationen kapseln:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">public static class LongEncoderHolder {
+    private final LongEncoder encoder;
+    ByteBuffer buffer = ByteBuffer.allocate(1000);
+    long value = 7;
+
+    public LongEncoderHolder(LongEncoder encoder) {
+        this.encoder = encoder;
+    }
+
+	@CompilerControl(CompilerControl.Mode.INLINE)
+    public int encode() {
+        buffer.rewind();
+        return encoder.encode(buffer, value);
+    }
+
+	@CompilerControl(CompilerControl.Mode.INLINE)
+    public long decode() {
+        buffer.rewind();
+        long decoded = encoder.decode(buffer);
+        if (decoded != value) throw
+          new AssertionError("Incorrectly decoded, original: "
+                             + value+" != decoded: "+decoded);
+        return decoded;
+    }
+
+	@CompilerControl(CompilerControl.Mode.INLINE)
+    void nextValue() {
+        value*=11;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die konkrete Holder Subklasse pro Encoder sieht so aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">@State(value = Scope.Thread)
+public static class SignedLongEncoderHolder extends LongEncoderHolder {
+    public SignedLongEncoderHolder() {
+        super(new SignedLongBase128Encoder());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diese Holder-Klassen sind sicher von der Polymorphismus-Deoptimierung von Hotspot beeinflusst, aber ein testweises Inlining der Klassen hat keine signifikaten Unterschiede aufgezeigt.</p>
+</div>
+<div class="paragraph">
+<p>Alternativ kann man den Zustand auch direkt im Benchmark ablegen, dann kann dieser mit @State(scope) annotiert werden und entsprechende Methoden für
+@Setup und @TearDown des Zustands enthalten. Man hätte dann eine Superklasse für den Benchmark und entsprechende Subklassen pro Encoder-Typ (siehe [JMH-Objectpool]).</p>
+</div>
+<div class="paragraph">
+<p>Der eigentliche Benchmarkcode sieht dann so aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="cypher language-cypher">@GenerateMicroBenchmark
+public long testSimpleLongEncoder(SimpleLongEncoderHolder longEncoder) {
+    longEncoder.encode();
+    long decoded = longEncoder.decode();
+    longEncoder.nextValue();
+    return decoded;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Bei der Ausführung erhalte ich folgende Werte, die mich doch etwas überrascht haben.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Benchmark                                             Mode   Samples         Mean   Mean error    Units
+d.j.IdCompressionBenchmark.testSignedEncoder         thrpt         5    20714,543     2963,493   ops/ms
+d.j.IdCompressionBenchmark.testSimpleLongEncoder     thrpt         5    19996,335     4542,521   ops/ms
+d.j.IdCompressionBenchmark.testStoringLongEncoder    thrpt         5    75018,281     9012,319   ops/ms
+d.j.IdCompressionBenchmark.testUnsignedEncoder       thrpt         5    38905,226     5379,667   ops/ms</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ich hätte vermutet, dass der SimpleLongEncoder der schnellste der Kompressionsalgorithmen ist, da er vergleichsweise wenige Operationen enthält. Der notwendige doppelte Zugriff (inkl Repositionierung) auf den Puffer für das Ablegen der Anzahl scheint sich hier negativ bemerkbar zu machen.</p>
+</div>
+<div class="paragraph">
+<p>Ich habe auch noch ein paar andere Ideen, wie ich diesen Ansatz beschleunigen könnte, ein Ziel wäre es an 75% der Leistung des reinen Speicherns heranzukommen. Dagegen ist der VLQ-Encoder für positive Werte überraschend schnell trotz notwendigem  Bitshifting und Rekombination von Blöcken.</p>
+</div>
+<div class="paragraph">
+<p>Eine spannende Ausgangssituation, um weiter an der Performanceoptimierung zu arbeiten. Danke JMH.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ressourcen">Ressourcen</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>[JmhSource] <a href="http://openjdk.java.net/projects/code-tools/jmh" class="bare">http://openjdk.java.net/projects/code-tools/jmh</a></p>
+</li>
+<li>
+<p>[JmhPresentation] Aleksey Shipilev "The Art of Java Benchmarking -Gentle Introduction in JMH" <a href="http://shipilev.net/talks/devoxx-Nov2013-benchmarking.pdf" class="bare">http://shipilev.net/talks/devoxx-Nov2013-benchmarking.pdf</a></p>
+</li>
+<li>
+<p>[JmhExamples] <a href="http://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/" class="bare">http://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/</a></p>
+</li>
+<li>
+<p>[JavaOpts] <a href="http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#PerformanceTuning" class="bare">http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#PerformanceTuning</a></p>
+</li>
+<li>
+<p>[OSR] On-Stack-Replacement <a href="http://www.azulsystems.com/blog/cliff/2011-11-22-what-the-heck-is-osr-and-why-is-it-bad-or-good" class="bare">http://www.azulsystems.com/blog/cliff/2011-11-22-what-the-heck-is-osr-and-why-is-it-bad-or-good</a></p>
+</li>
+<li>
+<p>[HdrHistogram] <a href="https://github.com/HdrHistogram/HdrHistogram" class="bare">https://github.com/HdrHistogram/HdrHistogram</a></p>
+</li>
+<li>
+<p>[Kabutz] Heinz Kabutz JMH für CAS vs. Synchronized <a href="http://www.javaspecialists.eu/archive/Issue217.html" class="bare">http://www.javaspecialists.eu/archive/Issue217.html</a></p>
+</li>
+<li>
+<p>[MBRegeln] Einige Regeln für Microbenchmarks <a href="https://wiki.openjdk.java.net/display/HotSpot/MicroBenchmarks" class="bare">https://wiki.openjdk.java.net/display/HotSpot/MicroBenchmarks</a></p>
+</li>
+<li>
+<p>[Goetz] Anatomy of a flawed microbenchmark <a href="http://www.ibm.com/developerworks/java/library/j-jtp02225/index.html" class="bare">http://www.ibm.com/developerworks/java/library/j-jtp02225/index.html</a></p>
+</li>
+<li>
+<p>[Caliper] Caliper is Google&#8217;s open-source framework for writing, running and viewing the results of JavaMicrobenchmarks. <a href="https://code.google.com/p/caliper/" class="bare">https://code.google.com/p/caliper/</a></p>
+</li>
+<li>
+<p>[JmhBlog] Writing Java Micro Benchmarks with JMH <a href="http://psy-lob-saw.blogspot.de/2013/04/writing-java-micro-benchmarks-with-jmh.html" class="bare">http://psy-lob-saw.blogspot.de/2013/04/writing-java-micro-benchmarks-with-jmh.html</a></p>
+</li>
+<li>
+<p>[VLQ] Variable Length Quantity: <a href="http://en.wikipedia.org/wiki/Variable-length_quantity" class="bare">http://en.wikipedia.org/wiki/Variable-length_quantity</a></p>
+</li>
+<li>
+<p>[JMH-Objectpool] <a href="https://github.com/chrisvest/object-pool-benchmarks/blob/master/src/main/java/objectpoolbenchmark/suite/ClaimRelease.java" class="bare">https://github.com/chrisvest/object-pool-benchmarks/blob/master/src/main/java/objectpoolbenchmark/suite/ClaimRelease.java</a></p>
+</li>
+<li>
+<p>[JMH-Javaspektrum] Beispielcode für den Artikel <a href="https://github.com/jexp/javaspektrum/tree/master/jmh-example" class="bare">https://github.com/jexp/javaspektrum/tree/master/jmh-example</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-03-26 13:10:00 CET</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+	
+   </div>
+
+</body>
+</html>
