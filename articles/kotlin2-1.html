@@ -1,0 +1,650 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Mit Kotlin schnell und sicher zum Ziel  (Teil 1)</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1>Mit Kotlin schnell und sicher zum Ziel  (Teil 1)</h1>
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://avatars3.githubusercontent.com/u/17617519?v=3&s=200" alt="17617519?v=3&amp;s=200">
+</div>
+</div>
+<div class="paragraph">
+<p>Wie man so schön sagt, bei Kindern und Entwicklerthemen vergeht die Zeit wie im Fluge.
+Meine letzte Kolumne zum Thema Kotlin ist vom Februar 2012, als diese Sprache für die JVM von Jetbrains noch nicht mal ihren Babyschuhen entwachsen war.</p>
+</div>
+<div class="paragraph">
+<p>Jetzt, schon fast 5 Jahre später lohnt es sich auf jeden Fall Kotlin (mittlerweise in Version 1.0.5, bzw. 1.1.0-M2) ernsthaft in Betracht zu ziehen, wenn man neue Projekte auf der JVM beginnt oder existierende modernisieren will.
+Seit dem Release der Version 1.0 im Frühjahr 2016, wird Kotlin von Jetbrains als stabil betrachtet und bleibt rückwärtskompatibel.</p>
+</div>
+<div class="paragraph">
+<p>In diesem zweiteiligen Artikel möchte ich zuerst die Grundlagen der Sprache, sowie einige Basiskonzepte und Eigenschaften beleuchten und dann im Teil 2 auf weiterführende Themen wie Nebenläufigkeit, funktionale Programmierung, diverse Bibliotheken, die neuen Features der Version 1.1 und einige Internas des Kotlin Compilers eingehen.</p>
+</div>
+<div class="paragraph">
+<p>Kotlin ist unter Apache 2 Lizenz verfügbar und hat eine aktive Nutzergemeinschaft die Fragen schnell beantwortet.</p>
+</div>
+<div class="paragraph">
+<p>Kotlin ist ursprünglich als ein Werkzeug bei Jetbrains entstanden, um Java sukzessive bei der Entwicklung, Wartung und Modernisierung der Infrastruktur und des Frameworks der Jetbrains IDEs zu ersetzen.</p>
+</div>
+<div class="paragraph">
+<p>Das Ziel für Kotlin war eine statisch getypte, pragmatische, klare, minimale Sprache mit funktionalen Elementen.
+Eine exzellente Java-Integration und Binärkompatibilität war bei dem geplanten Einsatzgebiet natürlich ein Muss.
+Dadurch können alle Bibliotheken und Frameworks auf der JVM ohne Zusatzaufwand genutzt werden, und Kotlin generierter Bytecode ist von diesen genauso nutzbar.</p>
+</div>
+<div class="paragraph">
+<p>Viel Ansehen hat Kotlin in der Entwicklung für Android bekommen, nicht zuletzt wegen der exzellenten Unterstützung in Android-Studio (auch ein Jetbrains-Tool).
+Besonders hervorgetan haben sich die schnelle Übersetzungszeit und die sicherere Entwicklung, die besonders für Entwickler die mit Android Programmen ihre ersten Schritte machen, sehr hilfreich ist.</p>
+</div>
+<div class="paragraph">
+<p>Neben der JVM hat Kotlin auch JavaScript als Zielplattform, die Spraches kann also auch für die Webentwicklung genutzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Da der Kotlin Compiler Java 6 unterstützt, kann es für sehr gut für Android genutzt werden, damit stehen einem auch auf Java 6 funktionale Konstrukte wie Lambdas zur Verfügung.</p>
+</div>
+<div class="paragraph">
+<p>Das Ganze kann man in der Kotlin-Sandbox (try.kotlinlang.org) live ausprobieren, wobei diese Umgebung schon eher einer kleinen IDE ähnelt als nur einer REPL Konsole.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_die_sprache">Die Sprache</h2>
+<div class="sectionbody">
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://opencredo.com/wp-content/uploads/2016/02/kronshtadt.jpg" alt="kronshtadt" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Eine Insel bei St. Petersburg, dem Hauptsitz von Jetbrains steht Pate für Kotlins Namen.</p>
+</div>
+<div class="paragraph">
+<p>Kotlin ist eine statisch getypte Sprache mit kompakter Syntax und funktionalen Elementen, die unnötige Komplexität von Java vermeiden will und Inkonsistenzen ausräumt.
+Ein wichtiger Aspekt ist, Null- und Typ-Checks weitgehend überflüssig zu machen indem der Compiler Metainformatione über Referenzen mitführt.</p>
+</div>
+<div class="paragraph">
+<p><strong>Variablen</strong> in Kotlin werden standardmässig unveränderlich mit <code>val name : Typ</code> definiert.
+Kotlin hat eine ausgereifte Typeinferenz, die dafür sorgt, dass man nur selten Typangaben vornehmen muss.</p>
+</div>
+<div class="paragraph">
+<p>Wie <code>match</code> in Scala, ist <code>when</code> das Pattern-Matching Schlüsselwort in Kotlin.</p>
+</div>
+<div class="paragraph">
+<p>If- und when-Konstrukte sind Ausdrücke, sie haben, wie in Scala, immer ein Ergebnis.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>val currency =
+  when (country) {
+    "UK" -&gt; "£"
+    "US" -&gt; "$"
+    "EU" -&gt; "€"
+    else -&gt; "-"
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Funktionen</strong> sind ein fester Sprachbestandteil, sie können inner- und ausserhalb von Objekten, Klassen und Funktionen definiert werden, sie können als Parameter und Ergebnisse von Funktionen dienen (höherwertige Funktions).</p>
+</div>
+<div class="paragraph">
+<p>Anonyme Funktionen, also Lambdas können anstelle von benannten Funktionen genutzt werden, wie in Groovy wird standardmäßig der <code>it</code> Bezeichner unterstützt:</p>
+</div>
+<div class="paragraph">
+<p><code>(1..10).filter { it &gt; 5 }.map { n -&gt; n * n }</code>.</p>
+</div>
+<div class="paragraph">
+<p>Da Java6 als Zielplattform anvisiert wird, wurden Lambdas bisher nicht über Java8-Lambda&#8217;s oder invoke-dynamic abgebildet, sonder über Inlining oder Implementierung zur Compile-Zeit  realisiert, was zu einer hohen Anzahl generierter Klassen und Methoden führt.</p>
+</div>
+<div class="paragraph">
+<p>Dieses Zitat aus einem Blog Beitrag von Mike Hearn [Hearn], fasst den Ansatz von Kotlin zur Erweiterbarkeit der Sprache gut zusammen:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Kotlin hat keine Makros oder andere Möglichkeiten die Sprache direkt zu ändern.
+Aber die sauber definierten Spracheigenschaften erlauben es Bibliotheken zu entwickeln, die viel eher wie Spracherweiterungen agieren als nur als eine Sammlung von Zusatzfunktionalität.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Viele der Funktionen, die Kotlin zu Listen oder Objekten aus Java hinzufügt sind als Erweiterungsfunktionen implementiert.</p>
+</div>
+<div class="paragraph">
+<p>Im Blog von Cedric Beust [Beust] werden sie etwas genauer unter die Lupe genommen.</p>
+</div>
+<div class="paragraph">
+<p>Exceptions sind in Kotlin unchecked und <code>try</code> ist ein Ausdruck:</p>
+</div>
+<div class="paragraph">
+<p><code>val x = try {  "42x".toInt() } catch (e : Exception) { -1 }</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_typ_sicherheit">(Typ-)Sicherheit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Entwicklung von Anwendungen sicherer und einfacher zu machen ist ein wichtiges Ziel von Kotlin.</p>
+</div>
+<div class="paragraph">
+<p>So wird zum Beispiel die Metainformation, dass eine Referenz nicht null ist, vom Compiler mitgeführt.
+Ab dem Zeitpunkt, zu dem diese Information vorliegt, z.B. nach einem Null-Check, einer Zuweisung oder dem null-freien Rückgabewert eines Aufrufs,
+muss man keine Überprüfungen mehr vornehmen, selbst wenn die Referenz über mehrere Zwischenschritte durch die Pfade des Programmes fliesst.</p>
+</div>
+<div class="paragraph">
+<p>Wenn dieser Check fehlt, weist der Compiler mit einem Fehler darauf hin, dass ein ungeprüfter, potentiell nicht besetzter Wert benutzt wird.</p>
+</div>
+<div class="paragraph">
+<p>Daher kennt Kotlin auch zwei Varianten einer Typdeklaration, zum einen die regulären Variablendeklarationen mit dem Typ, wie <code>val a : String</code>.
+Beim Versuch, diesen Wert nicht zu initialisieren oder Null zuzuweisen, gibt es einen Compiler-Fehler.</p>
+</div>
+<div class="paragraph">
+<p>Bei der zweiten Variante, wenn an den Typ ein Fragezeichen angehängt, wird, z.B. <code>String?</code> kann die Referenz Null enthalten, aber dann wird die Dereferenzierung bzw. Benutzung überwacht.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>var a: String = "abc"
+
+a = null // Compiler-Fehler
+
+val b: String? = loadFile()
+
+val l = b.length // Compiler-Fehler
+
+val l = b!!.length // Garantieren dass b nicht null ist
+val l = b?.length // Ergebnis null, wenn b null
+val v = b ?: "unknown" // Coalesce Operator
+val l = b?.length ?: -1 // Null und Coalesce Fallback
+
+if (b != null) { // Ab hier keine Checks mehr notwendig
+    b.length
+}
+b?.let { it.length } // let wird nur aufgerufen wenn "b" nicht null ist</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dadurch spart man sich den Aufwand, den man sich sonst mit <code>Optional&lt;T&gt;</code> in Java8 oder <code>Option[T]</code> in Scala hat, da das Konzept optionaler Werte in das Typsystem der Sprache integriert ist.</p>
+</div>
+<div class="paragraph">
+<p>Natürlich ist der Ansatz nur so gut, wie die Informationen die der Compiler besitzt, für den eigenen Code klappt das ziemlich gut.
+Für externe Bibliotheken, wie das JDK, hat sich Jetbrains den Aufwand gemacht, viele Signaturen von APIs des JDK mit <code>@Nullable</code> zu annotieren.</p>
+</div>
+<div class="paragraph">
+<p>Im Zweifelsfall muss natürlich angenommen werden, dass eine Referenz aus einer externen Quelle Null sein kann, daher wäre zumindest ein Null-Check vor Verwendung notwendig.</p>
+</div>
+<div class="paragraph">
+<p>Die Inferenz von Typen funktioniert überall, sogar ausgelöst durch vorangegangene Typ-Checks.
+Man muss nur noch selten, z.B. bei Funktionsparametern Typen angeben.</p>
+</div>
+<div class="paragraph">
+<p>Wenn einmal eine Instanz mit <code>value is Type</code> erfolgreich geprüft wurde, führt der Compiler auch diese Information mit und nimmt "smart casts" vor.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fun description(value : Object) {
+    if (value is Person) value.name else "not a person"
+}
+fun description(value : Object) {
+    when (value) {
+        is Person -&gt; value.name
+        else -&gt; "not a customer"
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wenn man es unbedingt möchte, kann man auch Typ-Konvertierungen nutzen, die statt eines Fehlers null zurückgeben: <code>val x : Int? = value as? Int</code>.
+Ich denke aber nicht, dass das eine gute Idee ist.</p>
+</div>
+<div class="paragraph">
+<p>Primitive Typen gibt es nicht, im generierten Bytecode werden numerische Typen aber als solche abgebildet.
+Konvertierung zwischen diesen muss aber manuell, z.b. mit <code>toInt()</code> vorgenommen werden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_entwicklung">Entwicklung</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_schneller_einstieg">Schneller Einstieg</h3>
+<div class="paragraph">
+<p>Zum schnellen Einstieg empfiehlt sich die interaktive Kotlin Mini-IDE auf try.kotlinlang.org, die mit vielen Beispielen für die diversen Sprachfeatures aufwartet.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://i.imgur.com/x5LyuAn.jpg" alt="x5LyuAn" width="100%">
+</div>
+</div>
+<div class="paragraph">
+<p>Desweiteren gibt es diverse Bücher der bekannten Verlage und eine ganze Menge aufgezeichneter Konferenzvorträge.
+Mein Freund und Jetbrains Evangelist Hadi Hariri hat vor Kurzem bei O&#8217;Reilly, einen kompletten Kotlin Online-Kurs aufgenommen, der hoffentlich bald verfügbar ist.</p>
+</div>
+<div class="paragraph">
+<p>Durch die Binärkompatibilität mit Java, kann man in einem existierenden Projekt eine Klasse nach der anderen umstellen, ohne den Rest des Projektes zu beeinflussen.</p>
+</div>
+<div class="paragraph">
+<p>Der Kotlin-Compiler ist trotz der fortgeschrittenen Features sehr schnell, und erzeugt Bytecode, der gut von Hotspot optimiert werden kann.
+Z.B. werden kurze Funktionen aus Listenoperationen häufiger vom Compiler geinlined.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_unterstützung_in_ides">Unterstützung in IDEs</h3>
+<div class="paragraph">
+<p>In den Jetbrains IDEs wie Android Studio und IDEA ist die Unterstützung für die Kotlin Entwicklung sehr ausgereift.
+Das Kotlin-Plugin umfasst mehr Funktionen als die für Scala oder Groovy.</p>
+</div>
+<div class="paragraph">
+<p>Neben Projekterzeugung, Build und Ausführung gibt es natürlich auch Sytax-Highlighting, aber vor allem Intentions (hilfreiche Warnungen und Verbesserungsvorschläge) und Refactorings.
+Ein besonders nützliches Feature ist die Umwandlung von Java-Quelltext nach Kotlin, wenn er in eine Kotlin-Datei eingefügt wird.
+Oder direkt die Konvertierung einer Java-Datei in das Kotlin Gegenstück.</p>
+</div>
+<div class="paragraph">
+<p>Für Eclipse Luna und Netbeans gibt es Kotlin Plugins in Beta, man kann aber auch seine Projekte in einem Editor entwicklen mit den Build-Tools (s.u.) auf der Kommandozeile bauen und ausführen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tests_mit_kotlin">Tests mit Kotlin</h3>
+<div class="paragraph">
+<p>Natürlich kann man für Unit-Tests JUnit, AssertJ oder andere Frameworks verwenden.
+Nat Pryce hat Hamcrest als HamKrest nach Kotlin portiert.
+KotlinTest ist ein Test Framework das an ScalaTest angelehnt ist.</p>
+</div>
+<div class="paragraph">
+<p>Und mit Spek hat man ein schönes spezifikationsbasiertes Framework, wie RSpec oder JBehave.</p>
+</div>
+<div class="paragraph">
+<p>Hier ist ein kleines Beispiel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class SimpleTest : Spek({
+  describe("ein Rechner") {
+    val calculator = SampleCalculator()
+
+    it("berechnet das Ergebnis der Subtraktion des zweiten Parameters vom ersten") {
+        val subtract = calculator.subtract(4, 2)
+        assertEquals(2, subtract)
+    }
+  }
+})</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_build">Build</h3>
+<div class="paragraph">
+<p>Obwohl man den Kotlin-Compiler selbst direkt aufrufen kann, wird man das nur selten tun.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kotlinc hello.kt -include-runtime -d hello.jar
+
+java -jar hello.jar
+# oder
+kotlin -classpath hello.jar HelloKt
+
+# start a REPL
+kotlinc-jvm</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Kotlin Projekte können problemlos mit <strong>Maven, Gradle oder Ant</strong> gebaut werden, es gibt auch ein Plugin für <strong>sbt</strong>.
+Ein eigenes, Gradle-ähnliches Buildsystem namens "Kobalt" wurde von Cedric Beust entwickelt.</p>
+</div>
+<div class="paragraph">
+<p>Mit dem gradle-script-kotlin Projekt können sogar Gradle Build-Files und Plugins leicht in Kotlin entwickelt werden.</p>
+</div>
+<div class="paragraph">
+<p>Ein sehr grosser Vorteil von Kotlin gegenüber Scala als funktionale Alternative, ist die kurze Zeit für den Build, die ähnlich wie bei Java-Projekten ausfällt.</p>
+</div>
+<div class="paragraph">
+<p>Ein netter Aspekt von Kotlin ist, dass es nur eine minimale Laufzeit Bibliothek (700kb) benötigt, sie enthält vor allem Erweiterungsfunktionen für das JDK.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dokumentation">Dokumentation</h3>
+<div class="paragraph">
+<p>Kotlins Äquivalent zu JavaDoc heisst KDoc, unterstützt nicht nur JavaDoc mässige Auszeichnungen <code>@constructor</code> sondern auch eingebettete Markdown-Syntax, z.B. für automatisch aufgelöste Referenzen auf andere Klassen und Methoden `[der Name der Person][example.Person.name]`.</p>
+</div>
+<div class="paragraph">
+<p>Das <strong>Dokka</strong> Tool erstellt aus gemischten Java- und Kotlin-Quellen schicke, anpassbare Dokumentations-Sites in diversen Formaten.</p>
+</div>
+<div class="paragraph">
+<p>Eine ausführliche Referenzdokumentation, Tutorials (Koans) und Videos zu Kotlin selbst findet man online unter kotlinlang.org/docs.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_nützliche_features">Nützliche Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_stringinterpolation">Stringinterpolation</h3>
+<div class="paragraph">
+<p>Ausgabe von Informationen ist unser täglich Brot, in Java wird heutzutage dafür meist <code>String.format</code> benutzt, oder <code>MessageFormat</code>.</p>
+</div>
+<div class="paragraph">
+<p>Wie in vielen anderen Sprachen auch, unterstützt Kotlin Stringinterpolation mittles <code>"$name"</code> oder <code>"${value * 10}"</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_funktionen">Funktionen</h3>
+<div class="paragraph">
+<p>In anderen Sprachen werden diese als <code>public static</code> Methoden oder als Methoden eines `object`s gehalten.</p>
+</div>
+<div class="paragraph">
+<p>In Kotlin kann man überall Funktionen definieren, auf dem Paket-Level oder innerhalb einer Funktion.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>package example
+
+fun squares(numbers : Iterable&lt;Int&gt;) = numbers.map{ it * it }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Funktionsargumente können benannt werden, um eine bessere Dokumentation und Lesbarkeit von Funktionsaufrufen zu gewährleisten.
+Kotlin unterstützt auch optionale Argumente mit Standardwerten und Varargs mit dem Spread Operator <code>*args</code>.</p>
+</div>
+<div class="paragraph">
+<p>Man kann Funktionen als <code>inline</code> deklarieren, dann folgt der Compiler diesem Hinweis.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_erweiterungsfunktionen">Erweiterungsfunktionen</h3>
+<div class="paragraph">
+<p>Man kann existierende Klassen, z.B. aus dem JDK, Bibliotheken oder dem eigenen Projekt mit neuer Funktionalität erweitern.</p>
+</div>
+<div class="paragraph">
+<p>Wir könnten z.B. String um eine <code>md5()</code> Methode erweitern.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>public fun String.md5() : String {
+    return MessageDigest.getInstance("MD5")
+           .digest(this.toByteArray())
+           .map{ Integer.toHexString(it.toInt() and 0xFF) }
+           .joinToString("")
+}
+"Hello World".md5() // b1a8db164e075415b7a99be72e3fe5</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Diese Erweiterungsmethoden werden dann auch von der IDE automatisch mit auf Instanzen der Klasse in der Auto-Completion mit angeboten.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_klassen_und_properties">Data Klassen und Properties</h3>
+<div class="paragraph">
+<p>Einfache DTO-Klassen kann man ganz einfach mit <code>class Person(val name : String, val age : Int)</code> deklarieren.
+Dabei sind alle Felder unveränderlich.</p>
+</div>
+<div class="paragraph">
+<p>Bei der Erstellunge einer Instanz kann das <code>new</code> Schlüsselwort weggelassen werden.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man der Klasse ein <code>data</code> voranstellt, generiert der Compiler, ähnlich wie bei case-Klassen in Scala die notwendigen <code>equals</code>, <code>hashCode</code> und <code>toString</code>-Methoden.
+Es wird auch eine <code>copy</code> Methode hinzugefügt, die es einfach macht mittels benannter Parameter, modifizierte Kopien der Instanz zu erzeugen:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data class Person(val name : String, val age : int)
+
+val alice = Person("Alice",32)
+
+alice == Person("Alice",32) // true
+// Zwilling von Alice
+val bob = alice.copy(name = "Bob")
+
+val (name,age) = alice</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zugriff auf Getter und Setter von Java Beans erfolgt in Kotlin kompakt mit Zuweisungen bzw. Leseoperation auf den Namen der Property.</p>
+</div>
+<div class="paragraph">
+<p>Aus <code>val x = person.name</code> wird in Java <code>String x = person.getName()</code> und umgekehrt.</p>
+</div>
+<div class="paragraph">
+<p>In Data Klassen werden Getter und Setter automatisch generiert.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tuples_und_dekomposition">Tuples und Dekomposition</h3>
+<div class="paragraph">
+<p>An vielen Stellen, wie z.B. Zuweisungen, Schleifen oder <code>when</code> Konstrukten können Felder von Objekten per Dekomposition an Variablen zugewiesen werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>val aapl = Pair("AAPL",111)
+val (stock,value) = aapl
+
+data class Person(val name: String, val age: Int)
+val alice = Person("Alice", 6)
+val (name, age) = alice // decomposition
+
+val (a,b) = arrayListOf(1,2,3) // first 2 elements</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mit <code>Pair</code> kann man schnell getypte Tuples von Werten erzeugen, entweder mit <code>Pair(a,b)</code> oder <code>a to b</code>.</p>
+</div>
+<div class="paragraph">
+<p>Das ist auch praktisch in einer For-Schleife, in der diese Tuple dekonstruiert werden können</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>val people = listOf(Pair("Michael","Germany"),"Hadi" to "Spain")
+for ((name,country) in people) {
+    println("$name lives in $country")
+}</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pattern_matching_mit_when">Pattern Matching mit <code>when</code></h3>
+<div class="paragraph">
+<p>Wie in Scala und anderen funktionalen Sprachen ist das eingebaute Pattern Matching ein mächtiges Werkzeug zur klareren Strukturierung von Enscheidungsregeln.</p>
+</div>
+<div class="paragraph">
+<p>Auf der linken Seite des Pfeiles `-&gt;` kann ein beliebiger Ausdruck stehen, falls dieser eine Typüberprüfung (auch mit Generics) enthält, sind die Instanzen auf der rechten Seite automatisch im korrekten Typ bereit.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>when (data) {
+    is Pair&lt;String,Int&gt; -&gt; println("${data.first()} is ${data.second()} years old")
+    is Person(name,age) -&gt; println("name is $age years old")
+}</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_collections_und_listenoperationen">Collections und Listenoperationen</h3>
+<div class="paragraph">
+<p>Kotlin bringt kein eigenes Collection-Framework mit, sondern benutzt und erweitert <code>java.util.collections</code>.</p>
+</div>
+<div class="paragraph">
+<p>Literale Collections gibt es zwar nicht, dafür aber, wie in Java 9 Funktionen, mit denen Collections erzeugt werden können, wie z.b: <code>listOf()</code>, <code>setOf()</code> oder <code>mapOf(*Pair)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Es wird zwischen veränderlichen (<code>MutableList</code>) und unveränderlichen (<code>List</code>) Varianten unterschieden.
+Eine Nur-Lese-Sicht auf eine Collection kann durch Nutzung eines unveränderlichen Interfaces erreicht werden, z.B. <code>val view : Map = mutableMap</code>.</p>
+</div>
+<div class="paragraph">
+<p>Die typischen funktionalen Listen-Operationen sind als Extension-Funktionen implementiert, daher kann man sich diese auch anschauen, bzw. leicht eigene umsetzen.
+Wie z.B. hier für <code>List</code> zu sehen [List], ist diese List mit ca. 100 verschiedenen Operationen wirklich umfassend.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>filter, map, mapIndexed reduce, sum, joinToString, takeWhile, distinct, sum</p>
+</li>
+<li>
+<p>associate zum Erzeugen von Maps</p>
+</li>
+<li>
+<p>Ranges wie <code>1..10</code>,<code>1 until 10 step 2</code> oder <code>10 downTo 1</code> sind auch hilfreich</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_anwendungsfälle">Anwendungsfälle</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kotlin wird natürlich bei Jetbrains genutzt, wenn auch noch nicht ganz in dem Umfang wie ursprünglich geplant.
+Teile der Jetbrains Platform liegen jetzt schon in Kotlin vor.</p>
+</div>
+<div class="paragraph">
+<p>Der Issue-Tracker "YouTrack" wurde in Kotlin neu geschrieben, er war vorher mittels MPS implementiert.
+Das online Code-Repository und Codereview Tool "Upsource" wurde in Kotlin entwickelt.
+Und grosse Teile der nagelneuen C#-IDE Raider besteht auch aus Kotlin Modulen.</p>
+</div>
+<div class="paragraph">
+<p>Auf der Kotlin Hauptseite sind einige Anwendungen gelistet, die die Sprache in größerem Umfang einsetzen. Hier ein paar Beispiele:</p>
+</div>
+<div class="paragraph">
+<p>Die Präsentationssoftware Prezi nutzt Kotlin im Backend, für umfangreiche Datenverarbeitung und die Entwicklung spezieller Services und APIs.
+In der Anwendung zur sicheren Kommunikation "Telegram" wird Kotlin als Schema-Compiler für die "TL"-Sprache genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Erwartungsgemäß gibt es diverse Android Anwendungen die ganz oder zum Teil mit Kotlin umgesetzt wurden (z.B. aus dem Medizinischen Bereich und Spiele).</p>
+</div>
+<div class="paragraph">
+<p>Ich selbst habe Kotlin für die Implementierung der GraphQL Erweiterung von Neo4j benutzt.
+Ich hatte es aus Bequemlichkeit in Java begonnen, dann aber spontan entschieden auf Kotlin zu wechseln.
+Die initiale Umstellung der Klassen hat nicht einmal eine Stunde gedauert.
+Danach konnte ich aber in einer Refactoring-Sitzung eine Menge Code entfernen und vereinfachen, und es hat Spass gemacht.
+Das Projekt macht von den Möglichkeiten der Sprache, besonders bei der Transformation von GraphQL Datenstrukturen zu Cypher viel Gebrauch.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fazit">Fazit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kotlin in einem Projekt einzuführen hat minimales Risiko.
+Die Sprache ist leicht zu erlernen und spart eine Menge Code und unnötige Komplexität.</p>
+</div>
+<div class="paragraph">
+<p>Durch die Binärkompatibilität mit Java, die leicht verständliche Sprache und die gute IDE Unterstützung, kann man in einem Bereich damit anfangen und sofort die Vorteile genießen, während man Erfahrungen mit der Sprache sammelt.</p>
+</div>
+<div class="paragraph">
+<p>Im Oktober 2016 wurde der zweite Milestone von Kotlin 1.1 veröffentlicht, mit interessanten neue Features wie der Unterstützung von Java 8, Typ-Aliasen und Co-Routinen.
+Mehr zu Kotlin 1.1 gibt es in Teil 2 des Artikels.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[Kotlin] <a href="https://kotlinlang.org/" class="bare">https://kotlinlang.org/</a> [Kotlin Site]</p>
+</li>
+<li>
+<p>[KotlinDoc] <a href="https://kotlinlang.org/docs/" class="bare">https://kotlinlang.org/docs/</a> Dokumentation (Referenz, Tutorial, Videos)</p>
+</li>
+<li>
+<p>[Kotlin Blog] <a href="https://blog.jetbrains.com/kotlin/" class="bare">https://blog.jetbrains.com/kotlin/</a></p>
+</li>
+<li>
+<p>[Kotlin Night London Recordings, Oct 2016] <a href="https://blog.jetbrains.com/kotlin/2016/11/kotlin-night-in-london-recordings/" class="bare">https://blog.jetbrains.com/kotlin/2016/11/kotlin-night-in-london-recordings/</a></p>
+</li>
+<li>
+<p>[AwesomeKotlin] <a href="https://kotlin.link/" class="bare">https://kotlin.link/</a></p>
+</li>
+<li>
+<p>[Dokka] <a href="https://github.com/Kotlin/dokka" class="bare">https://github.com/Kotlin/dokka</a></p>
+</li>
+<li>
+<p>[Spek] <a href="https://jetbrains.github.io/spek/" class="bare">https://jetbrains.github.io/spek/</a></p>
+</li>
+<li>
+<p>[List] <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/" class="bare">https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/</a></p>
+</li>
+<li>
+<p>[Beust] <a href="http://beust.com/weblog/2015/10/30/exploring-the-kotlin-standard-library/" class="bare">http://beust.com/weblog/2015/10/30/exploring-the-kotlin-standard-library/</a></p>
+</li>
+<li>
+<p>[Pryce] <a href="http://natpryce.com/articles/000815.html" class="bare">http://natpryce.com/articles/000815.html</a> Nat Prye über Kotlin</p>
+</li>
+<li>
+<p>[Anko] <a href="https://github.com/Kotlin/anko" class="bare">https://github.com/Kotlin/anko</a> Bibliothek und DSL für Android UI Entwicklun</p>
+</li>
+<li>
+<p>[Hearn] <a href="https://medium.freecodecamp.com/why-kotlin-is-my-next-programming-language-c25c001e26e3#.dxam7awck" class="bare">https://medium.freecodecamp.com/why-kotlin-is-my-next-programming-language-c25c001e26e3#.dxam7awck</a></p>
+</li>
+<li>
+<p>[Hearn FP] <a href="https://medium.com/@octskyward/kotlin-fp-3bf63a17d64a#.2ymqbkj1h" class="bare">https://medium.com/@octskyward/kotlin-fp-3bf63a17d64a#.2ymqbkj1h</a> "Kotlin loves FP"</p>
+</li>
+<li>
+<p>[GoodBadUgly] <a href="https://medium.com/keepsafe-engineering/kotlin-the-good-the-bad-and-the-ugly-bf5f09b87e6f#.sdiipf8s8" class="bare">https://medium.com/keepsafe-engineering/kotlin-the-good-the-bad-and-the-ugly-bf5f09b87e6f#.sdiipf8s8</a></p>
+</li>
+<li>
+<p>[KobaltBuildTool] <a href="http://beust.com/kobalt/home/index.html" class="bare">http://beust.com/kobalt/home/index.html</a></p>
+</li>
+<li>
+<p>[gradle-script-kotlin] <a href="https://github.com/gradle/gradle-script-kotlin" class="bare">https://github.com/gradle/gradle-script-kotlin</a></p>
+</li>
+<li>
+<p>[neo4j-graphql] <a href="http://github.com/neo4j-contrib/neo4j-graphql" class="bare">http://github.com/neo4j-contrib/neo4j-graphql</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-22 00:00:26 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

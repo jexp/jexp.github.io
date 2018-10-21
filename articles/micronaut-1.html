@@ -1,0 +1,968 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Ad Astra: Das Micronaut Framework</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1>Ad Astra: Das Micronaut Framework</h1>
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es passiert nicht oft, dass ein neues Anwendungsframework in der Java-Welt vorgestellt wird.
+Noch seltener wird im gleichen Atemzug von Millisekunden gesprochen.</p>
+</div>
+<div class="paragraph">
+<p>Besonders für MicroServices, Serverless (FaaS), mobile Android-Anwendungen sowie Streamverarbeitung sind is kurze Startzeit und effiziente Operationen wichtig, da die Anforderungen an kurze Latenzen sehr hoch sind.
+Bisher haben sich die meisten Java-Frameworks in diesem Aspekt nicht mit Ruhm bekleckert.</p>
+</div>
+<div class="paragraph">
+<p>Die Entwickler von OCI rund um Graeme Rocher haben mit [Micronaut] ein komplettes (full-stack und cloud-native) Framework entwickelt, dass die Bequemlichkeit von Spring mit der Geschwindigkeit von handgeschriebenen Code verbindet.</p>
+</div>
+<div class="paragraph">
+<p>Ich habe schon im zeitigen Frühjahr mit Graeme über Micronaut gesprochen, und jetzt nach der Veröffentlichung der Repositories und der ersten Releases, ist ein guter Zeitpunkt, diesen spannenden Ansatz vorzustellen.</p>
+</div>
+<div class="paragraph">
+<p>Das Team bringt durch die 10-jährige Entwicklung von Grails (Groovy), das selbst auf dem Spring-Stack basiert, viel praktische Erfahrung mit.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut ist Apache 2 lizensiert und unterstützt Anwendungsentwicklung in Java, Kotlin und Groovy.
+Da es nicht auf Reflection basiert, kann das Framework auch auf Android genutzt werden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_die_idee_hinter_micronaut">Die Idee hinter Micronaut</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit Micronaut sollen die bekannten und beliebten Eigenschaften von Fullstack-Frameworks erhalten bleiben, wie z.B.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Dependency Injection</p>
+</li>
+<li>
+<p>einfache Konfiguration mit sinnvollen Standards</p>
+</li>
+<li>
+<p>asynchrone APIs</p>
+</li>
+<li>
+<p>wenig Boilerplate Code</p>
+</li>
+<li>
+<p>Service Discovery</p>
+</li>
+<li>
+<p>Monitoring</p>
+</li>
+<li>
+<p>skalierbare (HTTP) Clients</p>
+</li>
+<li>
+<p>asynchrone HTTP Server mit Routing, Middleware, Security usw.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Um Entwicklern den Einstieg zu erleichtern, sind viele der Ansätze, APIs und Annotationen an die von Spring und Grails angelehnt.
+Beans, Controller, Jobs und Services entsprechen ihren Spring-Äquivalenten.</p>
+</div>
+<div class="paragraph">
+<p>Zugleich sollten die Probleme mit</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Startzeit</p>
+</li>
+<li>
+<p>Speicherbedarf</p>
+</li>
+<li>
+<p>Proxies/Reflections</p>
+</li>
+<li>
+<p>Integrationstests des vollen Stacks</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>zufriedenstellend gelöst werden.</p>
+</div>
+<div class="paragraph">
+<p>Wie kann man nun diese beiden Ziele - Komfort und Geschwindigkeit miteinander vereinbaren?</p>
+</div>
+<div class="paragraph">
+<p>Indem man den Aufwand zur Konfiguration, Dependency Injection, Profilaktivierung, Routen- und Finder-Methoden-Auflösung von der Laufzeit auf die Compilezeit verschiebt.</p>
+</div>
+<div class="paragraph">
+<p>In Groovy, Kotlin und Scala war es ja schon lange möglich mittels Compiler-Plugins aufgrund von Konfiguration, Konventionen und Annotationen (Byte)Code zu generieren, der dann zur Laufzeit der Anwendung sehr effektiv ausgeführt wurde.
+In Java selbst, wird das mit Annotation Prozessoren (APT) erreicht, wie von Lombok oder Hibernate bekannt.</p>
+</div>
+<div class="paragraph">
+<p>Zu anderen sind natürlich Microservice bzw. FaaS Projekte viel kleiner als klassische, monolithische Anwendungen mit ihren tausenden von Klassen.
+Damit sind sowohl der Compile und Generierungsaufwand, als auch das Setup der Anwendung beim Start viel weniger aufwändig.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_was_macht_micronaut_besonders">Was macht Micronaut besonders?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zum einen ist da eine Liste von nützlichen Features und Integrationen, zum anderen die genutzten Ansätze für die Generierung von Systembestandteilen zur Compile-Zeit.</p>
+</div>
+<div class="paragraph">
+<p>Dependency Injection wird wie in Spring durch einen IoC (Inversion of Control) Container unterstützt, dessen Implementierung sich auf Code-Generierung stützt und der nur im Ausnahmefall Reflection und Proxies einsetzt.</p>
+</div>
+<div class="paragraph">
+<p>Für alle Stellen für Injection und Beans wird mittels ASM Code generiert, der die Bereitstellung und Konfiguration von Instanzen (Prototypen, Singletons und andere Scopes) ausimplementiert.
+Dadurch fällt der Classpath und Reflection-Scan zum Start der Anwendung weg, genau wie Caches für alle Reflection-Informationen (Annotationen, Felder, Methoden, Konstruktoren).
+Zum anderen kann die JVM wie gewohnt im JIT-Prozess den generierten Code optimieren und inlinen.
+Da in komplexeren Setups oft Ketten von Beans instanziiert werden müssen, macht sich die Leistungsteigerung kulmulativ bemerkbar.</p>
+</div>
+<div class="paragraph">
+<p>Die Code-Generierung erfolgt in Annotation Prozessoren (Java) bzw AST Transformationen (Groovy) oder Compiler Plugins (Kotlin,kapt).
+Die dabei gesammelten Annotations-Informationen werden zur Laufzeit mittels `BeanDefinition`en zur Verfügung gestellt.</p>
+</div>
+<div class="paragraph">
+<p>Mit <code>@Inject</code> können wie gehabt Konstruktoren, Felder oder Setter annotiert werden.
+Beans können optional als <code>@Singleton</code> markiert werden oder aus mit <code>@Bean</code> annotierten Methoden einer <code>Factory</code> kommen.
+Es gibt auch einen <code>BeanContext</code> wie in Spring, der aber nicht genutzt werden muss, wenn man seine Anwendung einfach mit Injections zusammenstellt.</p>
+</div>
+<div class="paragraph">
+<p>Wie anderswo auch, gibt es eine Qualifikation für Beans mit diversen Annotationen und auch Scopes wie <code>@Context</code>, <code>@Infrastructure</code> oder <code>@ThreadLocal</code> oder eigene Varianten.
+<code>@Refreshable</code> ist ein Scope der Beans per externem Trigger (e.g. via API oder <code>RefreshEvent</code>) neu erzeugt.
+Mit <code>@Requires</code> können sehr flexible Bedingungen basierend auf Konfiguration, Umgebung usw. an die Verfügbarkeit von Beans geknüpft werden.</p>
+</div>
+<div class="paragraph">
+<p>Beans in Micronaut, anders als in Spring, haben keine Namen, <em>nur ihren Typen und ggf. Qualifier</em>, was weniger Ambiguitätsprobleme verursacht.
+Dafür kann mit <code>@Replaces</code> angegeben werden, dass ein Bean ein anderes ersetzen kann, z.B. in dem Fall das dessen Bedingungen nicht erfüllt werden.
+Ganze Gruppen von Beans innerhalb eines Packages, können mit einer @Configuration annotation in <code>package-info.*</code> konfiguriert werden.</p>
+</div>
+<div class="paragraph">
+<p>Alle annotierten Beans im Classpath werden während des Buildvorgangs ermittelt und verknüpft.
+Abhängigkeiten zu Bibliotheken zur Persistenz, Orchestrierung usw. werden zum gleichen Zeitpunkt aufgelöst und deren Dienste als Beans zur Verfügung gestellt.</p>
+</div>
+<div class="paragraph">
+<p>Für alle APIs unterstützt Micronaut durchgängig reaktive Typen um eine effiziente Nutzung von Systemresourcen zu erlauben.</p>
+</div>
+<div class="listingblock">
+<div class="title">Beispielservice für Meetup-Gruppen</div>
+<div class="content">
+<pre>@Singleton
+class GroupService {
+   @Inject GroupRepository repo;
+
+   public Single&lt;Group&gt; group(Single&lt;String&gt; id) {
+       return id.map(value -&gt; repo.findById(value))
+   }
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>import io.micronaut.context.*
+...
+GroupService service = BeanContext.run().getBean(GroupService.class)
+service.group('graphdb-berlin').forEach( ... )</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_konfiguration">Konfiguration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wie in Boot &amp; Grails wird Konfigurationsinformation aus Property-, JSON-, YAML- oder Groovy-Dateien direkt genutzt, kann aber mit Umgebungsvariablen bzw. System Properties überschrieben werden.
+Falls diese Werte typsicher sein sollen, können sie auch in Klassen definiert werden.</p>
+</div>
+<div class="paragraph">
+<p>Die Konfigurationswerte werden dann in mit <code>@Value</code> annotierten Stellen gesetzt (auch wieder per generiertem Bytecode), spannend ist die Nutzung solcher Ausdrücke auch in anderen Annotationsattributen, z.B. <code>@Controller("${api.version}/list")</code>.
+Application-Kontexte können mit mehreren Umgebungen spezifiziert werden, diese sind dann die Basis für spezifische Konfigurationen oder bedingte Selektion von Beans.
+Bestimmte Umgebungen (z.B. Tests, Cloud) werden automatisch erkannt oder aus <code>MICRONAUT_ENVIRONMENTS</code> bzw. <code>micronaut.environments</code> gelesen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_aop_zur_compile_zeit">AOP zur Compile-Zeit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zur Realisierung von systemübergreifenden Belangen (cross-cutting concerns) wie Logging, Transaktionen, Monitoring sind die Konzepte von AOP [HungerJS] weiterhin anwendbar.
+Ursprünglich wurde im AOP-Lager auf dedizierte Compiler wie <code>aspectj</code> gesetzt, in den letzten 5-10 Jahren jedoch vermehrt auf Load-Time-Weaving bzw. Laufzeitproxies, z.B. für <code>@Transactional</code> in Spring gewechselt.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut geht jetzt wieder dazu zurück, Methodenersetzungen (Around-Advices) und das Hinzufügen neuer Klassenbestandteile und Verhaltens (Introduction-Advice) zur Compile-Zeit anzuwenden.
+Dabei werden die ursprünglichen Klassen durch beim Compilieren generierte Proxies ergänzt.</p>
+</div>
+<div class="paragraph">
+<p>Für Around-Advices implementiert man eine Methode <code>MethodInterceptor.intercept(MethodInvocationContext)</code> die statt der originären (annotierten) Methode aufgerufen wird, und dann ggf. an diese delegiert.</p>
+</div>
+<div class="listingblock">
+<div class="title">Beispiel Around Advice als Cache</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Singleton
+class CacheInterceptor implementiert MethodInterceptor&lt;Object,Object&gt; {
+   @Inject Cache&lt;MethodCall,Object&gt; cache;
+   public Object intercept(MethodInvocationContext&lt;Object, Object&gt; context) {
+       return cache.computeIfAbsent(methodCall(context), call -&gt; context.proceed);
+   }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Memoized Annotation mit unserem CacheInterceptor</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Around
+@Type(CacheInterceptor.class)
+@Target(ElementType.METHOD)
+public @interface Memoized {}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Anwendung der <em>Memoized</em> Annotation</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">...
+   @Memoized
+   BigInteger factoral(BigInteger input) { ... }
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Da die Compile-Reihenfolge nicht immer deterministisch ist, ist es sinnvoll, die eigenen AOP-Advices in einem separaten Modul (Jar) zu halten, damit sie im Projekt dann bereitstehen.</p>
+</div>
+<div class="paragraph">
+<p>Introduction-Advices werden z.B. für Persistenz-Frameworks eingesetzt, oder im Micronauts Http-Client, sie werden adäquat implementiert.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut benutzt diese AOP-Mechanismen selbst für</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Validierung, JSR-303 mittels Hibernate-Validator</p>
+</li>
+<li>
+<p>Caching (synchron und asynchron), (z.B. mittels Caffeine oder Redis) <code>@Cacheable</code></p>
+</li>
+<li>
+<p>Retry mit <code>@Retryable</code> auch auf asynchronen Methoden</p>
+</li>
+<li>
+<p>Retry für Beans (z.B. wenn Dienste (noch) nicht verfügbar sind)</p>
+</li>
+<li>
+<p>Circuit Breaker mit <code>@CircuitBreaker</code></p>
+</li>
+<li>
+<p>Zeitlich gesteuerte Ausführung mittels <code>@Scheduled</code></p>
+</li>
+<li>
+<p><code>@Transactional</code> auch für Springs Variante mittels Alias</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Nützlich für Resilienz ist auch <code>@Fallback</code> mit dem Klassen annotiert werden können, die im Fehlerfall ein "sicheres" Minimalverhalten bereitstellen.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut integriert auch Netflix' Hystrix Bibliothek die dedizierte Implementierungen für Resilienzmuster über Kommandos bereitstellt.
+Dazu müssen neben dem Einbinden von <code>io.micronaut.configuration:netflix-hystrix</code> nur kritische Methoden mit <code>@HystrixCommand</code> annotiert werden, ein Hystrix-Dashboard steht dann optional auch zur Verfügung.</p>
+</div>
+<div class="paragraph">
+<p>Originäre Spring Projekte können auch mit Micronaut konfiguriert und genutzt werden, z.B. das deklarative Transaktionsmanagement würde dann über Micronaut AOP zur Compile-Zeit realisiert.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_beispiele">Beispiele</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Das Micronaut Tooling nutzt zur Zeit <em>Maven</em> und <em>Gradle</em> als Buildsysteme, in <em>IntelliJ</em> muss das Annotation Processing aktiviert werden.
+Laut Dokumentation wird dies in Eclipse nicht ausreichend unterstützt, so dass hier auf die Maven oder Gradle Integration zurückgegriffen werden muss, genauso für Kotlin Projekte.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut Anwendungen werden zu einem ausführbaren Jar oder Docker Container assembliert und können dann auf der jeweiligen Cloud-Infrakstruktur deployed werden.
+Lokal kann man sie mit <code>./gradlew run</code> starten.</p>
+</div>
+<div class="paragraph">
+<p>Die mitgelieferten Beispiele [MicronautExample] sind einfache Hello-World&#8217;s für Java, Kotlin und Groovy, es gibt aber online auch Guides [MicronautGuides] mit lauffähigen Beispielen für spezifische Themen, wie z.B. Authentifizierung.</p>
+</div>
+<div class="paragraph">
+<p>Im Beispielrepository findet sich auch eine komplette Anwendung, ein Petstore, der als "federated" Microservice-Architektur umgesetzt wurde.
+Die Microservices werden über Consul orchestriert und benutzen jeweils Neo4j, MongoDB oder Redis als Datenbanken, zum Teil arbeiten sie mit GORM und integrieren exemplarisch die Twitter API.
+Das Frontend ist eine einfache React-Anwendung, die auf eine Fassade (Storefront) zugreift die die einzelnen Services kapselt.
+Die Dienste kommunizieren asynchron über HTTP, zum Teil auch per streaming, die APIs nutzen zumeist reaktive Ansätze.</p>
+</div>
+<div class="paragraph">
+<p>Im folgenden Beispiel [MicronautMeet] werde ich die API von Meetup.com für Städte und Anmeldungen (RSVP) (stream.meetup.com/2/rsvps) konsumieren und dann mit verschiedenen Microservices diese Events verarbeiten, speichern, aggregieren.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_erste_schritte_mit_der_micronaut_cli">Erste Schritte mit der Micronaut CLI</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut kann man als Binärreleases von der Website (Repository) herunterladen, leichter geht es aber mit SDKman [SDKMAN].
+Damit wird Micronaut und das Kommandozeilentool <code>mn</code> installiert, laut Dokumentation funktioniert Micronaut mit Java 8 bis 10 (mit minimalen Anpassungen z.B. für <code>javax</code> Annotationen).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ sdk install micronaut
+
+$ mn --version
+| Micronaut Version: 1.0.0.M1
+| JVM Version: 1.8.0_172</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das Management von Micronaut Projekten erfolgt am Einfachsten über das <code>mn</code> Tool, entweder über den direkten Aufruf oder einen interaktiven Modus, der auch Kommandovervollständigung bietet.
+Damit können Projekte, Controller, Http-Clients, Jobs, Funktionen (Serverless), Service-Förderation und vieles mehr erzeugt werden.
+Die Aufrufe werden mit Flags gesteuert und können Profilen mit Templates für die Code-Generierung zugeordnet werden.
+Die sogenannten "Features" können zur Zeit nur beim Erstellen des Projektes automatisiert aktiviert werden.
+Später muss man der Dokumentation folgen und die Änderungen manuell vornehmen.
+Man kann sich aber sehr gut vorstellen so eine Automatisierung mit [Atomist] umzusetzen.</p>
+</div>
+<div class="listingblock">
+<div class="title">Erzeugung unseres Dienstes</div>
+<div class="content">
+<pre>mn create-app micro-meet-city
+| Application created .../micro-meet-city
+cd micro-meet-city</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Erzeugt ein Projekt mit einer Gradle Build Konfiguration, der Klasse <code>Application</code> im Paket <code>micro.meet.city</code> für und <code>src/main/resources/application.yml</code> für Konfiguration.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>public class Application {
+    public static void main(String[] args) {
+        Micronaut.run(Application.class);
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Der Port (<code>server.port</code>) wird zufällig ausgewählt oder aus Umgebungsvariablen geholt, man kann ihn aber auch festlagen.</p>
+</div>
+<div class="listingblock">
+<div class="title">Fix Server-Port in src/main/resources/application.yml</div>
+<div class="content">
+<pre>micronaut:
+    application:
+        name: micro-meet-city
+    server:
+        port: 8888</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mit <code>./gradlew run</code> kann die Anwendung gestartet werden, nur ohne Controller, Jobs oder andere Dienste macht sie noch nichts.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_http_server">Http Server</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Der asynchrone Http Server in Micronaut basiert auf Netty und ist darauf optimiert, serverseitigen Nachrichtenaustausch zwischen Services zu leisten und nicht primär als Browser-Endpunkt zu dienen.
+Daher sind die Mime-Typen für Endpunkte standardmässig auch als <code>application/json</code> definiert und das Ausliefern statischer Resourcen muss explizit aktiviert werden.
+Header, Pfad- und Query-Elemente, JSON bzw. Form-Daten können an POJOs oder direkt an Controller-Parameter gebunden werden.
+Incrementelle Datei-Uploads (<code>MediaType.MULTIPART_FORM_DATA</code>) werden direkt unterstützt, z.B. über <code>Publisher&lt;PartData&gt;</code> oder <code>StreamingFileUpload</code> Parameter.</p>
+</div>
+<div class="paragraph">
+<p>Asynchrone Methoden sollten in Micronaut das Mittel der Wahl sein.
+Controller-Methoden mit reaktiven Ergebnistypen (z.B. <code>Observable, Publisher, CompletableFuture</code> etc.) werden asynchron in Netty ausgeführt, alle anderen in einem dedizierten I/O-Threadpool.
+Das kann auch notwendig sein, wenn man fremde, synchrone Dienste aufruft, dann kann man Methoden auch mit <code>@Blocking</code> annotieren.</p>
+</div>
+<div class="paragraph">
+<p>Server Sent Events (SSE, <code>text/event-stream</code>) kann man über einen <code>Publisher&lt;Event&lt;DataType&gt;&gt;</code> an die Konsumenten schicken.
+Für die volle Http-Antwort mit Status, Header-Feldern und Body wird eine <code>HttpResponse</code> zurückgegeben.</p>
+</div>
+<div class="paragraph">
+<p>Der Controller wird mittels Kommandozeile generiert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-controller City</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die generierte Methode wird modifiziert und gibt jetzt den Pfad-Parameter zurück.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Controller("/city")
+public class CityController {
+
+    @Get("/echo/{text}")
+    public Single&lt;String&gt; echo(String text) {
+        return Single.just("&gt; " + text);
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Positiv fällt die Startup-Zeit auf:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./gradlew assemble
+java -jar build/libs/micro-meet-city-0.1-all.jar
+14:24:31.753 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 989ms. Server Running: http://localhost:8888</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Auch der Apache Bench Test ist nicht schlecht, für mein MacBook mit einer CPU.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ab -n5000 -c2 http://localhost:8888/city/echo/test
+This is ApacheBench, Version 2.3 &lt;$Revision: 1807734 $&gt;
+
+Concurrency Level:      2
+Time taken for tests:   0.944 seconds
+Complete requests:      5000
+Failed requests:        0
+Total transferred:      475000 bytes
+HTML transferred:       30000 bytes
+Requests per second:    5295.38 [#/sec] (mean)
+Time per request:       0.378 [ms] (mean)
+Time per request:       0.189 [ms] (mean, across all concurrent requests)
+Transfer rate:          491.27 [Kbytes/sec] received
+
+Percentage of the requests served within a certain time (ms)
+  50%      0
+  66%      0
+  75%      0
+  80%      0
+  90%      0
+  95%      1
+  98%      1
+  99%      1
+ 100%      7 (longest request)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Unser Controller kann jetzt andere Dienste, wie z.B. Repositories benutzen, die einfach injected werden.</p>
+</div>
+<div class="paragraph">
+<p>Wir können aber auch Daten von einer anderen API entgegennehmen und aufbereitet weitereichen.</p>
+</div>
+<div class="paragraph">
+<p>Wenn die Controller keine blockierende Operationen aufrufen, werden sie trotzdem im Netty Event-Loop ausgeführt nachdem die Parameter-Informationen gelesen wurden, auch wenn keine reaktiven Typen genutzt wurden.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut Controller unterstützen wie Spring auch, das <em>RFC-6570 URI Template</em> z.B. für Platzhalter im URI-String mit einer breiten Palette von Möglichkeiten, die in der Dokumentation erläutert werden.
+Neben Variablen aus der URI können auch <code>Header</code>, <code>Cookie</code> und <code>Body</code> an Controller Methodenparameter gebunden werden.
+Neben den üblichen HTTP-Verben, werden auch <code>@Patch</code>, <code>@Trace</code>, <code>@Options</code> unterstützt.</p>
+</div>
+<div class="paragraph">
+<p>Http-Filter (Modifikation von Request bzw. Response sowie Tracing, Security) sind in Micronaut ebenfalls asynchron, und werden durch Implementierung von <code>HttpServerFilter.doFilter</code> gehandhabt und über eine <code>@Filter</code> Annotation an URL Muster gebunden.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut ist standardmässig zustandslos kann aber in-memory oder Redis-basierte Sessions bei Bedarf unterstützen, ähnlich wie bei Spring-Session.</p>
+</div>
+<div class="paragraph">
+<p>Für die Fehlerbehandlung geht Micronaut einen interessanten Weg, es können Methoden (optional annotiert mit @Error) im Controller (oder global) deklariert werden, die als letzten Parameter einen bestimmten Exception-Typ ausweisen, dessen Verarbeitung dann in dieser Fehlerbehandlungsmethode erfolgt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_http_client">Http Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut unterstützt einen deklarativen Http-Client, der mittels <code>@Client</code> Annotation auf einem Interface oder einer abstrakten Klasse definiert wird.
+Die Implementierung des Clients erfolgt in Micronaut-AOP durch eine Introduction-Advice.
+Daneben gibt es noch einen low-level HTTP Client, z.B für Tests und reaktive Streams.</p>
+</div>
+<div class="paragraph">
+<p>Wir wollen uns Informationen aus der Meetup API für Städte bedienen: <a href="https://api.meetup.com/2/cities?page=10" class="bare">https://api.meetup.com/2/cities?page=10</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-client City</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wir erstellen uns zuerst zwei minimale Pojos für das Abfrageergebnis und die Stadt.</p>
+</div>
+<div class="listingblock">
+<div class="title">City und CityResult POJO</div>
+<div class="content">
+<pre>public class City {
+  public long id;
+  public String city;
+  public String country;
+  public double lon, lat;
+}
+
+class CityResult {
+    public List&lt;City&gt; results;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Den generierten Client passen wir etwas an.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Client("https://api.meetup.com/2")
+public interface CityClient {
+
+    @Get("/cities{?page}")
+    public CityResult cities(int page);
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Und benutzen ihn in unserem Controller:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Controller("/city")
+public class CityController {
+
+    @Inject CityClient client;
+
+    @Get("/list/{count:5}")
+    public Stream&lt;City&gt; cities(int count) {
+        return client.cities(5).results.stream();
+    }
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl http://localhost:8888/city/list/1
+[{"id":1007712,"city":"Dresden","country":"de","lon":13.739999771118164,"lat":51.04999923706055}]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Http-Clients sind auch sehr flexibel was das Parameter-Binding betrifft, sie können ebenso wie Controller-Methoden mittels Annotationen Parameter an URI&#8217;s, Query-Parameter, Header, Cookies oder den Payload binden.
+Auch die eingebauten Mechanismen zur Resilienz wie <code>@Retryable</code> und <code>@CircuitBreaker</code> lassen sich auf Http-Clients anwenden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing">Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Durch die kurze Start-Zeit von Micronaut Anwendungen, kann man sie in Unit- und Integrationstests direkt starten.
+Mocking von Beans kann durch @Replaces und @Primary bzw. Qualifier im Testpaket erfolgen.
+Auch die Nutzung testspezifischer, deklarativer Http-Clients für die eigenen Controller ist einfach möglich.
+Test der Persistenzintegration erfolgt oft mit Datenbanksetups die entweder direkt im Prozess laufen oder von diesem gemanaged werden.</p>
+</div>
+<div class="paragraph">
+<p>Für Tests kann man den <code>EmbeddedServer</code> nutzen.</p>
+</div>
+<div class="listingblock">
+<div class="title">Test</div>
+<div class="content">
+<pre>public class CityControllerTest {
+    private EmbeddedServer server;
+    private CityControllerClient client;
+    @Before
+    public void setup() {
+        this.server = ApplicationContext.run(EmbeddedServer.class);
+        this.client = server.getApplicationContext().getBean(CityControllerClient.class);
+    }
+    @Test
+    public void shouldReturnHello() {
+        String response = client.cities(1).blockingGet();
+        assertEquals(true, response.contains("\"country\":"));
+    }
+    @After
+    public void cleanup() {
+        this.server.stop();
+    }
+}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_wiederkehrende_jobs">Wiederkehrende Jobs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir wollen natürlich nicht immer wieder auf die Meetup API zugreifen, sondern die Informationen in unserer Datenbank (oder Cache) zwischenspeichern.</p>
+</div>
+<div class="paragraph">
+<p>Für das regelmässige Abholen erzeugt man einen Job, in dem der Http Client ebenso benutzt wird, und die Daten mittels einem Repository speichert.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut unterstützt Jobs mit regelmässigem Aufrufen von <code>@Scheduled</code> Methoden, die auch mittels CRON-Syntax oder mittels Konfigurationsparametern gesteuert werden können.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-job City
+mn create-bean CityRepository</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Minimalistisches CityRepository</div>
+<div class="content">
+<pre>@Singleton
+public class CityRepository {
+   private final Map&lt;Long,City&gt; data=new ConcurrentHashMap&lt;&gt;();
+
+   public void save(City c) {
+      data.putIfAbsent(c.id, c);
+   }
+   public Stream&lt;City&gt; findByName(String name) {
+      return data.values().stream().filter(c -&gt; c.city.contains(name));
+   }
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">CityJob</div>
+<div class="content">
+<pre>@Singleton
+public class CityJob {
+
+    @Inject CityClient client;
+    @Inject CityRepository repo;
+
+    @Scheduled(fixedRate = "5m")
+    public void process() {
+        client.cities(5).forEach(repo::save);
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Jetzt können wir unser Repository auch im Controller verwenden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    @Inject CityRepository repo;
+    @Get("/named/{name}")
+    public Stream&lt;City&gt; cities(String name) {
+        return repo.findByName(name);
+    }</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl http://localhost:8888/city/named/Ch
+[{"id":1007724,"city":"Chemnitz","country":"de","lon":12.9,"lat":50.8},
+ {"id":1007461,"city":"Cheská Lípa","country":"cz","lon":14.53,"lat":50.69}]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_persistenz_in_micronaut">Persistenz in Micronaut</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Natürlich ist eine <code>ConcurrentHashMap</code> kein Ersatz für eine Datenbank.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut unterstützt zur Zeit Redis, relationale Datenbanken mittels Hibernate, MongoDB und Neo4j.
+Bis auf Redis wird auch Objekt-Mapping mittels GORM (mit Groovy) angeboten.
+Beispiele für diese Datenbankintegrationen findet man im Petstore.</p>
+</div>
+<div class="paragraph">
+<p>Entweder man gibt beim Erzeugen des Projektes das jeweilige Persistenz-Feature (meist eine Datenbank pro Microservice) mit, oder fügt die Dependencies und Konfiguration manuell hinzu, die Details sind in der Dokumentation erläutert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-app &lt;name&gt; -feature bolt-neo4j</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle für bolt-neo4j</div>
+<div class="content">
+<pre>compile "io.micronaut.configuration:neo4j-bolt"</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Top-level Eintrag in application.yml (oder via Umgebungsvariablen <code>neo4j.uri</code>)</div>
+<div class="content">
+<pre>neo4j:
+    uri: bolt://localhost</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dann kann man sich im Repository einen Neo4j-Driver bereitstellen lassen, und diesen benutzen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Inject Driver driver;
+
+public void save(City city) {
+   try (Session s = driver.session()) {
+       String statement = "MERGE (c:City {id:$city.id}) ON CREATE SET c+=$city";
+       s.writeTransaction(tx -&gt; tx.run(statement, singletonMap("city", city.asMap())));
+   }
+}
+
+public Stream&lt;City&gt; findByName(String name) {
+   try (Session s = driver.session()) {
+       String statement = "MATCH (c:City) WHERE c.city contains $name RETURN c";
+       return s.readTransaction(tx -&gt; tx.run(statement, singletonMap("name",name)))
+               .list(record -&gt; new City(record.get("c").asMap())).stream();
+   }
+}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fazit">Fazit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Neben Geschwindigkeit und Kompaktheit beeindruckt Micronaut mit seinem Funktionsumfang, Beispielen und Dokumentation.
+Im zweiten Teil im nächsten Heft möchte ich Micronauts Fähigkeiten rund um Cloud-Native, Unterstützung von Function as a Service (FaaS) und die Nutzung reaktiver Ansätze näher beleuchten.
+Bis dahin freue ich mich schon auf neue Releases udn Features und möchte jeden ermuntern, das Framework auch auszuprobieren.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Micronaut GitHub <a href="https://github.com/micronaut-projects" class="bare">https://github.com/micronaut-projects</a></p>
+</li>
+<li>
+<p>Micronaut Docs: <a href="https://docs.micronaut.io" class="bare">https://docs.micronaut.io</a></p>
+</li>
+<li>
+<p>Main Website: <a href="https://micronaut.io" class="bare">https://micronaut.io</a></p>
+</li>
+<li>
+<p>Video:</p>
+</li>
+<li>
+<p>Micronaut Guides: <a href="https://guides.micronaut.io/" class="bare">https://guides.micronaut.io/</a></p>
+</li>
+<li>
+<p>FAQ: <a href="https://micronaut.io/faq.html" class="bare">https://micronaut.io/faq.html</a></p>
+</li>
+<li>
+<p>Micronaut Getting Started: <a href="https://medium.com/@jonashavers/getting-started-with-micronaut-595515985a98" class="bare">https://medium.com/@jonashavers/getting-started-with-micronaut-595515985a98</a></p>
+</li>
+<li>
+<p>GORM-Neo4j: <a href="http://gorm.grails.org/latest/neo4j" class="bare">http://gorm.grails.org/latest/neo4j</a></p>
+</li>
+<li>
+<p>MicroMeet: <a href="https://github.com/jexp/neo4j-micronaut-meetup" class="bare">https://github.com/jexp/neo4j-micronaut-meetup</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<h1 id="_teil_2_micronaut_ist_ein_cloud_native_weltbürger" class="sect0">Teil 2: Micronaut ist ein "cloud-native" Weltbürger</h1>
+<div class="sect1">
+<h2 id="_cloud_native">Cloud Native</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Da Micronaut im Jahre 2018 das Licht der Welt erblickt hat, ist neben den reaktiven und asynchronen Operationen für Microservices auch eine enge Integration in Clouddienste ("cloud-native") vorauszusetzen.
+Das Framework konnte aus den Erfahrungen von Spring Cloud und anderen Bibliotheken schöpfen.
+Daher sind die entsprechenden Funktionalitäten für Springentwickler vertraut.</p>
+</div>
+<div class="paragraph">
+<p>Relevante Features sind:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>verteilte Konfiguration</p>
+</li>
+<li>
+<p>Service Discovery</p>
+</li>
+<li>
+<p>Client Side Load Balancing</p>
+</li>
+<li>
+<p>Distributed Tracing</p>
+</li>
+<li>
+<p>Cloud Functions (Serverless)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Micronaut kann von AWS bis Heroku mindestens 8 verschiedene Cloud-Umgebungen erkennen und damit bedingte Konfiguration, Config-Dateien und Beans ermöglichen.
+Zusätzlich stehen dann Metainformationen der Maschine und Umgebung in <code>ServiceInstance.getMetadata()</code> zur Verfügung.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>LoadBalancer loadBalancer = loadBalancerResolver.resolve("some-service");
+Flowable.fromPublisher(loadBalancer.select())
+        .subscribe((instance) -&gt;
+    ConvertibleValues&lt;String&gt; metaData = instance.getMetadata();
+    ...
+);</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Consul (HashiCorp), Kubernetes und Eureka können für Aspekte wie verteilte Konfiguration, Service Discovery und Healthchecks genutzt werden, beim Erstellen einer Anwendung kann man sie als "Feature" hinzuwählen.</p>
+</div>
+<div class="paragraph">
+<p>Im Petstore Beispiel wird Consul genutzt.</p>
+</div>
+<div class="paragraph">
+<p>Konfigurierte Eigenschaften werden transparent aus den verteilten Diensten (aus dem <code>/config/application[,prod]</code> Verzeichnis) gelesen und wie reguläre Properties aufgelöst.
+Anwendungs-Instanzen können sich nach dem Start unter ID (Anwendungsname) und Tags bei der Service Discovery registrieren.
+Der <code>DiscoveryClient</code> findet registrierte Service-Instanzen, einfacher geht es aber mit einer benannten <code>@Client</code> Annotation an dem HttpClient der mit der Zielanwendung kommunizieren soll.
+Verfügbarkeit von Diensten kann über die "Healthcheck"-Integration (mit Testfrequenz und TTL für Einträge) sichergestellt werden.</p>
+</div>
+<div class="paragraph">
+<p>Um die Ausfallsicherheit zu erhöhen, können für jeden Service mehrere Instanzen verfügbar sein, diese werden dann vom DiscoveryClient über <code>LoadBalancer.select()</code> nacheinander asynchron zur Verfügung gestellt. Auch dort sind Mechanismen wie Retry und CircuitBreaker aktiv.</p>
+</div>
+<div class="paragraph">
+<p>Um Nachvollziehbarkeit von Microservice Interaktionen herzustellen, unterstützt Micronaut die OpenTracing API mittels Konfiguration und Annotationen für Scope und Parameter.
+<code>Zipkin</code> und <code>Jaeger</code> werden als Bibliotheken integriert.</p>
+</div>
+<div class="sect2">
+<h3 id="_cloud_functions">Cloud Functions</h3>
+<div class="paragraph">
+<p>Aufgrund seiner Performance-Characteristiken für Startup, Latenz und Speicherverbraucht ist Micronaut auch besser für Cloud-Funktionen (Serverless) geeignet als traditionelle Frameworks.
+Dabei wird von der Cloud-Infrastruktur keine Anwendung mehr deployed sondern nur einzelne Funktionen, die ggf. für eine gewisse Zeit aktiv (hot) gehalten werden.
+Zur Zeit wird AWS Lambda unterstützt, andere Frameworks sollen folgen.</p>
+</div>
+<div class="paragraph">
+<p>Man kann mittels <code>mn create-function &lt;name&gt; [-lang Kotlin]</code> das entsprechende Gerüst generieren.
+Jede mit <code>@FunctionBean</code> annotierte Klasse, die eines der <code>java.util.Function</code> Interfaces (Supplier, Consumer, BiConsumer, Function, BiFunction) implementiert kann als Cloud-Function deployed werden.
+Dann werden die Funktionen beim DiscoveryService registriert und stehen mittels (ggf. reactive) <code>@FunctionClient</code> annotiertem Interface zum Aufruf zur Verfügung.
+Abhängigkeiten und Konfiguration können wie gehabt injiziert werden.
+Zum Test können die Funktionen auch lokal als Web-Anwendung ausgeführt werden.
+In Groovy ist das einfacher, da dort Top-Level Funktionen direkt deklariert werden können.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monitoring">Monitoring</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TODO publish with docker or to heroku?</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_code_generierung">Code-Generierung</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_profiles">Profiles</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_federations">Federations</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_functions_aws_lambda">Functions (AWS Lambda)</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_asynchroner_client">Asynchroner Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Neben dem regulären HTTP-Client kann man JSON- und Event-Streams mit dem <code>RxStreamingHttpClient</code> nutzen, ein deklarativer Client ist für die Zukunft geplant.</p>
+</div>
+<div class="paragraph">
+<p>Auch die eigenen Services können Daten und Events von Controller zu Client streamen, wie auch im Petstore für Angebote <code>Offer</code> gezeigt wird.</p>
+</div>
+<div class="paragraph">
+<p>In meinem Fall möchte ich von der streaming Meetup-API lesen und dann die erhaltenen Daten in unserem System bereitstellen.</p>
+</div>
+<div class="paragraph">
+<p>In einem RSVP Event sind 6 Elemente enthalten: <code>Member, Group, Event, Venue, Rsvp, GroupTopic</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">RsvpController</div>
+<div class="content">
+<pre>@Controller("/rsvp")
+public class RsvpController {
+
+@Inject @Client("https://stream.meetup.com")
+RxStreamingHttpClient rxClient;
+
+@Get(value = "/", produces = MediaType.APPLICATION_JSON_STREAM)
+public Publisher&lt;Rsvp&gt; stream() {
+    return rxClient.jsonStream(HttpRequest.GET("/2/rsvps"), Rsvp.class);
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-client rsvp
+| Rendered template Client.java to destination src/main/java/micro/meetups/RsvpClient.java</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Client("rsvp")
+public interface RsvpClient {
+
+    @Get("/")
+    public HttpStatus index();
+}</pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-03 00:26:43 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

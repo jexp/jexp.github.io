@@ -1,0 +1,1051 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Space-Force in Action - Micronaut Teil 2</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1>Space-Force in Action - Micronaut Teil 2</h1>
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Aufgrund der vielen coolen Features von Micronaut reichte ein Artikel einfach nicht aus, um das Framework hinreichend zu behandeln.
+Daher geht es heute weiter mit Themen wie Cloud-Deployment und Orchestrierung, Unterstützung für Serverless und Cloud-Functions, sowie der neuen Kafka Integration.</p>
+</div>
+<div class="paragraph">
+<p>Seit dem letzten Heft gab es einige neue Micronaut-Releases, gerade eben ist Milestone 4 veröffentlich worden.
+Wenn dieser Artikel erscheint, halten wir ggf. schon das 1.0 Release in den Händen.
+Die Änderungen pro Release sind in der Dokumentation [MicroChanges] aufgeführt, ebenso die "breaking-changes" zwischen den Milestones.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_neue_features">Neue "Features"</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im letzten Artikel wurden einige Features schon behandelt, unter anderem</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Http-Server und -Client</p>
+</li>
+<li>
+<p>Jobs</p>
+</li>
+<li>
+<p>Datenbankintegration</p>
+</li>
+<li>
+<p>Unterstützung für Java, Kotlin, Groovy</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Neue interessante Feature-Flags der letzten Milestones sind:</p>
+</div>
+<table class="tableblock frame-all grid-all fit-content">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jrebel oder spring-loaded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dynamisches Laden von geänderten Klassen während der Entwicklung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cassandra</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cassandra Unterstützung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">postgres-reactive</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">reaktiver Treiber für Postgres</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc-dbcp, jdbc-hikari, jdbc-tomcat</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JDBC Connection Pools</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kafka, kafka-streams</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kafka Support</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Management Endpunkt</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">micrometer, micrometer-*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Micrometer Unterstützung für diverse Reporter (Graphite, Prometheus etc.)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">picocli</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kommandozeilenverarbeitung</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">netflix-archius</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Netflix Archaius Konfigurationsmanagement</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_Über_den_wolken_cloud_native">Über den Wolken: Cloud Native</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Für neue Anwendungen und die Migration existierender Anwendungen zu einem Set von unabhängigen Diensten ist nicht nur Unterstützung des Entwicklungsprozesses wichtig, sondern auch Deployment und Operations besonders mit einem Fokus auf Cloud-Infrastruktur.</p>
+</div>
+<div class="paragraph">
+<p>Durch die vielen verschiedenen Anbieter, Bibliotheken und Komponenten die im Cloud Umfeld um Aufmerksamkeit kämpfen, kann man schnell die Übersicht verlieren.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://objectcomputing.com/files/3415/3028/8047/1807-SETT-img01.png" alt="1807 SETT img01">
+</div>
+</div>
+<div class="paragraph">
+<p>Prinzipiell sind allen "cloud-native" Anwendungen die meisten der folgenden Aspekte zu eigen:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Service Discovery / Orchestrierung</p>
+</li>
+<li>
+<p>Konfiguration</p>
+</li>
+<li>
+<p>Immutable Deployments</p>
+</li>
+<li>
+<p>Effiziente Serviceinteraktion</p>
+</li>
+<li>
+<p>Elastische Skalierung</p>
+</li>
+<li>
+<p>Cloud-Awareness</p>
+</li>
+<li>
+<p>Monitoring</p>
+</li>
+<li>
+<p>Tracing</p>
+</li>
+<li>
+<p>Security</p>
+</li>
+<li>
+<p>Resilienz (auch Degrading)</p>
+</li>
+<li>
+<p>Cloud-Functions</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Micronaut unterstützt die meisten dieser Anforderungen schon von Hause aus.
+Dazu werden entsprechende Bibliotheken über "Features" integriert.
+Für spezielle Anwendungstypen (Service oder Funktion) und deren Zusammenfassung als "Federation" gibt es Profile, die die entsprechenden Code-, Konfigurations- und Abhängigkeitstemplates enthalten.
+Große Teile der ausführlichen Micronaut Dokumentation [MicroDoc] erklären die notwendigen Schritte, Features und Konfigurationen im Detail.</p>
+</div>
+<div class="paragraph">
+<p>Die notwendigen Cloud Dienste (z.B. Consul oder Eureka) kann man lokal über Docker oder Kubernetes starten.
+Zum Teil stehen sie für Tests auch als eingebettete Bibliotheken zur Verfügung.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_service_discovery_orchestrierung">Service Discovery &amp; Orchestrierung</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Da man in einer dynamischen Umgebung Abhängigkeiten zwischen Diensten nicht festzurren kann, wird auf eine Infrastruktur zur Auflösung von Namen zu Adressen und Konfigurationen aufgesetzt.
+Micronaut enthält Unterstützung für Consul, Eureka und Kubernetes, dafür gibt es auch ausführliche Anleitungen [Consul], [Eureka].
+Für bestimmte Umgebungen kann die Namensauflösung auch fest auf eine Liste von Diensten konfiguriert werden.</p>
+</div>
+<div class="paragraph">
+<p>Nachdem man den Namensservice als Feature aktiviert und konfiguriert hat, melden sich Micronaut Service-Instanzen <em>automatisch</em> beim Verzeichnisdienst an und ab.
+Clients werden mittels Namensauflösung (Name in <code>@Client</code> Annotation) mit den Adressen von benötigten Diensten versorgt.</p>
+</div>
+<div class="paragraph">
+<p><strong>Hier ein Beispiel für Consul</strong></p>
+</div>
+<div class="paragraph">
+<p>Zuerst sollte man Consul z.B. mittels Docker starten.
+Es gibt eine UI auf <a href="http://localhost:8500/ui" class="bare">http://localhost:8500/ui</a> auf der man die angemeldeten Dienste sieht.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>docker run -p 8500:8500 consul</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">micronaut:
+      application:
+          name: meetup-city
+  consul:
+    client:
+      registration:
+        enabled: true
+      defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="http://guides.micronaut.io/micronaut-microservices-services-discover-consul/img/consului.png" alt="consului">
+</div>
+</div>
+<div class="paragraph">
+<p>Dann können andere Services unseren Dienst nur über seinen Namen finden:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Client(id = "meetup-city")
+public interface CityClient {
+        //...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_load_balancing">Load Balancing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sofern Dienste auf mehr als eine Instanz skaliert wurden, nutzt die Micronaut Client Implementierung eine client-seitige "round-robin" Verteilung.
+Dienste können Anfragen auch an andere Instanzen weiterleiten sofern sie überlastet sind.</p>
+</div>
+<div class="paragraph">
+<p>Es können aber auch spezifische Load-Balancer eingebunden werden, wie Netflix "Ribbon".</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/resources/application.yml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">ribbon:
+      VipAddress: test
+      ServerListRefreshInterval: 2000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Natürlich werden auch auf Cloud-Seite IP basierte Load Balancer wie HA-Proxy oder Elastic Load Balancer (ELB) unterstützt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resilienz">Resilienz</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In verteilten Systemen treten Ausfälle kontinuierlich auf.
+Daher sollte schon bei der Entwicklung vorgesehen werden, dass abhängige Systeme mit entsprechenden Resilienz-Mustern [Friedrichsen] geschützt werden.</p>
+</div>
+<div class="paragraph">
+<p>In Micronaut erfolgt das mit entsprechenden Annotationen (z.B. <code>@Retryable</code> und <code>@CircuitBreaker</code>) auf Client-Interfaces, die über AOP-Advices automatisch implementiert werden.
+Das kann pro Methode oder für die ganze API (Interface oder Paket) erfolgen.
+Alle Muster kommen mit sinnvollen Defaults, können aber beliebig konfiguriert werden.</p>
+</div>
+<div class="listingblock">
+<div class="title">Beispiel für Wiederholung von Aufrufen</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Retryable( attempts = "${retry.attempts:3}",
+               delay = "${retry.delay:1s}" )
+@Client("city")
+public interface CityClient { ... }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mit <code>CircuitBreaker</code> wird beim wiederholten (<code>attempts</code>) Fehler der Aufruf des fremden Dienstes für einen gewissen Zeitraum (<code>reset</code>) unterbunden und nach einer "Abkühlungszeit" wieder versucht.
+Damit können sowohl kurzfristige Ausfälle als auch Überlastsituationen gehandhabt werden.</p>
+</div>
+<div class="paragraph">
+<p>Für beide Muster können mit <code>@Fallback</code> annotierte Dienste vorgesehen werden, die sbei Ausfall eine lokale Implementierung bzw. Auditing umsetzen.</p>
+</div>
+<div class="paragraph">
+<p>Wichtig ist, dass alle Resilienz-Integrationen ihren Status und Verlauf an eine Monitoringkomponente melden, so dass Zusammenhänge von Problemen festgestellt und Alarme bzw. Behebungsmassnahmen ausgelöst werden können.</p>
+</div>
+<div class="paragraph">
+<p>Nutzer von Netflix' Hystrix Bibliothek können auch diese Resilienz-Lösung mit Micronaut integrieren, mit <code>@HystrixCommand</code> annotatierte Methoden werden dann von der Bibliothek gewrappt und als resiliente Kommandos ausgeführt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monitoring">Monitoring</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Für das Monitoring von Diensten und Anwendungen stellt Micronaut verschiedene Arten von Endpunkten bereit.
+Jeder Endpunkt kann individuell konfiguriert und aktiviert werden.</p>
+</div>
+<table class="tableblock frame-all grid-all fit-content">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/beans</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Informationen über geladene Beans</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/info</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Statische Applikationsinformationen (aus Konfiguration und <code>InfoSource</code> Beans)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/health</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Verfügbarkeit der Anwendung (UP:HTTP-200, DOWN:HTTP-503 aggregiert aus <code>HealtIndicator</code> Beans)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/metrics</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Metriken (via Micrometer)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/refresh</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Neuladen von Beans (<code>@Refreshable</code>)</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/routes</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Routinginformationen</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/loggers</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Loggerinformationen &amp; Loglevel</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Alle Management-Endpunkte integrieren automatisch mit den Security-Features von Micronaut.
+Falls Informationen auch nicht-angemeldeten Nutzern gezeigt werden sollen, muss <code>details-visible: ANONYMOUS</code> gesetzt sein.
+Für spezielle Anforderungen können auch eigenen Management-Endpunkte mittels <code>@Endpoint</code> annotierten Klassen bereitgestellt werden.</p>
+</div>
+<div class="paragraph">
+<p>Seit Milestone 4 integriert Micronaut Monitoring mit [Micrometer] via das <code>micrometer</code> Features.
+Sobald dieses aktiv ist, werden die in der <code>MeterRegistry</code> registrierten <code>Meter</code> vom <code>/metrics</code> Endpunkt zurückgegeben.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -s http://localhost:8080/metrics/system.cpu.usage | jq .
+{
+  "name": "system.cpu.usage",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 0.27009646302250806
+    }
+  ]
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micronaut stellt verschiedene Modifikatoren, Filter und Binder (Quellen wie JVM, System, Web-Requests, Logging) für Micrometer bereit.
+Natürlich können auch eigene Metriken integriert werden.
+Für das Reporting der Metriken zu den unterstützten Diensten (Graphite, Prometheus, Statsd, Atlas) gibt es noch einmal individuelle Konfigurationen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -s http://localhost:8080/metrics/jvm.memory.max | jq .
+{
+  "name": "jvm.memory.max",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 5609357311
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap",
+        "nonheap"
+      ]
+    },
+    {
+      "tag": "id",
+      "values": [
+        "Compressed Class Space",
+        "PS Survivor Space",
+        "PS Old Gen",
+        "Metaspace",
+        "PS Eden Space",
+        "Code Cache"
+      ]
+    }
+  ]
+}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tracing">Tracing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Besonders in verteilten Architekturen ist es wichtig, Anfragen über Dienstgrenzen hinweg zu verfolgen.
+Dazu kann die [OpenTracing] API mittels der Integration von "Zipkin" (von Twitter) bzw. "Jaeger" (von Uber) genutzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Nach Aktivierung des Features werden benannte Request- und andere Laufzeit-Informationen ("spans") erzeugt aber nur Bruchteile (z.b. 0.1% davon) den jeweiligen Dienst übermittelt.
+Diese Tools können daraus einen Laufzeitgraphen erzeugen und aggregierte Latenz-, Abhängigkeits-, und Fehlerreports visualiseren.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut stellt mittels verschiedener Mechanismen (z.B. Instrumentation, Http-Header) sicher dass die relevanten Informationen über Thread- und Service-Grenzen hinweg propagiert werden.</p>
+</div>
+<div class="paragraph">
+<p>Die Namensinformation und Payload-Informationen für die Tracing-API kommen aus Annotationen auf Service-Methoden.
+Mittels <code>@NewSpan("name")</code> wird ein neuer Trace gestartet, der dann auf Methoden mit <code>@ContinueSpan</code> fortgesetzt wird.
+Parameter annotiert mit <code>@SpanTag("tag.name")</code> werden dem Trace hinzugefügt.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Singleton
+@Controller
+class RecommendationController {
+
+    @NewSpan("event-recommendation")
+    @Get("/recommend")
+    public Event recommend(@SpanTag("user.id") String id) {
+        return computeRecommendation(userService.loadUser(id));
+    }
+
+    @ContinueSpan
+    public Event computeRecommendation(User user) {
+        return eventService.recommend(user, 1);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die jeweiligen Clients können natürlich noch individuell konfiguriert werden, es gibt auch die Möglichkeit, eigene Tracer einzubinden.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://zipkin.io/public/img/web-screenshot.png" alt="web screenshot">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_das_federation_profil">Das Federation Profil</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Da Microservice Anwendungen aus mehreren, überschaubaren Diensten bestehen, die miteinander kommunizieren, ist es sinnvoll sie in getrennten Modulen zu verwalten.
+Viele der Infrastrukturdienste (Orchestrierung, Monitoring, Resilienz, Eventprotokoll) sind aber in jedem der Teilprojekte notwendig.
+Andere Features wie Datenbankanbindung, oder Machine-Learning Bibliotheken sind pro Projekt verschieden.</p>
+</div>
+<div class="paragraph">
+<p>Mit dem "Federation" Profil kann so ein Gesamtprojekt generiert werden, dass die Teilprojekte mit erzeugt und konfiguriert, aber auch eine Build-Konfiguration für das Gesamtprojekt bereitstellt.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-federation meetup --services users,groups,events,locations,recommendation
+   --feature config-consul,discovery-consul,http-client,http-server,security-jwt,... --profile service --build gradle</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cloud_funktionen">Cloud Funktionen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit Micronaut&#8217;s "function" bzw. "function-aws" Profilen, ist es einfach einzelne Funktionen für "serverless" Infrastruktur zu entwickeln und deployen.
+Mittels <code>mn create-function</code> erzeugt man diese statt einer Anwendung.</p>
+</div>
+<div class="paragraph">
+<p>In Groovy werden einfach Top-Level Funktionen und in Java/Kotlin Beans mit annotierten Methoden genutzt, dort werden auch die funktionalen Interfaces aus <code>java.util.function.*</code> implementiert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-function recommend</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@FunctionBean("recommend")
+public class RecommendFunction implements Function&lt;User, Single&lt;Event&gt;&gt; {
+
+    @Inject RecommendationService service;
+
+    @Override
+    public Single&lt;Event&gt; recommend(User user) {
+        return service.recommend(user).singleOrError();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wie auch Services, melden sich Funktionen beim ggf. konfigurierten Service Discovery Dienst an.</p>
+</div>
+<div class="paragraph">
+<p>Konsumiert werden Funktionen über einen speziellen Client, der ähnlich wie der HttpClient funktioniert, nur mit <code>@FunctionClient("name")</code> annotiert ist.
+Jede Methode des Client-Interfaces repräsentiert eine Funktion, die natürlich auch wieder reaktive Typen als Ergebnisse benutzen kann.
+Die generierte Implementierung des Clients kümmert sich dann z.B. mittels Service Discovery um den Lookup der Funktion und die nachfolgende Ausführung.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@FunctionClient("meetup")
+static interface MeetupClient {
+
+    Single&lt;Event&gt; recommend(User user);
+
+    @Named("rating")
+    int stars(Group group);
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um Funktionen zu testen, kann man diese direkt im Test aufrufen, oder auch mittels des <code>function-web</code> Features im HTTP-Server laufen lassen.
+Dann sind sie entweder als GET oder POST Operation verfügbar, je nachdem ob sie Parameter entgegennehmen oder nicht.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl -X POST -d'{"userId":12345}' http://localhost:8080/recommend</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Test
+void testStars() {
+    EmbeddedServer server = ApplicationContext.run(EmbeddedServer.class)
+    MeetupClient client = server.getApplicationContext().getBean(MeetupClient.class)
+
+    assertEquals(4, client.stars(new Group("4-Stars")))
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Funktionen können auch als CLI-Anwendungen ausgeführt werden.
+Das ausgeführte Fat-Jar nimmt Parameter über <code>std-in</code> entgegen und gibt Ergebnisse über <code>std-out</code> zurück.</p>
+</div>
+<div class="paragraph">
+<p>AWS Lambda Funktionen können im "function-aws" Profil mit zusätzlich aktivierten Gradle Plugins direkt nach AWS deployed und dort aufgerufen werden, sofern AWS Zugangsdaten verfügbar sind.</p>
+</div>
+<div class="paragraph">
+<p>Diese Funktionen können dann für den <code>FunctionClient</code> in der <code>application.yml</code> bekannt gemacht werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>aws:
+    lambda:
+        functions:
+            recommend:
+                functionName: recommendEvent
+    region: us-east-1</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Mittels Docker wird auch "OpenFaaS" Deployment unterstützt, dazu muss nur das "openfaas" Feature aktiviert werden.
+Hier wird die Ausführung von Funktionen als Kommandozeilenanwendung genutzt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deployment">Deployment</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_docker">Docker</h3>
+<div class="paragraph">
+<p>Standardmässig generiert Micronaut ein <code>Dockerfile</code> für jedes Projekt, das direkt im Build-Prozess genutzt werden kann und auch für "immutable deployments" geeignet ist.
+Es basiert auf dem Alpine-Image und inkludiert das Fat-JAR aus dem Buildprozess dass dann über <code>java -jar</code> gestartet wird.s</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-app micronaut-docker-beispiel</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Dockerfile</div>
+<div class="content">
+<pre>FROM openjdk:8u171-alpine3.7
+RUN apk --no-cache add curl
+COPY target/micronaut-example*.jar micronaut-docker-beispiel.jar
+CMD java ${JAVA_OPTS} -jar micronaut-docker-beispiel.jar</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./gradlew shadowJar
+docker build .
+docker run cd21fba541e5 -p 8080:8080
+01:31:04.314 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 1231ms. Server Running: http://localhost:8080</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_google_cloud_platform_gcp">Google Cloud Platform (GCP)</h3>
+<div class="paragraph">
+<p>Micronaut kann auf die Google Cloud über ein Fat-JAR, dass die Anwendung mit dem notwendigem Server und Bibliotheken enthält mit den <code>gcloud</code> Kommandozeilentools deployed werden.
+Im [GCPGuide] werden die einzelnen Schritte erläutert, prinzipiell lädt man das JAR in einen Bucket und schreibt dann ein Start-Script für die Instanz, das das Jar lädt, Java installiert und es mittels <code>java -jar</code> startet.
+Dieses Script wird von <code>gcloud compute instances create</code> benutzt, danach wird für Port 8080 eine Firewall-Regel angelegt und nach ein paar Minuten ist der Dienstes gestartet und steht zur Verfügung.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_aws_lambda">AWS-Lambda</h3>
+<div class="paragraph">
+<p>Mittels eines Gradle Plugins können Lambda Funktionen direkt aus dem Build-Prozess deployed und aufgerufen werden, sofern man valide AWS Zugangsdaten in <code>.aws/credentials</code> vorliegen hat.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>if(new File("${System.getProperty("user.home")}/.aws/credentials").exists()) {
+    task deploy(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+        functionName = "echo"
+        handler = "io.micronaut.function.aws.MicronautRequestStreamHandler"
+        role = "arn:aws:iam::${aws.accountId}:role/lambda_basic_execution"
+        runtime = com.amazonaws.services.lambda.model.Runtime.Java8
+        zipFile = shadowJar.archivePath
+        memorySize = 256
+        timeout = 60
+    }
+
+    task invoke(type: jp.classmethod.aws.gradle.lambda.AWSLambdaInvokeTask) {
+       functionName = "echo"
+       invocationType = com.amazonaws.services.lambda.model.InvocationType.RequestResponse
+       payload = '"foo"'
+       doLast {
+          println "Lambda function result: " + new String(invokeResult.payload.array(), "UTF-8")
+       }
+    }
+}</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/gradlew deploy</div>
+<div class="content">
+<pre>BUILD SUCCESSFUL in 1m 48s
+4 actionable tasks: 3 executed, 1 up-to-date</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/gradlew invoke</div>
+<div class="content">
+<pre>&gt; Task :invoke
+Lambda function result: "foo" "foo"</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_message_driven_microservices">Message Driven Microservices</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Microservices-Architekturen setzten sich eventbasierte Integrationsschichten immer mehr durch.
+Obwohl Micronaut mit den reaktiven Http-Servern in Bezug auf Flow-Control schon mithalten konnte, sind andere Aspekte verteilter, persistenter Event-Logs natürlich sehr vorteilhaft.
+Daher wurde im Milestone 4 Unterstützung für Apache Kafka bereitgestellt.</p>
+</div>
+<div class="paragraph">
+<p>Dazu gibt es auch ein neues Profil für reine Kafka-Services, ohne HTTP-Server.
+Aber auch andere Dienste und Funktionen können mittels Feature-Flag Unterstützung für Kafka bzw. Kafka-Streams erhalten.
+Die ggf. aktivierte Micrometer-Registry enthält dann auch die Kafka-Metriken, und der <code>/health</code> Endpunkt gibt Auskunft über den Zustand der Verbindung.</p>
+</div>
+<div class="listingblock">
+<div class="title">Kafka Dienst ohne Http-Server erzeugen</div>
+<div class="content">
+<pre>mn create-app rsvp-loader --profile kafka</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dieser Dienst kommuniziert wie konfiguriert mit Kafka über <code>localhost:9092</code>.
+Ein oder mehrere Kafka-Server können in der Anwendungskonfiguration, aber auch über <code>KAFKA_BOOTSTRAP_SERVERS</code> gesetzt werden.</p>
+</div>
+<div class="listingblock">
+<div class="title">Konfiguration in application.yml</div>
+<div class="content">
+<pre>kafka:
+    bootstrap:
+        servers: localhost:9092</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Zum Testen kann man entweder <code>EmbeddedKafka</code> (mittels <code>kafka.embedded.enabled</code>) benutzen, oder Kafka mittels Docker [KafkaDocker] starten.</p>
+</div>
+<div class="sect2">
+<h3 id="_kafka_produzenten">Kafka Produzenten</h3>
+<div class="paragraph">
+<p>Micronaut Services und Funktionen können deklarativ mittels Annotationen als Konsumenten und Publisher von Events auf Topics definiert werden.</p>
+</div>
+<div class="paragraph">
+<p>Etwas verwirrend benannt, ist ein mit <code>@KafkaClient</code> annotiertes Bean eine Quelle von Events.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-kafka-producer Rsvp
+| Rendered template Producer.java to destination src/main/java/rsvp/loader/RsvpProducer.java</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@KafkaClient
+public interface RsvpProducer {
+    @Topic("rsvps")
+    void sendRsvp(@KafkaKey String id, Rsvp rsvp);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wie gehabt, wird die Implementierung des Interfaces von Micronaut vorgenommen.
+Neben dem Payload können auch noch weitere, annotierte Parameter übergeben werden, wie Partition oder Header.
+Auch hier können reaktiven Typen wie <code>Flowable</code> oder <code>Single`für Payload und Ergebnisse genutzt werden, so dass man auch auf die Ergebnisse der Publikation abonnieren kann.
+Man kann auch ein Kafka - `RecordMetadata</code> zurückgeben, das enthält dann alle Detailinformationen des Sendevorgangs.</p>
+</div>
+<div class="paragraph">
+<p>Batching wird mit <code>@KafkaClient(batch=true)</code> aktiviert, dann werden Listen von mehreren Entitäten als Batch behandelt und nicht als einzelner, grosser Payload serialisiert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@KafkaClient(batch=true)
+public interface RsvpBatchProducer {
+    @Topic("rsvps")
+    Flowable&lt;RecordMetadata&gt; sendRsvp(@KafkaKey Flowable&lt;String&gt; ids, Flowable&lt;Rsvp&gt; rsvps);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Benutzt wird der Produzent wie folgt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Inject RsvpProducer producer;
+// oder
+RsvpProducer producer = applicationContext.getBean(RsvpProducer.class);
+
+producer.sendRsvp("293y89dcd", new Rsvp(....));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für produktive Deployments von Kafka wird eine Vielzahl von Konfigurationsoptionen in <code>@KafkaClient("producer-id")</code> unterstützt - Serialisierung, Retries, Acknowledgement, usw.
+Standardmässig werden Jackson-Serializer für JSON genutzt, diese sind aber entweder global oder pro Producer/Consumer konfigurierbar.
+Für sehr spezielle Anwendungsfälle kann man sich auch direkt <code>KafkaProducer</code> der Kafka-API injizieren lassen und hat dann die volle Flexibilität.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kafka_konsumenten">Kafka Konsumenten</h3>
+<div class="paragraph">
+<p>Mittels <code>@KafkaListener</code> werden Nachrichten von einem oder mehreren Topics abonniert.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-kafka-listener Rsvp
+| Rendered template Listener.java to destination src/main/java/rsvp/loader/RsvpListener.java</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@KafkaListener(offsetReset = OffsetReset.EARLIEST)
+public class RsvpListener {
+   @Inject RsvpRepository repo;
+
+   @Topic("rsvps")
+   public void receiveRsvp(@KafkaKey String id, Rsvp rsvp) {
+       repo.storeRsvps(Flowable.fromArray(rsvp));
+   }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Auch hier können eine Menge zusätzlicher Parameter angegeben werden, wie Offset, Partition, Zeitstempel, Topic, Header, oder halt gleich ein Kafka <code>ConsumerRecord</code>.
+Für Batchverarbeitung kann auch hier <code>@KafkaListener(batch=true)</code> genutzt werden und dann entweder Listen oder reaktive Streams von Parametern verarbeitet werden.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@KafkaListener(batch=true, offsetReset = OffsetReset.EARLIEST)
+public class RsvpBatchListener {
+   @Inject RsvpRepository repo;
+
+   @Topic("rsvps")
+   public void receiveRsvp(@KafkaKey Flowable&lt;String&gt; ids, Flowable&lt;Rsvp&gt; rsvps) {
+        repo.storeRsvps(rsvps);
+   }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Praktischerweise kann mittels <code>@SendTo("topic",&#8230;&#8203;)</code> Annotation das Ergebnis des Methodenaufrufs an einen weiteren Topic weitergeleitet werden.</p>
+</div>
+<div class="paragraph">
+<p>Es gibt noch weitere Konfigurationen für Thread-Management, Timeouts, Serialisierung für einzelne Consumer oder Gruppen, die in der Dokumentation im Detail erläutert werden.
+Offset Commit-Management ist ein eigenes Thema für sich, das auch Fehlerbehandlung, asynchrone Verarbeitung, Bestätigungsmanagement, Offset-Recovery und Re-Delivery Bezug nimmt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_kafka_streams">Kafka Streams</h3>
+<div class="paragraph">
+<p>Streaming Data (Fast Data) Architekturen (Akka, Kafka, Flink, Spark) werden immer verbreiteter.
+Dabei läuft der eigene Code als Prozessoren auf dem Stream, die Daten aggregieren, filtern oder neue Streams erzeugen können.
+Micronaut&#8217;s schlanke Runtime sollte für solche Verarbeitung entsprechend wenig Overhead verursachen.</p>
+</div>
+<div class="paragraph">
+<p>Für Kafka-Streams ist nem den Bibliotheken und der Kafka-Konfiguration eine <code>@Factory</code> notwendig, deren "process" Methode, einen <code>ConfiguredStreamBuilder</code> entgegennimmt und einen typisierten <code>KStream</code> der Kafka-Streams API zurückgibt.</p>
+</div>
+<div class="paragraph">
+<p>Hier ist ein minimales Beispiel, ohne den Konfigurationscode für Serialisierung.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Factory
+public class NoRsvpFilterStream {
+
+    public static final String INPUT = "streams-plaintext-input";
+    public static final String OUTPUT = "streams-wordcount-output";
+
+
+    @Singleton
+    KStream&lt;String, Rsvp&gt; yesRsvpFilter(ConfiguredStreamBuilder builder) {
+        // Serializer Konfiguration ...
+
+        KStream&lt;Rsvp, Rsvp&gt; source = builder.stream("rsvps");
+        return source
+                .filter( rsvp -&gt; rsvp.yes ).to("yes-rsvps");
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Die Topics dieser Streams können dann ganz regulär von "Upstream"-Produzenten mit Daten versorgt und ihre Ergebnisse von Downstream-Konsumenten verarbeitet werden.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kommandozeilenanwendungen">Kommandozeilenanwendungen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Zusammen mit der Neuentwicklung des <code>mn</code> Tools mittels <code>picocli</code> gibt es jetzt sowohl ein <code>cli</code> Profil für reine Kommandozeilenanwendungen.
+Man kann mittels <code>create-cli-app</code> so eine Anwendung erzeugen und dann in dieser mittels <code>create-command</code> weitere Kommandos anlegen.
+Mehr Informationen zur API gibt es bei PicoCLI</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>mn create-cli-app list</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Das Kommando sieht dann (angepasst) so aus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@Command(name = "list", description = "Listing of entities",
+        mixinStandardHelpOptions = true)
+public class ListCommand implements Runnable {
+
+    @Option(names = {"-c", "--cities"}, description = "list cities")
+    boolean listCities;
+
+    @Inject CityClient cities;
+
+    public static void main(String[] args) throws Exception {
+        PicocliRunner.run(ListCommand.class, args);
+    }
+
+    public void run() {
+        if (listCities) {
+            cities.list().map(c -&gt; c.name).forEach(System.out::println);
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Neben <code>gradlew run</code> kann man mit <code>gradlew assemble</code> die Kommandozeilen Anwendung auch in eine Zip distribution packen, die dann alle Abhängigkeiten und Shell-Skripte für OSX, Unix und Windows enthält.</p>
+</div>
+<div class="paragraph">
+<p>Die können wir dann mit <code>bin/list -c</code> ausführen.</p>
+</div>
+<div class="paragraph">
+<p>Es wäre schön in der Zukunft für diese vielleichte eine Graal-VM Variante, oder ein auf der Shell ausführbares Jar wie bei Spring-Boot zu unterstützen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fundgrube">Fundgrube</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Mit <code>create-cli-app</code> kann man Kommandozeilenanwendungen erzeugen, die Dienste wie reguläre Konsumenten oder Produzenten benutzen</p>
+</li>
+<li>
+<p><code>@Singleton</code> Beans können mit <code>@Parallel</code> annotiert werden, um parallele Initialisierung zu ermöglichen.</p>
+</li>
+<li>
+<p>Lombok&#8217;s Annotation Prozessor sollte vor Micronaut laufen.</p>
+</li>
+<li>
+<p>JDBC Connections können jetzt den Spring-JDBC Transaction Manager nutzen</p>
+</li>
+<li>
+<p>Es werden JDBC Connection Pools unterstützt</p>
+</li>
+<li>
+<p>spring-loaded oder jrebel helfen bei dem dynamischen Neuladen von Klassen</p>
+</li>
+<li>
+<p>Eine neue AOP-Advice "Method-Adapter" mit der Meta-Annotation <code>@Adapter</code>, erlaubt es annotierte Methoden, als Single-Abstract-Method (SAM) Beans bereitzustellen, die ein bestimmtes Interface implementieren.<br>
+Das wird z.B. für die <code>@EventListener</code> Annotation genutzt, die Methoden für die Verarbeitung Application-Events markiert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Eigentlich ist Micronaut ja kein klassisches Web-Framework, um HTML und andere Inhalte zu rendern.
+Seit neuestem werden aber mittels des <code>io.micronaut:views</code> Moduls, und die jeweiligen Bibliotheken der Template-Engines wie Thymeleaf, Velocity und Handlebars unterstützt.
+Die Template Dateien liegen in <code>src/main/resource/views</code> und Controllermethoden die mit <code>@View("name")</code> annotiert sind sowie Maps, POJOs bzw. <code>ModelAndView</code> zurückgeben, stellen die Render-Informationen bereit.</p>
+</div>
+<div class="paragraph">
+<p>Die <code>@Requires</code> Annotation für das dynamische Aktivieren von Beans abhänging von externen Bedingungen ist extrem flexibel, hier sind ein paar Beispiele</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@Requires(beans = DataSource.class)</code></p>
+</li>
+<li>
+<p><code>@Requires(property = "enabled")</code></p>
+</li>
+<li>
+<p><code>@Requires(missingBeans = EmployeeService)</code></p>
+</li>
+<li>
+<p><code>@Requires(sdk = Sdk.JAVA, value = "1.8")</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fazit">Fazit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mit Micronaut ist man bestens gewappnet, auch komplexe service-basierte Systeme zu entwickeln, integrieren, deployen, robust laufen zu lassen und zu überwachen.
+Dank der Aktualität des Frameworks sind moderne Tools für diese Aufgaben schon integriert.
+Für die Nutzung der verschiedenen Cloud-Provider, zB. für Cloud-Functions ist noch einiges zu tun, zur Zeit wird nur AWS automatisch unterstützt.
+Dank der Kafka Integration hat man die Wahl für die Inter-Service-Kommunikation HTTP- oder ereignisbasierte Protokolle zu nutzen.</p>
+</div>
+<div class="paragraph">
+<p>Micronaut kann aber nicht nur für klassische Backend-Dienste genutzt werden.
+OCI Entwickler Ryan Vanderwerf zeigt im [GalecinoCar] Projekt wie Micronaut zusammen mit ML-Frameworks und Robo4j ein selbstfahrendes Modellauto auf einem Raspberry PI steuert.</p>
+</div>
+<div class="paragraph">
+<p>Ich freue mich schon auf die weitere Entwicklung des Frameworks.
+Bisher sind die durchdachten Features, Hilfe und Aktivität in der Community und die schnellen Bugfixes sehr beeindruckend.</p>
+</div>
+<div class="paragraph">
+<p>Ich vermisse eigentlich nur die Möglichkeit, "Features" in existierenden Projekten mittels <code>mn --feature</code> zu aktivieren, und so konsistent und korrekt neue Abhängigkeiten und Konfigurationen hinzuzufügen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[MicroDoc] <a href="https://docs.micronaut.io/" class="bare">https://docs.micronaut.io/</a></p>
+</li>
+<li>
+<p>[MicroChanges] <a href="https://docs.micronaut.io/latest/guide/index.html#whatsNew" class="bare">https://docs.micronaut.io/latest/guide/index.html#whatsNew</a></p>
+</li>
+<li>
+<p>[MicroIntro] <a href="https://objectcomputing.com/resources/publications/sett/july-2018-micronaut-framework-for-the-future" class="bare">https://objectcomputing.com/resources/publications/sett/july-2018-micronaut-framework-for-the-future</a></p>
+</li>
+<li>
+<p>[MicroGuides] <a href="http://guides.micronaut.io" class="bare">http://guides.micronaut.io</a> u.a. für Consul, Eureka, Zipkin, Jaeger</p>
+</li>
+<li>
+<p>[GuideConsul] <a href="http://guides.micronaut.io/micronaut-microservices-services-discover-consul/guide/index.html" class="bare">http://guides.micronaut.io/micronaut-microservices-services-discover-consul/guide/index.html</a></p>
+</li>
+<li>
+<p>[GuideEureka] <a href="http://guides.micronaut.io/micronaut-microservices-services-discover-eureka/guide/index.html" class="bare">http://guides.micronaut.io/micronaut-microservices-services-discover-eureka/guide/index.html</a></p>
+</li>
+<li>
+<p>[GuideZipkin] <a href="http://guides.micronaut.io/micronaut-microservices-distributed-tracing-zipkin/guide/index.html" class="bare">http://guides.micronaut.io/micronaut-microservices-distributed-tracing-zipkin/guide/index.html</a></p>
+</li>
+<li>
+<p>[GuideJaeger] <a href="http://guides.micronaut.io/micronaut-microservices-distributed-tracing-jaeger/guide/index.html" class="bare">http://guides.micronaut.io/micronaut-microservices-distributed-tracing-jaeger/guide/index.html</a></p>
+</li>
+<li>
+<p>[MicroWorkshop] <a href="https://alvarosanchez.github.io/micronaut-workshop/" class="bare">https://alvarosanchez.github.io/micronaut-workshop/</a></p>
+</li>
+<li>
+<p>[GalecinoCar] <a href="https://objectcomputing.com/resources/events/webinars/galecino-car/recording" class="bare">https://objectcomputing.com/resources/events/webinars/galecino-car/recording</a></p>
+</li>
+<li>
+<p>[Friedrichsen] <a href="http://www.informatik-aktuell.de/entwicklung/methoden/resilient-software-design-robuste-software-entwickeln.html" class="bare">http://www.informatik-aktuell.de/entwicklung/methoden/resilient-software-design-robuste-software-entwickeln.html</a></p>
+</li>
+<li>
+<p>[OpenTracing] <a href="http://opentracing.io" class="bare">http://opentracing.io</a></p>
+</li>
+<li>
+<p>[OpenFaaS] <a href="https://www.openfaas.com/" class="bare">https://www.openfaas.com/</a></p>
+</li>
+<li>
+<p>[KafkaDocker] <a href="https://docs.confluent.io/current/installation/docker/docs/configuration.html" class="bare">https://docs.confluent.io/current/installation/docker/docs/configuration.html</a></p>
+</li>
+<li>
+<p>[Baeldung] <a href="http://www.baeldung.com/micronaut" class="bare">http://www.baeldung.com/micronaut</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-09-20 05:43:17 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

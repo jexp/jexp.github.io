@@ -4,65 +4,11 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>JEXP | Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</title>
+  <title>Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</title>
     <meta http-equiv='Content-Style-Type' content='text/css' />
   <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
   <link rel="openid.server" href="http://jexp.de/id" />
-<!--HeaderText--><style type='text/css'><!--
-  div.wikibody { line-height: 1.6em; font-size:1.4em; }
-  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
-  code.escaped { white-space: nowrap; }
-  .vspace { margin-top:1.33em; }
-  .indent { margin-left:40px; }
-  .outdent { margin-left:40px; text-indent:-40px; }
-  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
-  a.createlink { text-decoration:none; position:relative; top:-0.5em;
-    font-weight:bold; font-size:smaller; border-bottom:none; }
-  img { border:0px; }
-   
-  table.tabtable { border-collapse: collapse; }
-  table.tabtable td { border:1px solid #cccccc; }
-
-div.sourceblock {
-	padding: 0.5em;
-	border: 1px solid #808080;
-	background-color: #F1F0ED; }
-div.sourceblock div {
-	font-family: monospace;
-	font-size: small;
-	line-height: 1; }
-div.sourceblock div.head, div.sourceblock div.foot {
-	font: italic medium serif;
-	padding: 0.5em;
-}
-div.codeblock {
-	padding: 0.5em;
-	border: 1px solid #808080;
-	background-color: #F1F0ED; }
-div.codeblock pre {
-	font-family: monospace;
-	font-size: small;
-	line-height: 1; }.editconflict { color:green; 
-  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
-
-  table.markup { border:2px dotted #ccf; width:90%; }
-  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
-  table.vert td.markup1 { border-bottom:1px solid #ccf; }
-  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
-  table.markup caption { text-align:left; }
-  div.faq p, div.faq pre { margin-left:2em; }
-  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
-   
-    .frame 
-      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
-    .lfloat { float:left; margin-right:0.5em; }
-    .rfloat { float:right; margin-left:0.5em; }
-a.varlink { text-decoration:none; }
-
---></style>
-    <meta name='robots' content='index,follow' />
-
-
+  <meta name='robots' content='index,follow' />
 </head>
 <body>
 <!--PageHeaderFmt-->
@@ -81,34 +27,13 @@ a.varlink { text-decoration:none; }
 	<li><a class='urllink' href='/books.html'>Books</a></li>
 	<li><a class='urllink' href='/projects.html'>Projects</a></li>
 	<li><a class='urllink' href='/bio.html'>Bio</a></li>
-<!--
-<li><a class='wikilink' href='/Main.Projects'>Projects</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='/Info.Biografie'>Bio</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='/Business.Referenzen'>References</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='/Info.Links'>Links</a>
-</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='/Info.BetterDevelopment'>BetterDevelopment</a>
-</li><li><a class='wikilink' href='/Info.Konferenzen'>Conferences</a>
-</li><li><a class='wikilink' href='/Info.Demotivators'>Demotivators</a>
-</li><li><a class='wikilink' href='/Info.Quotes'>Quotes</a>
-</li><li><a class='wikilink' href='/Main.Reviews'>Reviews</a>
-<ul><li><a class='wikilink' href='/DslBook.DslBook'>DslBook</a>
-</li></ul></li><li><a class='wikilink' href='/Main.Java'>Java</a>
-<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
-</li><li><a class='wikilink' href='/BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
-</li><li><a class='wikilink' href='/Java.Projects'>Look@Projects</a>
-</li><li><a class='wikilink' href='/Java.Spring'>Spring</a>
-</li><li><a class='wikilink' href='/Java.Code'>Code</a>
-</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='/Site.Impressum'>Impressum</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='/Site.Internal'>Internal</a>
-</li>
--->
-
 </ul>
 
 </div>
 
 <div id="wikibody">
+
+<h1>Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</h1>
 
 <div class="sect1">
 <h2 id="_stromschnellen_oder_wo_man_mit_java_8_streams_aufpassen_muss">Stromschnellen, oder wo man mit Java 8 Streams aufpassen muss.</h2>
@@ -140,7 +65,7 @@ Um diese Art von Interfaces explizit zu dokumentieren wurde mit Java8 auch die A
 <div class="listingblock">
 <div class="title">Streams-Beispiel:</div>
 <div class="content">
-<pre class="highlight"><code class="java language-java">Map&lt;Integer, List&lt;Integer&gt;&gt; ungeradeQuadrateIn100Gruppen =
+<pre class="highlight"><code class="language-java" data-lang="java">Map&lt;Integer, List&lt;Integer&gt;&gt; ungeradeQuadrateIn100Gruppen =
   range(1, 1_000)
    .filter(i -&gt; i % 2 == 1)
    .map(i -&gt; i * i)
@@ -189,7 +114,7 @@ Dass bedeutet aber auch, dass die Datenmengen die verarbeitet werden sollten meh
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">private long countPrimes(int max) {
+<pre class="highlight"><code class="language-java" data-lang="java">private long countPrimes(int max) {
    return range(1, max).parallel().filter(this::isPrime).count();
 }
 private boolean isPrime(long n) {
@@ -199,7 +124,7 @@ private boolean isPrime(long n) {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">public void testSum() throws Exception {
+<pre class="highlight"><code class="language-java" data-lang="java">public void testSum() throws Exception {
     int sum = range(0, TOTAL).sum();
     System.out.println("testSum = " + sum);
 }
@@ -243,7 +168,7 @@ public void testSumParallelBatched() throws Exception {
 </li>
 </ul>
 </div>
-<table class="tableblock frame-all grid-all" style="width: 100%;">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -308,7 +233,7 @@ Zum Beispiel hier:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">private List&lt;StockInfo&gt; getStockInfo(Stream&lt;String&gt; symbols, int minVolume) {
+<pre class="highlight"><code class="language-java" data-lang="java">private List&lt;StockInfo&gt; getStockInfo(Stream&lt;String&gt; symbols, int minVolume) {
   return symbols.parallel()
                 .map(this::getStockInfo) //slow network operation
                 .filter(si -&gt; si.tradeVolume &gt; minVolume)
@@ -329,7 +254,7 @@ Ansonsten kann man damit den Fork-Join-Pool schnell aushungern, so dass andere M
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">// Fork-Join-Pool mit Parallelität von X
+<pre class="highlight"><code class="language-java" data-lang="java">// Fork-Join-Pool mit Parallelität von X
 
 // Start einer Summierung von Fenstern von jeweils einer Million Werten
 
@@ -343,7 +268,7 @@ Ansonsten kann man damit den Fork-Join-Pool schnell aushungern, so dass andere M
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+<pre class="highlight"><code class="language-java" data-lang="java">ForkJoinPool forkJoinPool = new ForkJoinPool(4);
 
 forkJoinPool.submit(() -&gt;
     range(1, 1_000_000).parallel().filter(PrimesPrint::isPrime)
@@ -385,7 +310,7 @@ Prinzipiell ist das schon ok, nur wenn der aktuelle Thread anders konfiguriert i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">private ExecutorService createPool(int threads, int queueSize) {
+<pre class="highlight"><code class="language-java" data-lang="java">private ExecutorService createPool(int threads, int queueSize) {
     return new ThreadPoolExecutor(1, threads, KEEP_ALIVE, SECONDS,
              new LinkedBlockingDeque&lt;&gt;(queueSize),
              new ThreadPoolExecutor.CallerRunsPolicy());
@@ -464,14 +389,15 @@ Parallelisierungs-Overhead</p>
 
 
   <div id='wikifoot' class="footnav">
-    <div style="text-align:right; float:right" class='lastmod'>Last updated 2015-01-30 19:50:13 CET</div>
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-21 23:33:58 CEST</div>
 	
       <div style="text-align:center;">
       <a href='http://jexp.de/impressum'>Impressum</a>
-    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
-	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
-	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
-	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
 	
    </div>
 

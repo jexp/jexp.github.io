@@ -1,0 +1,57 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title><%= title %></title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1><%=title%></h1>
+
+<%= content %>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated <%= %(#{attr :docdatetime}) %></div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Release It - Java Edition</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1>Release It - Java Edition</h1>
+
+<div class="sect1">
+<h2 id="_lektionen_vom_system_stabilisator">Lektionen vom System-Stabilisator</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Schon die erste Edition von "Release-It" [Nygard], vor 10 Jahren!, von Michael Nygard war eines der besten Bücher für Softwareentwickler das ich je in den Händen hatte.
+Unterhaltsam geschrieben mit vielen Beispielen aus der Praxis stellte er (Anti-)Pattern und erprobte Lösungsansätze für stabile Produktivsysteme vor und zeigte am konkreten Beispiel wie man diese umsetzen kann, um die eigenen Systeme auch unter der Last von Horden von Internetnutzern sauber am Laufen zu halten.</p>
+</div>
+<div class="paragraph">
+<p>Jetzt ist die zweite Ausgabe im Review und ich bin immer noch begeistert, die Informationen aus dem ersten Buch wurden nicht nur aktualisiert.
+Ein grosser und dicht gepackter Teil, der Schicht für Schicht der Gesamtarchitektur im Detail behandelt wurde umfassend erweitert.
+Besonders im Zeitalter von Cloud, Containern, MicroServices und Diensten "as a Service" gibt es vieles, was einem von den Anbietern abgenommen wird, aber auch viele neue (und alte) Fallstricke, die man kennen sollte.</p>
+</div>
+<div class="paragraph">
+<p>Ich möchte heute einige Themen herausgreifen, die besonders für Java-Entwickler relevant sind.
+Ich empfehle trotzdem dringend jedem, der an Systemen arbeitet die entweder kritisch oder öffentlich sind, sich die zweite Ausgabe von "Release-It" zuzulegen und stets dabeizuhaben.</p>
+</div>
+<div class="paragraph">
+<p>Ich möchte auf jeden Fall auch die Arbeit von Uwe Friedrichsen von Codecentric zur "Mustersprache für resiliente Systeme" [UFried] herausstellen.
+Uwe&#8217;s Vorträge, Artikel und Gedanken zu dem Thema sind ebenso grossartig wie Michaels.
+Ich finde es sehr hilfreich, dass er die Muster in einer Mustersprache zusammenführt und damit ihre Zusammenhänge und Abhängigkeiten deutlich macht.</p>
+</div>
+<div class="paragraph">
+<p>Eine gute Implementierung vieler dieser Muster ist in [Resilience4j] zu finden.
+Die Bibliothek stellt komponierbare Dekoratoren für Lambdas und Methodenreferenzen bereit, die die jeweilige Funktionalität für (a)synchrone Aufrufe kapseln und auch entsprechende Metriken an Monitoringsysteme weitermelden.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_produktivsysteme">Produktivsysteme</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Systeme, die viel Mehrwert erwirtschaften haben oft viele Nutzer (Menschen oder Maschinen).
+Daher müssen sie in ihrer Leistungsfähigkeit diesen Anwenderzahlen gerecht werden, auch bekannt als "internet-scale".
+Diese Systeme handhaben komplexe Prozesse, die Daten verschiedenster Art entgegennehmen, verarbeiten, speichern, zur Verfügung stellen und weitersenden.
+Oft nutzen sie externe Dienste um ihre Aufgaben zu lösen.</p>
+</div>
+<div class="paragraph">
+<p>All diese harmlosen Beschreibungen stellen für die Architektur des Systems Herausforderungen dar, die während Entwicklung und Wartung aber besonders im Produktivbetrieb extrem in Anspruch genommen werden.</p>
+</div>
+<div class="paragraph">
+<p>I&#8217;m Buch stellt Michael Nygard Negativmuster dar, die den Betrieb solcher Systeme negativ beeinflussen und auch Stabilitätsmuster, mit denen man das System robuster machen kann.</p>
+</div>
+<div class="paragraph">
+<p>Hier ein paar Beispiele für kritische Aspekte, die ich im folgenden partiell wieder aufgreifen möchte.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Integrationspunkte</p>
+</li>
+<li>
+<p>Kettenreaktionen</p>
+</li>
+<li>
+<p>Fehlerkaskaden</p>
+</li>
+<li>
+<p>Nutzer</p>
+</li>
+<li>
+<p>Blockierte Threads</p>
+</li>
+<li>
+<p>Eigentore</p>
+</li>
+<li>
+<p>Skalierungseffekte</p>
+</li>
+<li>
+<p>Unbalancierte Kapazitäten</p>
+</li>
+<li>
+<p>Hebelwirkung</p>
+</li>
+<li>
+<p>Langsame Antworten</p>
+</li>
+<li>
+<p>Unbegrenzte Ergebnismengen</p>
+</li>
+<li>
+<p>Überlastung beim Start</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kaskaden">Kaskaden</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Oft ist es ein kleiner Fehler, der am Anfang sogar unbemerkt bleibt, der sich in kurzer Zeit ausbreitet und immer größeres Systemversagen verursacht, das exponentiell beschleunigt und sich durch Fehlverhalten nach aussen materialisiert.</p>
+</div>
+<div class="paragraph">
+<p>Das exponentielle Versagen ist dem Umstand geschuldet, dass die verbliebenen Systeme zusätzlich die immer höhere Last der ausgefallenen übernehmen müssen und immer schneller überlasten.
+Selbst mit Auto-Scaling kommt man da nicht mehr hinterher, besonders wenn alle Systeme schlussendlich in denselben Ursprungsfehler laufen.
+Eine Ähnliche Überlastsituation kann beim Neustart eines Gesamtsystems (mit tausenden von Diensten) passieren, wenn dahinterliegende Systeme (Daten oder Energie) durch den gleichzeitigen Initialisierungsbedarf überladen werden und dann auch kaskadiert zusammenbrechen.</p>
+</div>
+<div class="paragraph">
+<p>Oft sind diese Überlastsituationen auch selbst verschuldet, z.B. durch nicht abgestimmte Marketingaktiväten (deren Links ggf. Caches umgehen), globale Roll-Outs neuer Systeme, Ignoranz von Nutzermengen und -verhalten (z.b. Crawler, Bots ohne Session-Cookies pro Request).</p>
+</div>
+<div class="paragraph">
+<p>Automatisierung von Systemmanagement ist generell zu begrüßen, da sie uns von Fehlern bewahrt, getested werden kann und vormals manuelle Aufgaben viel schneller ausführen kann.</p>
+</div>
+<div class="paragraph">
+<p>Sie kann aber auch unerwünschte Aktionen aus Missverständnissen viel schneller ausführen, als wir darauf reagieren können (z.B. massives Abschalten von Servern, Synchronisation leerer Datenbanken auf vormals volle, usw.).
+Um dort den Gau zu verhindern, helfen graduelle Ausführung von Operationen, Monitoring, Limits und Regeln für die Begrenzung der Beschleunigung und ggf. Bestätigung bei "grossen" Änderungen.</p>
+</div>
+<div class="paragraph">
+<p><strong>Da wir Fehler nicht vermeiden können, ist es viel sinnvoller Systeme zu entwickeln, die mit Problemsituationen sinnvoll umgehen können.</strong></p>
+</div>
+<div class="paragraph">
+<p>Das kann Kapazitätsmanagement, eingeschränkte Funktionalität (z.b. statische Seiten statt personalisiert), sinnvolle Fehlermeldungen an Nutzer</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_multi_threading">Multi-Threading</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Viele Kerne pro CPU und viele CPUs pro Server haben uns im Zeitalter der stagnierenden Taktfrequenzen den Weg der Nebenläufigkeit geführt.
+Gerade für Produktivsysteme sind verfügbar Pools von Threads zu Abarbeitung von Aufgaben essientiell.</p>
+</div>
+<div class="paragraph">
+<p>Umso erschreckender ist, wie schnell ein Pool mit hunderten oder sogar tausenden von Threads mit Warten auf einen (oder sogar ein und denselben) blockierenden Aufruf zum Stillstand gebracht werden kann.</p>
+</div>
+<div class="paragraph">
+<p>Die Ursachen sind vielseitig:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Netzwerkverbindungen ohne Timeouts,</p>
+</li>
+<li>
+<p>Warten auf geteilte Resourcen (bes. Deadlocks),</p>
+</li>
+<li>
+<p>volle Warteschlangen,</p>
+</li>
+<li>
+<p>selbstentwickelte Nebenläufigkeitsframeworks und vieles mehr.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Heutige Systeme sind oft eng gekoppelt mit synchronen Aufrufen und teilweise unsichtbaren Abhängigkeiten.
+Änderungen oder Fehler in einer Komponente propagieren in andere.</p>
+</div>
+<div class="paragraph">
+<p>Die Entkopplung von Diensten (MicroServices sind nur ein Beispiel) und Aufrufen (EventBus, MessageQueues) und die klare Definition von Systemgrenzen helfen klarzustellen wo mein eigener Dienst aufhört und die Aussenwelt beginnt.
+Und welche Kontrakte ich als Aufrufer erwarten kann oder als Anbieter garantieren muss.
+Beides kann und sollte dann unabhängig voneinander getestet werden.</p>
+</div>
+<div class="paragraph">
+<p>Synchrone Aufrufe können blockieren, nur extrem langsam Daten zurückliefern oder nach initialer Kontaktaufnahme nie wieder antworten.
+Wie oft setzen wir uns mit solchen Fehlerszenarien auseinander?</p>
+</div>
+<div class="paragraph">
+<p>Und können und wollen wir all diese selbst in unserer Kommunikationsschicht behandeln?
+Es ist sicher sinnvoller eine erprobte und geteste Infrastruktur dafür zu benutzen, wie z.B. Akka, Kafka, RabbitMQ usw.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Was passiert, wenn unser Threadpool leer ist?</p>
+</li>
+<li>
+<p>Werden neue Threads erzeugt ohne Obergrenze?</p>
+</li>
+<li>
+<p>Werden neue Aufgaben in eine (lange) Warteschlange gestellt?</p>
+</li>
+<li>
+<p>Produziert der Aufrufer weiterhin neue Aufgaben oder wird er geblockt?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Java ThreadPools bieten sowohl Task-Warteschlange an als auch verschiedene Strategien <code>RejectedExecutionHandler</code>, für die Behandlung neuer Aufgaben wenn die Warteschlange voll ist.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public static ExecutorService createDefaultPool() {
+    int threads = getNoThreadsInDefaultPool();
+    int queueSize = threads * 25;
+    int corePoolSize = threads / 2;
+    int keepAliveTime = 30L;
+    Queue&lt;Runnable&gt; queue =  new ArrayBlockingQueue&lt;&gt;(queueSize)
+    return new ThreadPoolExecutor(corePoolSize, threads, keepAliveTime, SECONDS, queue,
+                                  new CallerBlocksPolicy());
+    // alternativ: new ThreadPoolExecutor.CallerRunsPolicy()
+
+}
+static class CallerBlocksPolicy implements RejectedExecutionHandler {
+    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+        if (!executor.isShutdown()) {
+            LockSupport.parkNanos(100);
+            executor.execute(r);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>AbortPolicy</code> - der Versuch schlägt mit einer Exception fehl (das ist der Standardansatz)</p>
+</li>
+<li>
+<p><code>DiscardPolicy</code> - der Task wird ohne Rückmeldung ignoriert</p>
+</li>
+<li>
+<p><code>DiscardOldestPolicy</code> - entferne den ältesten Eintrag, auf dessen Ergebnisse wird am unwahrscheinlichsten noch gewartet</p>
+</li>
+<li>
+<p><code>CallerBlocksPolicy</code> - der Aufrufer wird blockiert bis die Warteschlange wieder Platz frei hat</p>
+</li>
+<li>
+<p><code>CallerRunsPolicy</code> - der Aufrufer führt die Arbeit selbst aus, und blockiert sich damit selbst (immer wieder)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Letztere ist etwas tricky, da das Verhalten bei einer Ausführung des Tasks im Aufrufer anders sein kann:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>von ThreadLocals, die ggf. anders genutzt werden als angedacht,</p>
+</li>
+<li>
+<p>zu nicht vorhandenem Monitoring und</p>
+</li>
+<li>
+<p>unerwartetem Verhalten, wenn plötzlich Exceptions den Aufrufer beenden (im Threadpool kann das vorkommen, dann werden einfach neue Threads erzeugt).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Oft sind Threadpools verschiedener Teile des Systems unterschiedlich dimensioniert.
+Während Webserver beliebig repliziert werden können und zehntausende von Threads haben, sind Datenbanken mit ein paar hundert Threads gut ausgelastet und Fremdsysteme zur Integration haben oft nur eine Handvoll.
+Damit kann ein</p>
+</div>
+<div class="paragraph">
+<p>Eine interessante Frage stellte hier die Dimensionierung unserer Testsysteme dar.
+Aufgrund von Budgetgrenzen aber auch der Unmöglichkeit das Produktivverhalten (Last, Nutzeranfragen, Ausfälle, Fremdsysteme) zu reproduzieren, sind Testssysteme of nur eine sehr schwache Abbildung der Realität und verhalten sich viel freundlicher als die echte Welt.</p>
+</div>
+<div class="paragraph">
+<p>Thread-Pool-Größen der verschiedenen Systeme, die produktiv teilweise starke Verzerrungen aufweisen sind im Testsystem oft ähnlich große Kapazitäten vorhanden.
+Damit werden die Wahrscheinlichkeit von Problemen durch Blockierungen und Überlast deutlich reduziert.
+Das Mocking von Fremdsystemen durch gutartige Implementierungen stellen auch eine deutliche Verharmlosung dar.</p>
+</div>
+<div class="paragraph">
+<p>Michael empfiehlt einen Test-Harness, mit dem man alle möglichen, fiesen Situtationen produzieren kann die im echten Leben auftreten.
+Für einen wirklich realistischen Test der Systemstabilität wird Chaos-Testing erfolgreich genutzt, um zu lernen was und was nicht funktioniert (und warum) und bei letzterem natürlich die Ursachen anzugehen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_netzwerkverbindungen">Netzwerkverbindungen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In heutigen Cloud und Datacenter-Deployments ist Netzwerklatenz udn Bandbreite meist kein kritisches Problem mehr.
+Interessant wird es aber bei der Verfügbarkeit anderer Dienste, und deren Antwortverhalten, besonders wenn man nicht das Netzwerk dahin und den Dienst dahinter kontrolliert und kennt.</p>
+</div>
+<div class="paragraph">
+<p>Das können Datenbanken, Addressvalidierungsdienste, Logistikdienstleister und anderes sein. Die eigene Antwortzeit ist immer mindestens langsam wie die Antwortzeiten der aufgerufenen Dienste.</p>
+</div>
+<div class="paragraph">
+<p>Bei der Konfiguration unseres Dienstes muss aufgepasst werden, an welche Netzwerkinterfaces und Routen wir uns binden, besonders, wenn dankenswerterweise mehrere Netzwerkinterfaces vorliegen.</p>
+</div>
+<div class="paragraph">
+<p>Es ist wichtig, die IP zu spezifizieren an die jeweiligen Netzwerk sich binden will, sonst schaut man in die "falsche Röhre".
+Besonders in Java ist IP-Lookup ein unerwartet komplexes Thema, wenn man nicht konkret genug ist. Dann bindet sich der Socket an ein zufälliges (oder alle) Interfaces.</p>
+</div>
+<div class="paragraph">
+<p>Sofern man sich auf DNS-Round-Robin zum Load-balancing verlässt, sollte man wissen dass (nicht-)aufgelöste DNS Einträge lange gecached werden.</p>
+</div>
+<div class="paragraph">
+<p>Java hat seinen eigenen Cache (u.a. aus Sicherheitsgründen), den man auf minimale Werte setzen kann.
+Wenn ein SecurityManager installiert ist, wird standardmässig unendlich lange gecached (wg. DNS Spoofing), sonst 30 Sekunden.
+Die Einstellungen findet man in <code>${JRE_HOME}/lib/security/java.security</code> oder über <code>java.security.Security.setProperty</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>// alternatives, internes Setting, wenn Security Property nicht gesetzt
+-Dsun.net.inetaddr.ttl=5 -Dsun.net.inetaddr.negative.ttl=30
+
+java.security.Security.setProperty("networkaddress.cache.ttl")
+java.security.Security.setProperty("networkaddress.cache.negative.ttl")</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wenn der aufgerufene Dienst die Verbindung ablehnt, sind wir gut raus, unser Aufruf schlägt schnell fehl und wir können darauf reagieren.</p>
+</div>
+<div class="paragraph">
+<p>Andererseits ist man gut beraten, eine Timeout für die Verbindung angegeben zu haben, ansonsten blockiert der Aufruf potentiell bis in alle Ewigkeit.</p>
+</div>
+<div class="paragraph">
+<p>Oft ist das nicht in der API möglich, aber oft können Maximalzeiten für Verbindungsaufbau (connect) und Lesen (read) vom Socket konfiguriert werden, wie z.B. bei den meisten HTTP-Clients und sogar <code>HttpURLConnection</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">JDBC Timeouts</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">// timeout für connection initialization
+DriverManager.setLoginTimeout(timeoutInSeconds);
+Connection con = DriverManager.getConnection(url, username, password);
+
+// Vorzeitiger Abbruch von SQL Connections, bei langen Netzwerk (TCP) Timeouts
+con.setNetworkTimeout(executor, timeoutInMillis);
+
+// Transaktions-Timeout, e.g. via Spring oder JTA (vor tx.begin() aufrufen)
+UserTransaction.setTransactionTimeout(timeoutInSeconds);
+
+// Timeout pro statement (standardmässig kein Timeout)
+Statement.setQueryTimeout(timeoutInSeconds);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für einige JDBC Treiber gibt es dafür eigene Methoden, oder URL parameter für den JDBC connection String oder JDBC Properties, siehe auch [JDBCTimeouts].</p>
+</div>
+<div class="listingblock">
+<div class="title">HTTP connect und read timeout</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">HttpURLConnection con = ...
+con.setConnectTimeout(3_0000);
+con.setReadTimeout30_000);
+....</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In einigen APIs, wie ist das nicht möglich, dann kann man entweder Sockets mit Timout erzeugen, bevor man diese für die eigentliche Verbindung verwendet.</p>
+</div>
+<div class="listingblock">
+<div class="title">Socket timeout</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Socket socket = new Socket();
+socket.setSoTimeout(readTimeout);
+socket.connect(addr, connectTimeout);
+
+newSocket = socket.getSocketFactory().createSocket(socket, hostname, port, true);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oder sogar eine eigene <code>SocketFactory</code> im System installieren, die <strong>immer</strong> solche Timeouts setzt.</p>
+</div>
+<div class="listingblock">
+<div class="title">Eigene SocketFactory</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">// default is java.net.SocksSocketImpl
+// Client Sockets
+Socket.setSocketImplFactory(new TimoutSocketFactory())
+// Server Sockets
+ServerSocket.setSocketFactory(SocketImplFactory)
+
+public class TimoutSocketFactory extends java.net.SocksSocketImpl {
+    private final int defaultSoTimeout = 5000;  // oder aus System property oder Constructor
+
+    protected void connect(SocketAddress endpoint, int timeout) throws IOException {
+        super.connect(endpoint, timeout == 0 ? defaultSoTimeout : timeout);
+    }
+
+    protected void connect(String host, int port) throws UnknownHostException, IOException {
+        setTimeoutIfNecessary();
+        super.connect(host, port);
+    }
+
+    protected void connect(InetAddress address, int port) throws IOException {
+        setTimeoutIfNecessary();
+        super.connect(address, port);
+    }
+
+    private void setTimeoutIfNecessary() throws SocketException {
+        if (super.getTimeout() == 0)
+          setOption(SO_TIMEOUT, defaultSoTimeout);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ein oft unbeachteter Aspekt ist die Blockierung von Lese- oder Schreiboperationen, z.b. auf HTTP-Verbindunge, wenn die Input- und Output-Streams nicht geleert werden.
+So kann es z.B. passieren, dass man keine Daten empfangen kann, wenn der InputStream nicht abgeschlossen wurde, oder die Vebindung solange blockiert, bis man wieder genug Daten aus dem OutputStream gelesen hat.</p>
+</div>
+<div class="paragraph">
+<p>Mit Resourcenmanagement (z.b. try-with-resources für `AutoCloseable`s) kann man zumindest dafür sorgen, dass Verbindungen garantiert die Gelegenheit gegeben wird, ihre Resourcen aufzuräumen.
+Wenn das nicht oder unvollständig passiert, können z.B. halb-geschlossene Verbindungen existieren, oder verhindert werden dass Connections in den Pool zurückgegeben werden.
+In einem Beispiel im Buch passierte das nach einem Datenbank-Failover, wenn existierende Connections und Statements partiell invalidiert wurden.
+Dasselbe gilt natürlich für andere Resourcen, wie z.B. Datei-Handles.</p>
+</div>
+<div class="listingblock">
+<div class="title">Falsch - kein null-check, und wenn ein close fehlschlägt, werden die anderen nicht mehr ausgeführt</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Connection con = driverMgr.getConnection();
+Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery(query);
+try {
+  ...
+} finally {
+   rs.close();
+   stmt.close();
+   con.close();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Besser mit try-with-resources</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">try (Connection con = driverMgr.getConnection()) {
+   try (PreparedStatement pstmt = con.prepareStatement(statement)) {
+      try (ResultSet rs = pstmt.executeQuery()) {
+
+      }
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Um diesen (temporären) Ausfall von Fremdkomponenten zu handhaben, ist ein Muster wie "Circuit-Breaker" (Sicherung) gut geeignet.
+So eine Sicherung kapselt Aufrufe von Fremdsysteme und zählt aufeinanderfolgende Fehlschläge (in einem Zeitrahmen) mit und weist ab einer gewissen Quote (je nach Regel) Aufrufe ab.
+Nach einiger Zeit können einzelne Aufrufe testweise durchgelassen werden, um zu testen ob das Fremdsystem wieder verfügbar ist.
+Die Fehlerzähler, -raten und -zustände dieser Sicherungen sollten definitiv ins Monitoring mit einbezogen werden.</p>
+</div>
+<div class="paragraph">
+<p>Das kann in Java mittels Bibliotheken, wie z.b. der Hystrix-Annotation: <code>@HystrixCommand(fallbackMethod = "fallbackMethodName")</code>
+oder [Resilience4j], die jeweils auch Integration mit Monitoring anbieten.</p>
+</div>
+<div class="listingblock">
+<div class="title">Beispiel aus Resilience4j</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public interface BackendService {
+    String doSomething();
+}
+
+CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("backendName");
+
+// Create a default Retry with at most 3 retries and a fixed time interval between retries of 500ms
+Retry retry = Retry.ofDefaults("backendName");
+
+// Decorate your call to BackendService.doSomething() with a CircuitBreaker
+Supplier&lt;String&gt; decoratedSupplier = CircuitBreaker
+    .decorateSupplier(circuitBreaker, backendService::doSomething);
+
+// Decorate your call with automatic retry
+decoratedSupplier = Retry
+    .decorateSupplier(retry, decoratedSupplier);
+
+// Execute the decorated supplier and recover from any exception
+String result = Try.ofSupplier(decoratedSupplier)
+    .recover(throwable -&gt; "Hello from Recovery").get();
+
+// When you don't want to decorate your lambda expression,
+// but just execute it and protect the call by a CircuitBreaker.
+String result = circuitBreaker.executeSupplier(backendService::doSomething);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nur bei transienten Problemen (z.b. kurze Netzwerkstörung, Neustart des Dienstes), was uns auch erst einmal korrekt vermittelt werden muss, könnte man den Aufruf noch einmal versuchen.</p>
+</div>
+<div class="paragraph">
+<p>Die automatische Wiederholung des Aufrufs (retry), ggf. mit inkrementellem Verzögerungen, klingt erst einmal wie eine gute Idee, geht aber oft eher nach hinten los.</p>
+</div>
+<div class="paragraph">
+<p>Denn all diese Versuche und Wartezeiten summieren sich schnell auf (und übersteigen dann unsere garantierte Antwortzeit) und blockieren Resourcen, es ist viel besser dem Aufrufer schnell das Fehlschlagen mitzuteilen (fail-fast) und ihm dann die Entscheidung zu überlassen.
+Endnutzer klicken sowieso noch einmal, oder laden ihre Seite neu, wenn ihnen die Antwort nicht schnell genug kommt.</p>
+</div>
+<div class="paragraph">
+<p>Oft wären die angeforderten Daten nach einem Retry schon veraltet und würden sowieso verworfen.</p>
+</div>
+<div class="paragraph">
+<p>Auf dem TCP Schicht sorgen Empfangs- und Sendewarteschlangen für eine Pufferung eingehender Pakete, was im Sinne der Bandbreite erst einmal hilfreich sein kann.
+Wenn diese voll sind, wird die andere Seite und damit der Aufrufer geblockt und damit eine Art "Backpressure" erzeugt.
+Reaktive Systeme wie Akka, Reactor usw. nutzen einen ähnlichen Ansatz auf dem höheren Infrastrukturlevel um skalierbare Systeme zu gewährleisten, in denen Konsumenten nicht überlastet werden.</p>
+</div>
+<div class="paragraph">
+<p>Die Länge dieser Warteschlangen kann ein Problem darstellen besonders wenn die Weiterverarbeitung der gepufferten Anfragen, dann gar nicht passiert oder extrem verzögert ist.
+Dann wartet man ggf. unnötig lange auf ein Ergebnis das dann doch nicht kommt.
+Daher gibt es oft die Empfehlung diese TCP-Puffer (auch den für Nachzügler-Pakete) im Rechenzentrum eher klein zu halten, damit man schnell eine Rückmeldung über die Kapazitätsprobleme der anderen Seite bekommt.</p>
+</div>
+<div class="paragraph">
+<p>Das ganze Thema Orchestrierung, Discovery und Configuration Management für service- oder komponentenbasierte Dienste ist ein eigenes Thema das ganze Bücher füllen kann.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_security">Security</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sicherheit ist ein extrem wichtiges Thema, wie wir nicht erst seit den letzten Problemen mit Struts oder Commons Collections in Verbindung mit Deserialisierung [HungXXX artikel].</p>
+</div>
+<div class="paragraph">
+<p>Die Grundregeln sind:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Traue niemandem,</p>
+</li>
+<li>
+<p>Alle Daten von ausserhalb des Systems sind potentiell kontaminiert</p>
+</li>
+<li>
+<p>Du bist nur so sicher wie deine Dependencies (Bibliotheken, JVM, OS).</p>
+</li>
+<li>
+<p>Minimale Rechte für den Nutzer unter dem das System läuft</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Daten von Nutzern, wie <code>Bobby'); DROP TABLE students; --</code> sollten nie in ihrer Rohform in Datenbank-Statements eingebunden werden, an Dateinamen angehängt oder in HTML gerendert werden.</p>
+</div>
+<div class="paragraph">
+<p>Wenn irgend möglich müssen Parameter genutzt werden, wie hier im <code>PreparedStatement</code>, das gilt übrigens nicht nur für SQL, sondern auch für NoSQL Datenbanken, Big-Data Systeme und Suchmaschinen.
+Es hilft auch, Anfragen, die nur Daten lesen sollen, in einer READ_ONLY Transaktion auszuführen.</p>
+</div>
+<div class="listingblock">
+<div class="title">Beispiel aus JDBC</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">try (PreparedStatement pstmt = con.prepareStatement("SELECT * FROM PERSON WHERE NAME = ?")) {
+   pstmt.setString(1,request.get("name"));
+   try (ResultSet rs = pstmt.executeQuery()) {
+     ...
+   }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Beispiel aus Neo4j&#8217;s Cypher</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">String stmt = "CREATE (p:Person {id:$id}) SET p.name = $name";
+Map params = Map.ofEntries(entry("id",request.get("id")), entry("name",request.get("name")));
+try (Session session = driver.session(AccessMode.READ)) {
+    StatementResult res = session.run(stmt, params);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Da die Daten von Nutzereingaben trotzdem in der Datenbank landen und da schlummern, sollte man sich nicht sicher wiegen.
+Sobald sie, ohne Säuberung z.b. in einer HTML Seite angezeigt werden, können enhaltene Skript-Fragemente auch Monate später noch Schaden anrichten.
+Das reicht vom Identitätsdiebstahl zu Übernahme von Systemen (wenn diese Daten z.b. in einem Admin-Backend angezeigt werden, die umfassende Rechte hat).</p>
+</div>
+<div class="paragraph">
+<p>Die Aktualisierung von Dependencies bes. nach Sicherheitsfixes ist kritisch, oft wird das vernachlässigt, da die eigenen Release-Zyklen zu lang sind bzw. das Thema nicht wichtig genommen wird, wie wir gerade erst beim Equifax-Datendiebstahls gesehen haben.
+Automatisierte Dependency-Trackingsysteme wie Version-Eye können dabei gut helfen.</p>
+</div>
+<div class="paragraph">
+<p>Michael empfiehlt auch, eigene Mirrors von öffentlichen Dependencies anzulegen, da Kompromittierung mittels "man-in-the-middle" sonst leicht möglich ist, das betrifft auch Plugins für Build-Systeme (maven, gradle, Jenkins usw.). Diese sollten dann zumindest gegen die veröffentlichen Checksummen gepüft werden.</p>
+</div>
+<div class="paragraph">
+<p>Im Buch werden die Top-10 Sicherheitsprobleme von OWASP (Open Web Application Security Project) detailliert besprochen, jedes von ihnen ist glaube ich einen Artikel wenn nicht sogar ein Buch wert.
+Für die meisten davon gibt es Checklisten, Übersichten und sogar Bibliotheken die beim sicheren Umgang mit (Nutzer-)Daten, Authentifizierung, Authorisierung, Angriffen und Verletzlichkeiten helfen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_systembetrachtung">Systembetrachtung</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im Buch werden alle relevanten Schichten unserer Systeme im Detail beleuchtet, das würde hier leider den Rahmen sprengen.</p>
+</div>
+<div class="paragraph">
+<p>Bild:{img}/nygard-layers-of-concern.jpg[]</p>
+</div>
+<div class="paragraph">
+<p>Eine weiteren umfangreichen Teil nehmen Betrachtungen zu Plattformen (Cloud, as a Service) und neuen Ansätzen zu Paketierung (Container), Monitoring und Datenaustausch (APIs, Messaging) ein und wie adaptive Architekturen dabei helfen können, zukünftigen Anforderungen kontinuierlich gerecht zu werden.</p>
+</div>
+<div class="paragraph">
+<p>Desweiteren geht Michael auch auf die organisatorischen Aspekte ein, wie Teamstruktur und -kommunikation, gemeinsames Verständnis, Auslastung (Überlastung), Platform-Teams, DevOps und die Entwicklung hin zu Organisationen die mit schnellen Entwicklungs- und Releasezyklen sowohl Mehrwerte schneller realisieren können als auch Produktivprobleme unmittelbar finden und sofort im nächsten Deployment beheben können.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fazit">Fazit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es gibt nicht viel, dass ich im Buch vermisse, aber es soll ja auch noch Raum für eine 3. Edition bleiben.</p>
+</div>
+<div class="paragraph">
+<p>Natürlich hätte man bei jedem Thema noch viel mehr in die Tiefe gehen können, aber dafür gibt es eine Menge Referenzen und ein gutes Literaturverzeichnis.
+Ich hätte mir noch mehr Bezug zu NoSQL Datenbanken, Orchestrierung und Roll-Out in größeren Systemen, und die aktuellen Entwicklungen um serverless/Lambda-basierte Ansätze.
+Eine Referenz auf Uwe Friedrichsens Mustersprache wäre angemessen gewesen und auch die Darstellung der Muster in einem engerem Zusammenhang.</p>
+</div>
+<div class="paragraph">
+<p>In dem Zusammenhang hätte auch eine Diskussion von Architekturerosion und -dokumentation gut ins Buch gepasst.
+Das Dokumentationsthema mit dazugehörigen Problemen und Lösungen findet leider auch keine Beachtung.</p>
+</div>
+<div class="paragraph">
+<p>Das gilt auch für den Bezug auf Domain-Driven-Design und welche Auswirkungen es auf die Systemarchitektur hat, z.B. mittels bounded-context, translation layer und ubiquitous language.</p>
+</div>
+<div class="paragraph">
+<p>Auf jeden Fall, ist das Buch sehr zu empfehlen, soviel Wissen, nützliche Tips und Unterhaltung findet man selten in einer technischen Publikation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[Nygard] Release It Michael Nygard, Pragmatic Programmers</p>
+</li>
+<li>
+<p>[DDD] Domain Driven Design, Eric Evans</p>
+</li>
+<li>
+<p>[LongBastani] Cloud Native Java, Josh Long, Kenny Bastani</p>
+</li>
+<li>
+<p>[UFried] Uwe Friedrichsen Resilicency Patterns: <a href="https://www.codecentric.de/publikation/eine-kurze-einfuehrung-in-resilient-software-design/" class="bare">https://www.codecentric.de/publikation/eine-kurze-einfuehrung-in-resilient-software-design/</a></p>
+</li>
+<li>
+<p>[JDBCTimeouts] <a href="https://www.cubrid.org/blog/understanding-jdbc-internals-and-timeout-configuration" class="bare">https://www.cubrid.org/blog/understanding-jdbc-internals-and-timeout-configuration</a></p>
+</li>
+<li>
+<p>[OWASP] Open Web Application Security Project <a href="http://owasp.org" class="bare">http://owasp.org</a></p>
+</li>
+<li>
+<p>[Resilience4j] <a href="https://github.com/resilience4j/resilience4j" class="bare">https://github.com/resilience4j/resilience4j</a> - implementiert viele der vorgestellten Muster in plain Java basierend auf VAVR(ehem. JavaSlang)</p>
+</li>
+<li>
+<p>[DNSJava] <a href="http://www.myhowto.org/java/42-understanding-host-name-resolution-and-dns-behavior-in-java/" class="bare">http://www.myhowto.org/java/42-understanding-host-name-resolution-and-dns-behavior-in-java/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-21 23:33:58 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

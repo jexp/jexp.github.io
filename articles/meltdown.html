@@ -1,0 +1,561 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Prozessor Gau - Meltdown und Spectre</title>
+    <meta http-equiv='Content-Style-Type' content='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
+  <link rel="openid.server" href="http://jexp.de/id" />
+  <meta name='robots' content='index,follow' />
+</head>
+<body>
+<!--PageHeaderFmt-->
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
+    alt='JEXP' border='0' align="center" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    JEXP</div>
+<!--/PageHeaderFmt-->
+
+<div id="wikileft">
+   <ul>
+	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
+	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
+</ul>
+
+</div>
+
+<div id="wikibody">
+
+<h1>Prozessor Gau - Meltdown und Spectre</h1>
+
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Einige Autoren sprechen vom kritischsten Sicherheitsproblemen in der Geschichte moderner Hard- und Software.
+In den wenigen Wochen seit der Veröffentlichung der drei neuen Angriffmuster für moderne Prozessoren, die unter ihren Bezeichnungen "Meltdown" und "Spectre" war die IT Welt im Aufruhr.
+Sie hat sich jetzt beruhigt, zeigt aber dass es schwieriger ist, sich vor modernen, untraditionellen Angriffe zu schützen.</p>
+</div>
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://spectreattack.com/images/meltdown.min.svg" alt="meltdown.min" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Beide Lücken bedürfen, dass fremder Code auf dem eigenen System ausgeführt wird, was aber bei Multi-User Systemen, Cloud-Umgebungen und sogar beim Browsen im Netz stets gegeben ist.
+In beiden Fällen wird spekulative Ausführung von Operationen zusammen mit einer indirekten Erkennung genutzt.
+Bei Meltdown wird aus dem Kernel-Speicher und bei Spectre aus geschütztem Anwendungsspeicher gelesen.</p>
+</div>
+<div class="paragraph">
+<p>Die Forschungsergebnisse wurden schon im Juni 2017 bereitgestellt.
+Die Erkenntnisse kamen vom Google&#8217;s "Project Zero" das aktiv nach Sicherheitslücken forscht, und anderen Wissenschaftlern, die darauffolgend auch an Fixes arbeiteten.</p>
+</div>
+<div class="paragraph">
+<p>Auch wenn die Informationen erst Anfang Januar an die breite Öffentlichkeit kamen, haben Mitarbeiter der Prozessorschmieden Intel, AMD, Apple und ARM, sowie der Cloud-Anbieter (AWS, Google, Microsoft) und Betriebsystementwickler (Linux, Apple, Microsoft) schon seit mehreren Monaten an Lösungen für die Probleme gearbeitet.</p>
+</div>
+<div class="paragraph">
+<p>Offensichtlich ist das aber schwieriger als es sich jeder wünschen würde - wir hörten von Geschwindigkeitseinbussen von bis zu 30% je nach Anwendungsfall in Betriebsystemen, Serverdiensten, und Datenbanken.
+Leider sind nicht nur traditionelle Server und PCs (Laptops) von diesem Problem betroffen, sondern auch Mobilgeräte und ggf. auch andere Geräte mit einem "modernen" Prozessor aus den letzten 20 Jahren.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sicherheitslücken">Sicherheitslücken</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wir haben bisher meist von Sicherheitslücken gehört, die auf Pufferüberläufen, fehlerhafter Rechte- oder Schlüsselhandhabung oder unzureichendem Schutz von sensiblen Informationen beruhten.
+Selten waren es auch fehlerhafte Microcodes in Prozessoren (Pentium Bug), oder Handhabung von Speicherfehlern.</p>
+</div>
+<div class="paragraph">
+<p>Meltdown und Spectre stellen eine neue Art von Angriffen dar, sogenannte Sidechannel-Attacken.
+Dabei wird auf sensible, geschütze Information nicht unmittelbar zugegriffen sondern ihre Werte durch indirekte Beobachtungen von Laufzeiten, Temperaturen, Änderungen im elektrischen Feld abgeleitet.</p>
+</div>
+<div class="paragraph">
+<p>In Prozessoren ist die Laufzeit von Operationen eine Größe die mit Zeitmessung im Nanosekundenbereich beobachtet werden kann.
+Und um mehrere Größenordnungen unterscheidbare Laufzeiten gibt es vor allem beim Zugriff auf verschiedene Speicher.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man also den Prozessor dazu bekommt, abhängig von geschützen Speicherinhalten, bestimmte Zugriffszeiten zu verändern, kann man auf diese Inhalte schliessen.</p>
+</div>
+<div class="paragraph">
+<p>Fast alle Prozesse laufen im regulären Benutzer-Modus, also mit den Rechten des ausführenden Nutzers, und können nur ihren eigenen Speicher lesen und schreiben.
+Sie können nicht auf geschützte Speicherbereiche zugreifen, diese sind nur im Kernel-Modus verfügbar, z.B. während Systemaufrufen.</p>
+</div>
+<div class="paragraph">
+<p>Aus Performance-Gründen wird der Systemspeicher auch bei regulären Prozessen mittels virtueller Addressen in den Seitentabellen (Page-Tables) in den Prozessspeicher eingeblendet.
+Der Zugriff auf diesen Speicher im Benutzer-Modus ist aber trotzdem geschützt (Supervisor-Bit), der Prozess würde beim Versuch mit einem Zugriffsfehler abgebrochen.</p>
+</div>
+<div class="paragraph">
+<p>Wenn man also die CPU dazu bringen kann, Code im Hintergrund auszuführen der ohne den Sicherheitscheck den geschützten Speicher ausliest und dann nicht alle "Spuren" hinter sich beseitigt, dann kann man dies nutzen, um die Informationen implizit ermitteln.</p>
+</div>
+<div class="paragraph">
+<p>Und genau das passiert bei der spekulativen Ausführung von zukünftigen Codefragmenten.</p>
+</div>
+<div class="paragraph">
+<p>Während Meltdown direkt diesen unzureichenden Schutz ausnutzt, hat Spectre einen anderen Fokus.
+Bei diesem Angriff werden die Vorhersageeinheiten der CPU beeinflusst, um spekulativ vertrauenswürdige, privilegierte Code-Abschnitte aus Programmen und Bibliotheken auszuführen und so die nachweisbaren Spuren zu erzeugen.
+Das geht soweit, dass sogar ein Javascript Programm in der Browser-Sandbox eines ungepatchten Systems auf geschützte Passworte im Browser-Speicher zugreifen könnte.</p>
+</div>
+<div class="paragraph">
+<p>Um zu verstehen wie und warum das passiert, müssen wir kurz auf moderne Prozessorarchitektur eingehen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_moderne_prozessoren">Moderne Prozessoren</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Seit den 1965 begleitet uns Moore&#8217;s Law, das besagt, dass sich die Anzahl der Transistoren auf einem Chip alle 18 Monate verdoppelt.
+Das bedeutet aber <strong>nicht</strong> dass sich dadurch die Leistung einer CPU automatisch steigt.</p>
+</div>
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Moore_Law_diagram_%282004%29.png" alt="Moore Law diagram %282004%29" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Die höhere Zahl an Transistoren ging für einige Zeit mit gleichzeitiger Steigerung der Taktfrequenzen einher, von wenigen Megahertz bis auf heutzutage bis zu 3.7 GHz.
+Dem ungebremsten Takt-Turbo machte dann die Physik einen Strich durch die Rechnung - Übersprechen und Interferenzen von Leitungen mit immer kleineren Abständen und vor allem auch die massive Abwärme, fokussierten die Chipdesigner auf andere Architekturbestandteile, die sich leichter skalieren lassen.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen sind das heute viele Kerne pro Chip, von denen jeder auch noch 2 CPUs enthält (Hyper-Threading), eine andere Entwicklung begann aber schon viel eher.</p>
+</div>
+<div class="paragraph">
+<p>Schon in den Neunzigern wurden mit dem Pentium mehrere Pipelines zur Abarbeitung von Prozessorbefehlen integriert.
+Diese Prozessoren werden auch als [superskalar] bezeichnet.</p>
+</div>
+<div class="paragraph">
+<p>Damit konnten aufeinanderfolgende, aber voneinander unabhängige Befehle im Mikrocode parallel ausgeführt werden.
+Leider gibt es diese Unabhängigkeit von Operationen generell nicht oft genug, um die Pipelines zu beschäftigen, obwohl Compiler versuchen dafür optimierten Code zu erzeugen.</p>
+</div>
+<div class="paragraph">
+<p>Also wurde im weiteren auf bedingte Entscheidungspunkte im Programmablauf geschaut, die mehrere Programmzweige, Aufrufe oder Sprünge zu verschiedenen Zielen zur Folge hätten.</p>
+</div>
+<div class="paragraph">
+<p>Offensichtlich sind diese parallelen Alternativzweige unabhängig voneinander und somit perfekte Kandidaten für die sich langweilenden Pipelines.</p>
+</div>
+<div class="paragraph">
+<p>Sie können die Operationen schon einmal spekulativ ausführen, so dass wenn die Entscheidung ausgewertet wird, der Code "dahinter" schon ausgeführt wurde und die relevanten Ergebnisse schon vorliegen.</p>
+</div>
+<div class="paragraph">
+<p>Alle anderen Ergebnisse werden einfach verworfen.
+Das ist immer noch günstiger, als alle anderen Pipelines nicht zu nutzen und erst nach der Entscheidung den einen, relevanten Zweig auszuführen.</p>
+</div>
+<div class="paragraph">
+<p><em>Wirklich alle? Dazu kommen wir gleich.</em></p>
+</div>
+<div class="paragraph">
+<p>Die Entscheidung, welcher der vielen Zweige oder Ziele relevanter sind als andere, versucht der Prozessor mittels Annahmen über die Ausdrücke (Branch-Prediction) und einem minimalen Lernprozess (Cache) vorherzusagen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_caches">Caches</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die hohe Taktfrequenz und die vielen parallelen Ausführungseinheiten führen dazu, dass der Hauptspeichercontroller unter einer hohen Last steht und nicht schnell genug Daten für die Ausführungseinheiten liefern kann.
+Damit lange Wartezyklen auf den Hauptspeicher die CPU nicht komplett ausbremsen, wurden schon früh CPU-Caches eingeführt.</p>
+</div>
+<div class="paragraph">
+<p>Moderne CPUs enthalten meist 3 Cacheschichten (oder sogar 4), deren Zugriffszeiten und Größen sich um mehrere Größenordnungen voneinander und auch vom Hauptspeicher unterscheiden.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Cache: Latenzen &amp; Größen</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Level</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Latenz</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Takte</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Größe</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1 ns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3-4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">128KB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5ns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1-2MB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20ns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">80-90</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8-10MB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">50ns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">150-200</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100MB</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RAM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">80-120ns</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">400-500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GB / TB</p></td>
+</tr>
+</tbody>
+</table>
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Multi-level_Cache_Hierarchy_diagram.svg/557px-Multi-level_Cache_Hierarchy_diagram.svg" alt="557px Multi level Cache Hierarchy diagram" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Nur wenn Informationen in Registern oder im Level 1 Cache vorliegen, kann die CPU-Pipeline mit maximalem Takt arbeiten, sonst muss sie stets warten, bis die Informationen geladen sind.
+Daher gibt es zusätzlich diverse Mechanismen zum Vorladen (Prefetching) von Daten.
+Einige (einfache) Zugriffsmuster auf Speicher können vorhergesagt, und die relevanten Bereiche oder Addressinhalte vorgeladen werden.</p>
+</div>
+<div class="paragraph">
+<p><strong>All diese Architekturbestandteile moderner Prozessoren werden für die neuen Angriffe genutzt.</strong></p>
+</div>
+<div class="paragraph">
+<p>Leider gibt es einen Design-Fehler in Intel Prozessoren: bei der Hintergrundausführung von Operationen in den parallelen Pipelines werden die Zugriffsrechte für den Kernel-Speicherbereich nicht sofort beachtet, so dass Werte daraus in Berechnungen genutzt werden können.</p>
+</div>
+<div class="paragraph">
+<p>Dann können diese spekulativen Operationen mit den geschützten Werten zum Beispiel eine Speicheradresse im Nutzerspeicher indirekt berechnen, die dann in den Cache vorgeladen wird.</p>
+</div>
+<div class="paragraph">
+<p>Man stelle sich ein 256-elementiges Feld vor, für das man sicherstellt dass keiner seiner Werte im CPU-Cache ist.
+Jetzt wird ein Feldindex mittels des Wertes aus dem "sicheren" Kernel-Speicher berechnet <code>feld[kernelSpeicherWert]</code>, was dazu führt dass <strong>dieses eine</strong> Feldelement in den Cache geladen wird.</p>
+</div>
+<div class="paragraph">
+<p>Bei <strong>Meltdown</strong> führt diese Vorbereitung ein Prozess direkt aus, der dann, wie erwartet mit einem Zugriffsfehler abgebrochen wird.</p>
+</div>
+<div class="paragraph">
+<p>Aber die geladene, harmlose Speicheraddresse ist immer noch im CPU Cache vorhanden und wird beim Zugriff darauf eine deutlich kürzere Zugriffszeit vorweisen als all ihre benachbarten Feldinhalte.
+Die kann man in einem zweiten Programm messen und daraus den originalen Byte-Wert aus dem geschützten Kernel-Speicher rekonstruieren, das dem Feldindex entspricht.</p>
+</div>
+<div class="imageblock" style="float: right">
+<div class="content">
+<img src="https://spectreattack.com/images/spectre.min.svg" alt="spectre.min" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Bei <strong>Spectre</strong> sind indirekte Sprünge und Aufrufe im Programmcode die Angriffstelle, d.h. ein Sprünge deren Zieladdresse von einem Registerinhalt abhängig ist.</p>
+</div>
+<div class="paragraph">
+<p>Die Startadresse eines indirekte Zweiges wird erst zur Laufzeit ermittelt, wie z.B. bei Sprungtabellen oder virtuellen Aufrufen in objektorientierten Programmen.
+Diese Ziele werden für die spekulative Ausführung vorhergesagt (branch prediction), ein Prozess, der möglichst treffsicher sein soll, und daher auch "lernen" kann.</p>
+</div>
+<div class="paragraph">
+<p>Bei mehreren Alternativen, wird genau wie bei anderen spekulativen Zweigen abgeschätzt welche Zielroutinen das sein könnten und diese schon einmal vorauseilend ausgeführt.</p>
+</div>
+<div class="paragraph">
+<p>Im Angriff werden die Vorhersageeinheiten der CPU so beeinflusst, dass sie spekulativ Code im Programm, dem Betriebssystem oder einer Bibliothek ausführen, der geschützte Inhalte lädt und dann abhängig von deren Wert entweder wieder Caches lädt, oder weitere Verzweigungen steuert, deren Auswirkungen gemessen werden können.</p>
+</div>
+<div class="paragraph">
+<p>Und so kann man mit beiden Ansätzen Byte für Byte Speicherbereiche auslesen auf die man eigentlich keinen Zugriff haben sollte.
+Das ist zwar nicht besonders schnell, die Forscher sind auf Datenraten zwischen 100 bis 500kb pro Sekunde gekommen, aber das ist für den Angriff an sich keine Einschränkung.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_patch_day">Patch Day</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Wer ist alles betroffen?
+Intel CPUs sind wegen ihres Designfehlers anfällig für Meltdown, aber alle Hersteller produzierten moderne CPUs mit spekulativer Ausführung von Zweigen im Hintergrund, die sich Spectre zunutze macht.</p>
+</div>
+<div class="paragraph">
+<p>Das betrifft Milliarden von Prozessoren weltweit, die nicht so mal einfach getauscht oder repariert werden können.
+Also muss es Patches im Mikrocode, den Betriebssystemen, Virtualisierungslösungen, Compilern und Anwendungen geben.</p>
+</div>
+<div class="paragraph">
+<p>Es wäre jedoch fatal für die CPU-Leistung, die spekulative Ausführung pauschal abzuschalten.</p>
+</div>
+<div class="paragraph">
+<p>Die Auswirkungen von Fixes auf die Rechenleistung auf Systeme und Anwendungen hängt davon ab, wieviele der kritischen Angriffstellen sie enthalten, also Systemaufrufe oder bedingte Sprünge.</p>
+</div>
+<div class="paragraph">
+<p>Ein unschöner Workaround der für Endnutzer-Anwendungen, wie Browser oder die JVM in Frage kommt, ist die <strong>Granularität von Zeitmessung</strong> auf mehr als 20 Nanosekunden zu vergröbern.
+Dann könnten die Cachelaufzeiten nicht mehr genau genug gemessen werden.
+Das wurde von einigen Browseranbietern schon umgesetzt.</p>
+</div>
+<div class="paragraph">
+<p>Bisher gibt es für Meltdown einen relativ "radikalen" Patch.
+Dabei werden die Kernel-Speicherbereiche nicht mehr automatisch in den Prozessspeicher eingeblendet, sondern erst bei jedem relevanten Systemaufruf und auch nur für dessen Laufzeit.</p>
+</div>
+<div class="imageblock" style="float: left">
+<div class="content">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Kernel_page-table_isolation.svg" alt="Kernel page table isolation" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>Diese Lösung heisst in Linux <strong>Kernel Page Table Isolation</strong> (KPTI), für Windows und andere Betriebssystemen gibt es ähnliche Ansätze.
+Damit werden Nutzer- und Kernelspeicher strikter voneinander getrennt.</p>
+</div>
+<div class="paragraph">
+<p>Bei der Umschaltung zwischen den beiden Betriebsmodi müsste auch der Address-Caches (TLB) bereinigt werden, eine extrem teure, sich auch noch selbst-verstärkende Angelegenheit, die selbst Anwendungen mit nur wenigen Systemaufrufen extrem ausbremsen würde.</p>
+</div>
+<div class="paragraph">
+<p>Zum Glück kann das [PCID] (<strong>Processor-Context-ID</strong>) Feature moderner Prozessoren dafür sorgen dass bestimmte Seiten nur im korrekten Kontext sichtbar werden, was in Linux seit kurzem auch benutzt werden kann.
+Wie Gil Tene von Azul festgesellt hat, wird dieses Feature von vielen Virtualsierungslösungen nicht an Gastsysteme weitergereicht.
+Wenn ihre Systeme auf virtueller oder Cloud-Infrastruktur laufen, stellen Sie sicher, das <code>grep pcid /proc/cpuinfo | wc -l</code> die Anzahl der Prozessoren anzeigt.</p>
+</div>
+<div class="paragraph">
+<p>Intels Patches waren bisher nur bedingt erfolgreich.
+Zum Beispiel führten die Microcode-Updates zu Crashes und spontanen Neustarts, so dass Intel Ende Januar sie erst einmal wieder zurückgezogen hat.
+Die PR-Strategy die gefundenen Probleme einfach als "reguläre Funktionsweise" moderner Chips darzustellen wird Intel auch nicht abgenommen.</p>
+</div>
+<div class="paragraph">
+<p>Eingereichte Linux Kernel Patches wurden von Linus Torvalds heftigst kritisiert, da scheinbar relativ einfache Fixes mit einer Menge irrelevanter Änderungen gemischt wurden.
+Nach den Erklärungen des Authors David Woodhouse ist das aber nicht der Fall, sondern stellt eine breitere Absicherung dar, um bestimmte Probleme auf Intel Skylake Prozessoren zu addressieren.</p>
+</div>
+<div class="paragraph">
+<p>Für Spectre ist die Problembehebung deutlich schwieriger.</p>
+</div>
+<div class="paragraph">
+<p>Zum einen muss betroffene Software analysiert und bei Bedarf mit gepatchten Compilern (neue Versionen von GCC, LLVM usw sind verfügbar) neu übersetzt werden, die die kritischen Stellen unschädlich machen.</p>
+</div>
+<div class="paragraph">
+<p>Es wird versucht über die Einschränkung der spekulativer Ausführung von Zweigen eine der beiden Spectre Varianten zu entschärfen, über Kernel Patches und Microcode-Updates in Prozessoren.
+Diese Ansätze sind aber relativ teuer, besonders auf älteren Prozessoren.</p>
+</div>
+<div class="paragraph">
+<p>Sie verhindern, dass die Vorhersage von Sprungaddressen von weniger privilegiertem Code und nebenläufigen bzw. vorangegangenen Ausführungen beeinflusst werden kann.
+Die daraus entstehenden Leistungseinbussen kommen noch zu den Auswirkungen für den Meltdown-Fix hinzu.</p>
+</div>
+<div class="paragraph">
+<p>Für Spectre(v2) wurde von Google Mitarbeitern ein Ansatz namens [Retpoline] ("return + trampoline") entwickelt.
+Indirekte Sprünge (<code>JMP %rax</code>) und Aufrufe (<code>CALL %rax</code>) stellen das Angriffsziel von Spectre dar.
+Dabei wird die Umgebung so manipuliert, dass <strong>potentielle</strong> Werte des Registerinhaltes auf Betriebssystems- oder Bibliotheksfunktionen zeigen, die relevanten geschützen Speicher auslesen und damit in den Cache laden würden.
+Und diese werden dann auch während der Sprungvorhersage spekulativ ausgeführt.</p>
+</div>
+<div class="paragraph">
+<p>Retpoline nutzt einen ziemlich cleveren Trick:</p>
+</div>
+<div class="paragraph">
+<p>Ein <code>RETURN</code> Opcode stellt ja nur einen indirekten Sprung dar, dessen Ziel (die Rücksprungadresse) auf dem Stack liegt.
+Damit kann man jeden bedingten Sprung (JMP) oder Aufruf (CALL) durch das Platzieren der Zieladdresse auf dem Stack und ein nachfolgendes <code>RETURN</code> ersetzen.
+Diese Operation ist zwar auch theoretisch spekulativ, wird aber von den CPUs schon frühzeitiger festgehalten, so dass die manipulierbare spekulative Ausführung von "Fake News" also falschen Informationen über die Sprungadresse ausgeht, und in einer von Retpoline eingefügten Endlosschleife landet, die dann nach Abschluss der Spekulation einfach verworfen wird.</p>
+</div>
+<div class="paragraph">
+<p>Der Retpoline Maschinencode kann direkt jeden indirekte Verzweigung oder Aufruf ersetzen, aus einem Opcode werden zwar mehrere (6) aber davon werden nur 2 ausgeführt, der "Mehraufwand" ist nicht existent.</p>
+</div>
+<div class="paragraph">
+<p>Neue Compilerversionen enthalten Optionen (z.B. Retpoline aber auch Blockaden für Vorhersagebeeinflussung), um weniger anfälligen Code für Programme und Bibliotheken für Spectre(v2) zu generieren.
+Für Betriebssysteme, Browser und andere Software gibt es neue Builds mit diesen Änderungen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_leistungseinbussen">Leistungseinbussen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bei <em>Anwenderrechnern</em> mit aktuellen Prozessoren sowie aktuellen Betriebssystemen sinkt die Rechnerleistung trotz der Patches laut Aussagen von Microsoft und Apple kaum.</p>
+</div>
+<div class="paragraph">
+<p>Ingenieure von [RedHat] haben verschiedene Kernelupdates mit Microcode-Patches mit einer Zahl von Benchmarks getestet und haben folgende Einbussen ermittelt:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>8-19% Speicherintensive Anwendungen, OLTP Datenbankzugriffe (Transaktionen)</p>
+</li>
+<li>
+<p>3-7% OLAP Datenbankzugriffe (Analyse), Entscheidungssysteme, Java VMs</p>
+</li>
+<li>
+<p>2-5% Hochleistungsrechnen, CPU-intensive Anwendungen</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Da Anwendungen in Containern als Linux-Prozesse sind deren Einschränkungen ähnlich.
+Dagegen haben Virtualisierungslösungen häufigere Wechsel zwischen Kernel- und Nutzermodus, was zu höheren Leistungsverlusten führen muss.</p>
+</div>
+<div class="paragraph">
+<p>Wenn Systeme schon an der Kapazitätsgrenze laufen, sind unmittelbare Maßnahmen notwendig.
+Für alle anderen Anwendungen sollte die Auswirkung im Realbetrieb beobachtet und bei Bedarf über Skalierung oder andere Optimierungen addressiert werden.</p>
+</div>
+<div class="paragraph">
+<p>Google, Microsoft und Amazon haben schon zeitig Patches auf ihrer <em>Cloud-Infrastruktur</em> eingespielt, zum Teil (auf AWS) hat sich das deutlich in der Leistung der virtuellen Maschinen widergespiegelt, bei [Google-Cloud] gab es kaum Auswirkungen.</p>
+</div>
+<div class="paragraph">
+<p>Für Nutzer von <em>serverlosen (Lambda) Funktionen</em> sollte sich der Einfluss in Grenzen halten, da die meisten der Operationen innerhalb der Funktion keinen Kernel-Zugriff benötigen, es kann sich maximal die Ausführzeit etwas verlängern. Eine Auswirkung wie CPU-Last ist dort ja nicht relevant für den Endnutzer.</p>
+</div>
+<div class="paragraph">
+<p>Von den Meltdown Patches wären alle Systemaufrufe die Kernelberechtigungen benötigen betroffen, hier ist eine Auswahl:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Netzwerk I/O</p>
+</li>
+<li>
+<p>Disk I/O</p>
+</li>
+<li>
+<p>Interrupts</p>
+</li>
+<li>
+<p>Locking</p>
+</li>
+<li>
+<p>Thread Management</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Wenn Anwendungen und ihre Bibliotheken nur relativ wenige dieser Aufrufe nutzen, oder deren Nutzung bündeln, dann beeiträchtigen die Patches ihre Leistung nur minimal.
+In vielen Fällen ist das aber deutlich zu merken, in verschiedenen Systemen wurden bis zu 30% Leistungseinbussen berichtet:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Redis (3% - 15%)</p>
+</li>
+<li>
+<p>Spark (3% - 5%)</p>
+</li>
+<li>
+<p>Kafka (bis zu 40%)</p>
+</li>
+<li>
+<p>Postgres (7% - 20%)</p>
+</li>
+<li>
+<p>Cassandra (2% - 25%)</p>
+</li>
+<li>
+<p>Memcache (bis zu 100%)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Je nach Anwendungsfall sind die Ergebnisse sehr verschieden, von [SolarWinds] wurde in einem Artikel die Auswirkung der AWS Patches auf ihren Kafka, Cassandra und Memcache Cluster visualisiert.
+Dabei wird vor allem deutlich, dass nachgelagerte Systeme von der Latenzerhöhung durch kaskadierte Laufzeiten beeinträchtigt wurden.
+Spätere Patches verbesserten das Laufzeitverhalten, zum Teil wurden aber auch einfach Intels Microcode-Updates wegen Instabilitäten zurückgerollt.</p>
+</div>
+<div class="paragraph">
+<p>Infrastructure as a Service (IaaS) ist somit ein Segen - da die Anbieter automatisch und ohne Zutun der Nutzer so weit wie möglich optimierte Patches auf den verwalteten Maschinen einspielen.
+Weniger segensreich ist jedoch die granulare Transparenz, trotz Blog- und Helpcenter-Artikeln ist es oft nicht wirklich klar, was da wie, wo und wann gepatched wurde.
+Anwender mit kritischen Systemen sollten selbst testen und sicherstellen, wie es um ihre Backendinfrastruktur bestellt ist.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_jvm_und_java_programme">JVM und Java Programme</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die JVM selbst ist wie Browser ein Programm das "nicht vertrauenswürdigen" Code in einer Sandbox ausführt.
+Daher sollte sie für Spectre (v1) anfällig sein sund müsste mit entsprechend gefixten Compilern neu übersetzt werden.</p>
+</div>
+<div class="paragraph">
+<p>Aber in den von Oracle im Januar herausgegebenen Sicherheitpatches [ORA-PATCH] sind keine relevanten Patches für die JVM enthalten.
+Nur X86 Server und Virtual Box erhielten Fixes für Spectre(v2).</p>
+</div>
+<div class="paragraph">
+<p>Es bleibt also abzuwarten ob da noch etwas kommt.</p>
+</div>
+<div class="paragraph">
+<p>Prinzipiell kann der JVM Interpreter / JIT-Compiler aktiver dafür sorgen das potentiell kritische Codesequenzen nicht generiert bzw. geschützt werden.
+Für Anwendungen die häufig I/O bzw. Netzwerkzugriffe mit kleinen Blöcken durchführen, sollten die Meltdown Patches Auswirkungen zeigen.
+Dasselbe sollte auch beim Thread-Scheduling der Fall sein, das auch einen privilegierten Systemaufruf darstellt.
+Bei Locks und Semaphoren auf Resourcen mit vielen Konflikten wird durch die Nutzung von Betriebssystem-Mutex (Futex - fast userspace mutex) Aufrufen weiter verlangsamt.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_fazit">Fazit</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Die Entwicklung der Angriffe und von Retpoline als Gegenmassnahme stellt jeweils eine beeindruckende Kombination von Ideen dar.</p>
+</div>
+<div class="paragraph">
+<p>Meltdown und Spectre sind sicher nur die Spitze des Eisbergs, es bleibt abzuwarten, welche anderen Ansätze mit indirekten Angriffen auf die modernen Prozessorarchitekturen realisiert werden.
+Die Designer der Chiphersteller müssen jetzt jedenfalls diese Erkenntnisse in ihre Arbeit integrieren und sicherstellen, dass die transiente Ausführung von Operationen diesselben Sicherheitsüberprüfungen unterliegt wie im regulären Fall.</p>
+</div>
+<div class="paragraph">
+<p>Was ich beeindruckend finde, ist dass diese Lücken nicht von traditionellen Sicherheitsfirmen oder den Chipherstellern kommen, sondern einer Cloud-Firma wie Google.</p>
+</div>
+<div class="paragraph">
+<p>Und dass sich hier ein Vorteil von Infrastrukturservices sehr deutlich auszahlt.
+Effektive Fixes werden unmittelbar eingespielt, ohne dass sich die Nutzer darum kümmern müssen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_referenzen">Referenzen</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>[ProjectZeroPub] <a href="https://googleprojectzero.blogspot.de/2018/01/reading-privileged-memory-with-side.html" class="bare">https://googleprojectzero.blogspot.de/2018/01/reading-privileged-memory-with-side.html</a></p>
+</li>
+<li>
+<p>[Spectre Paper] <a href="https://spectreattack.com/spectre.pdf" class="bare">https://spectreattack.com/spectre.pdf</a></p>
+</li>
+<li>
+<p>[Meltdown Paper] <a href="https://meltdownattack.com/meltdown.pdf" class="bare">https://meltdownattack.com/meltdown.pdf</a></p>
+</li>
+<li>
+<p>[Heise Analyse] <a href="https://www.heise.de/security/meldung/Analyse-zur-Prozessorluecke-Meltdown-und-Spectre-sind-ein-Security-Supergau-3935124.html" class="bare">https://www.heise.de/security/meldung/Analyse-zur-Prozessorluecke-Meltdown-und-Spectre-sind-ein-Security-Supergau-3935124.html</a></p>
+</li>
+<li>
+<p>[KPTI] <a href="https://en.wikipedia.org/wiki/Kernel_page-table_isolation" class="bare">https://en.wikipedia.org/wiki/Kernel_page-table_isolation</a></p>
+</li>
+<li>
+<p>[InfoQ] <a href="https://www.infoq.com/news/2018/01/meltdown-spectre-deep-dive" class="bare">https://www.infoq.com/news/2018/01/meltdown-spectre-deep-dive</a></p>
+</li>
+<li>
+<p>[Google-Cloud] <a href="https://www.blog.google/topics/google-cloud/protecting-our-google-cloud-customers-new-vulnerabilities-without-impacting-performance/" class="bare">https://www.blog.google/topics/google-cloud/protecting-our-google-cloud-customers-new-vulnerabilities-without-impacting-performance/</a></p>
+</li>
+<li>
+<p>[Retpoline] <a href="https://support.google.com/faqs/answer/7625886" class="bare">https://support.google.com/faqs/answer/7625886</a></p>
+</li>
+<li>
+<p>[ORA-PATCH] <a href="http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html#AppendixJAVA" class="bare">http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html#AppendixJAVA</a></p>
+</li>
+<li>
+<p>[TUGRAZ] Meltdown Demo Code und Video Uni Graz: <a href="https://github.com/iaik/meltdown" class="bare">https://github.com/iaik/meltdown</a></p>
+</li>
+<li>
+<p>[RedHat Performance Impact] <a href="https://access.redhat.com/articles/3307751" class="bare">https://access.redhat.com/articles/3307751</a></p>
+</li>
+<li>
+<p>[SolarWinds] <a href="https://blog.appoptics.com/visualizing-meltdown-aws/" class="bare">https://blog.appoptics.com/visualizing-meltdown-aws/</a></p>
+</li>
+<li>
+<p>Meltdown and Spectre, explained: <a href="https://medium.com/@mattklein123/meltdown-spectre-explained-6bc8634cc0c2" class="bare">https://medium.com/@mattklein123/meltdown-spectre-explained-6bc8634cc0c2</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+
+
+  <div id='wikifoot' class="footnav">
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-21 23:33:58 CEST</div>
+	
+      <div style="text-align:center;">
+      <a href='http://jexp.de/impressum'>Impressum</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
+	
+   </div>
+
+</body>
+</html>

@@ -4,69 +4,15 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>JEXP | Schneller sperren - Stamped Lock in Java 8</title>
+  <title>Schneller sperren - Stamped Lock in Java 8</title>
     <meta http-equiv='Content-Style-Type' content='text/css' />
-  <link rel='stylesheet' href='http://jexp.de/pub/skins/jexp/jexp.css' type='text/css' />
+  <link rel='stylesheet' href='/css/jexp.css' type='text/css' />
   <link rel="openid.server" href="http://jexp.de/id" />
-<!--HeaderText--><style type='text/css'><!--
-  div.wikibody { line-height: 1.6em; font-size:1.4em; }
-  ul, ol, pre, dl, p { margin-top:0px; margin-bottom:0px; }
-  code.escaped { white-space: nowrap; }
-  .vspace { margin-top:1.33em; }
-  .indent { margin-left:40px; }
-  .outdent { margin-left:40px; text-indent:-40px; }
-  a.createlinktext { text-decoration:none; border-bottom:1px dotted gray; }
-  a.createlink { text-decoration:none; position:relative; top:-0.5em;
-    font-weight:bold; font-size:smaller; border-bottom:none; }
-  img { border:0px; }
-   
-  table.tabtable { border-collapse: collapse; }
-  table.tabtable td { border:1px solid #cccccc; }
-
-div.sourceblock {
-	padding: 0.5em;
-	border: 1px solid #808080;
-	background-color: #F1F0ED; }
-div.sourceblock div {
-	font-family: monospace;
-	font-size: small;
-	line-height: 1; }
-div.sourceblock div.head, div.sourceblock div.foot {
-	font: italic medium serif;
-	padding: 0.5em;
-}
-div.codeblock {
-	padding: 0.5em;
-	border: 1px solid #808080;
-	background-color: #F1F0ED; }
-div.codeblock pre {
-	font-family: monospace;
-	font-size: small;
-	line-height: 1; }.editconflict { color:green; 
-  font-style:italic; margin-top:1.33em; margin-bottom:1.33em; }
-
-  table.markup { border:2px dotted #ccf; width:90%; }
-  td.markup1, td.markup2 { padding-left:10px; padding-right:10px; }
-  table.vert td.markup1 { border-bottom:1px solid #ccf; }
-  table.horiz td.markup1 { width:23em; border-right:1px solid #ccf; }
-  table.markup caption { text-align:left; }
-  div.faq p, div.faq pre { margin-left:2em; }
-  div.faq p.question { margin:1em 0 0.75em 0; font-weight:bold; }
-   
-    .frame 
-      { border:1px solid #cccccc; padding:4px; background-color:#f9f9f9; }
-    .lfloat { float:left; margin-right:0.5em; }
-    .rfloat { float:right; margin-left:0.5em; }
-a.varlink { text-decoration:none; }
-
---></style>
-  <link href='/wiki/pub//css/commentboxplus.css' rel='stylesheet' type='text/css' />  <meta name='robots' content='index,follow' />
-
-
+  <meta name='robots' content='index,follow' />
 </head>
 <body>
 <!--PageHeaderFmt-->
-  <div id='wikihead'><a href='http://jexp.de/index.php'><img src='http://jexp.de/pub/skins/jexp/img/jexp.gif'
+  <div id='wikihead'><a href='/'><img src='/img/jexp.gif'
     alt='JEXP' border='0' align="center" /></a>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     JEXP</div>
@@ -76,39 +22,18 @@ a.varlink { text-decoration:none; }
    <ul>
 	<li><a class='urllink' href='http://www.jexp.de/blog'>BLOG</a></li>
 	<li><a class='urllink' href='http://github.com/jexp'>GitHub</a></li>
-	<li><a class='urllink' href='conferences.html'>Conferences</a></li>
-	<li><a class='urllink' href='articles.html'>Articles</a></li>
-	<li><a class='urllink' href='books.html'>Books</a></li>
-	<li><a class='urllink' href='projects.html'>Projects</a></li>
-	<li><a class='urllink' href='bio.html'>Bio</a></li>
-<!--
-<li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Projects'>Projects</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Biografie'>Bio</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Business.Referenzen'>References</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Links'>Links</a>
-</li><li><a class='urllink' href='http://www.librarything.com/catalog/mesirii' rel='nofollow'>Books</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.BetterDevelopment'>BetterDevelopment</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Konferenzen'>Conferences</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Demotivators'>Demotivators</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Info.Quotes'>Quotes</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Reviews'>Reviews</a>
-<ul><li><a class='wikilink' href='http://jexp.de/index.php?n=DslBook.DslBook'>DslBook</a>
-</li></ul></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Main.Java'>Java</a>
-<ul><li><a class='urllink' href='http://jequel.de' rel='nofollow'>Jequel</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=BricksAndMortar.BricksAndMortar'>BricksAndMortar</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Projects'>Look@Projects</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Spring'>Spring</a>
-</li><li><a class='wikilink' href='http://jexp.de/index.php?n=Java.Code'>Code</a>
-</li></ul><p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Impressum'>Impressum</a>
-<p class='vspace'></p></li><li><a class='wikilink' href='http://jexp.de/index.php?n=Site.Internal'>Internal</a>
-</li>
--->
-
+	<li><a class='urllink' href='/conferences.html'>Conferences</a></li>
+	<li><a class='urllink' href='/articles.html'>Articles</a></li>
+	<li><a class='urllink' href='/books.html'>Books</a></li>
+	<li><a class='urllink' href='/projects.html'>Projects</a></li>
+	<li><a class='urllink' href='/bio.html'>Bio</a></li>
 </ul>
 
 </div>
 
 <div id="wikibody">
+
+<h1>Schneller sperren - Stamped Lock in Java 8</h1>
 
 <div id="preamble">
 <div class="sectionbody">
@@ -204,7 +129,7 @@ Mittels anderer Sperren, kann man selbst kontrollieren, ob man lesenden oder sch
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="java language-java">private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+<pre class="highlight"><code class="language-java" data-lang="java">private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 ...
 public float updateAndComputeAverage(int value) {
 
@@ -442,7 +367,7 @@ public float updateAndComputeAverage(int value) {
 <div class="listingblock">
 <div class="title">Optimistische Leseoperation</div>
 <div class="content">
-<pre class="highlight"><code class="java language-java">class Counter {
+<pre class="highlight"><code class="language-java" data-lang="java">class Counter {
     private final StampedLock sl = new StampedLock();
     int sum;
     int count;
@@ -576,14 +501,15 @@ Notifizierte Threads bekommen nicht automatisch die Sperre, sie sind nur die nä
 
 
   <div id='wikifoot' class="footnav">
-    <div style="text-align:right; float:right" class='lastmod'>Last updated 2014-11-26 14:45:23 CET</div>
+    <div style="text-align:right; float:right" class='lastmod'>Last updated 2018-10-22 00:04:36 CEST</div>
 	
       <div style="text-align:center;">
       <a href='http://jexp.de/impressum'>Impressum</a>
-    - <a class='urllink' href='http://twitter.com/mesirii'>Twitter</a>
-	- <a class='urllink' href='http://github.com/jexp'>GitHub</a>
-	- <a class='urllink' href='http://stackoverflow.com/users/story/728812'>StackOverflow</a>
-	- <a class='urllink' href='http://linkedin.com/jexpde'>LinkedIn</a>
+    - <a class='urllink' href='https://twitter.com/mesirii'>Twitter</a>
+	- <a class='urllink' href='https://github.com/jexp'>GitHub</a>
+	- <a class='urllink' href='https://stackoverflow.com/users/story/728812'>StackOverflow</a>
+	- <a class='urllink' href='https://linkedin.com/jexpde'>LinkedIn</a>
+	- <a class='urllink' href='https://medium.com/@mesirii'>Medium</a>
 	
    </div>
 
