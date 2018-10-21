@@ -34,7 +34,7 @@ table { background-color: #3B543B; }
   font-size: 1.5em;
   margin: 0 0 0 0;
   text-align: top;
-  background-image:url(img/top.gif); background-repeat:no-repeat;
+  background-image:url(/img/top.gif); background-repeat:no-repeat;
   font-family: Times New Roman,serif; font-style:italic; font-variant:small-caps; color:#FFD561;
 }
 #wikihead input { font-size:85%; }
@@ -43,7 +43,7 @@ table { background-color: #3B543B; }
 
 #wikileft {
   width:115px; height:400px;
-  background-image:url(img/left.gif); background-repeat:no-repeat;
+  background-image:url(/img/left.gif); background-repeat:no-repeat;
   float: left;
   padding:10px 10px 0 -10px;
   font-size: 85%;
